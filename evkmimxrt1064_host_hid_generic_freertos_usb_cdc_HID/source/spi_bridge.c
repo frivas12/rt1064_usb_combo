@@ -35,6 +35,11 @@ typedef struct _spi_bridge_device_entry
     uint8_t hasOutEndpoint;
     uint8_t deviceType;
     uint16_t reportDescLen;
+    uint8_t hubNumber;
+    uint8_t portNumber;
+    uint8_t hsHubNumber;
+    uint8_t hsHubPort;
+    uint8_t level;
 } spi_bridge_device_entry_t;
 
 static QueueHandle_t s_bridgeQueue;
@@ -260,6 +265,11 @@ status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
                                uint8_t interfaceNumber,
                                bool hasOutEndpoint,
                                uint16_t reportDescLen,
+                               uint8_t hubNumber,
+                               uint8_t portNumber,
+                               uint8_t hsHubNumber,
+                               uint8_t hsHubPort,
+                               uint8_t level,
                                uint8_t *deviceIdOut)
 {
     spi_bridge_device_entry_t *entry = SPI_BridgeAllocateEntry();
@@ -276,6 +286,11 @@ status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
     entry->hasOutEndpoint  = hasOutEndpoint ? 1U : 0U;
     entry->deviceType      = (uint8_t)deviceType;
     entry->reportDescLen   = reportDescLen;
+    entry->hubNumber       = hubNumber;
+    entry->portNumber      = portNumber;
+    entry->hsHubNumber     = hsHubNumber;
+    entry->hsHubPort       = hsHubPort;
+    entry->level           = level;
 
     payload.vid             = vid;
     payload.pid             = pid;
@@ -283,6 +298,11 @@ status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
     payload.hasOutEndpoint  = entry->hasOutEndpoint;
     payload.deviceType      = entry->deviceType;
     payload.reportDescLen   = reportDescLen;
+    payload.hubNumber       = hubNumber;
+    payload.portNumber      = portNumber;
+    payload.hsHubNumber     = hsHubNumber;
+    payload.hsHubPort       = hsHubPort;
+    payload.level           = level;
 
     if (SPI_BridgeQueueFrame(kSpiBridgeMessageDeviceAdd, entry->deviceId, (const uint8_t *)&payload,
                              (uint16_t)sizeof(payload)) == kStatus_Success)

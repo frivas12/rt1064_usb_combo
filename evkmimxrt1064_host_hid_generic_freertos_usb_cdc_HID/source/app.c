@@ -74,7 +74,7 @@ void BOARD_InitHardware(void);
  * Variables
  ******************************************************************************/
 /*! @brief USB host generic instance global variable */
-extern usb_host_hid_generic_instance_t g_HostHidGeneric;
+extern usb_host_hid_generic_instance_t g_HostHidGeneric[HID_GENERIC_MAX_DEVICES];
 usb_host_handle g_HostHandle;
 
 /*******************************************************************************
@@ -150,9 +150,14 @@ static void USB_HostTask(void *param)
 
 static void USB_HostApplicationTask(void *param)
 {
+    usb_host_hid_generic_instance_t *instances = (usb_host_hid_generic_instance_t *)param;
+
     while (1)
     {
-        USB_HostHidGenericTask(param);
+        for (uint8_t index = 0U; index < HID_GENERIC_MAX_DEVICES; ++index)
+        {
+            USB_HostHidGenericTask(&instances[index]);
+        }
     }
 }
 
