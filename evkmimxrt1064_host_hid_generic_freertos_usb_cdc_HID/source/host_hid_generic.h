@@ -52,6 +52,11 @@ typedef struct _usb_host_hid_generic_instance
     uint8_t *genericInBuffer;  /*!< use to receive report descriptor and data */
     uint8_t *genericOutBuffer; /*!< use to send data */
     uint16_t sendIndex;        /*!< data sending position */
+    uint16_t reportDescriptorLength; /*!< length of the active HID report descriptor */
+    uint16_t lastInDataLength;       /*!< most recent interrupt IN payload size */
+    uint16_t lastOutDataLength;      /*!< most recent interrupt OUT payload size */
+    uint16_t vid;                    /*!< attached device vendor ID */
+    uint16_t pid;                    /*!< attached device product ID */
 } usb_host_hid_generic_instance_t;
 
 /*******************************************************************************

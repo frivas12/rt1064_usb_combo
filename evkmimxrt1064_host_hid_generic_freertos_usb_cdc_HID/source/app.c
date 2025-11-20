@@ -13,6 +13,7 @@
 #include "host_hid_generic.h"
 #include "fsl_common.h"
 #include "board.h"
+#include "spi_bridge.h"
 #if (defined(FSL_FEATURE_SOC_SYSMPU_COUNT) && (FSL_FEATURE_SOC_SYSMPU_COUNT > 0U))
 #include "fsl_sysmpu.h"
 #endif /* FSL_FEATURE_SOC_SYSMPU_COUNT */
@@ -161,6 +162,11 @@ int main(void)
 
     USB_HostApplicationInit();
 
+    if (SPI_BridgeInit() != kStatus_Success)
+    {
+        usb_echo("spi bridge init error\r\n");
+    }
+
     if (xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, APP_USB_TASK_PRIORITY, NULL) != pdPASS)
     {
         usb_echo("create host task error\r\n");
@@ -169,6 +175,10 @@ int main(void)
         pdPASS)
     {
         usb_echo("create mouse task error\r\n");
+    }
+    if (xTaskCreate(SPI_BridgeTask, "spi bridge", 1024L / sizeof(portSTACK_TYPE), NULL, APP_MAIN_TASK_PRIORITY, NULL) != pdPASS)
+    {
+        usb_echo("create spi bridge task error\r\n");
     }
 
     vTaskStartScheduler();
