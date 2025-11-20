@@ -267,7 +267,7 @@ status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
 
     if (entry == NULL)
     {
-        return kStatus_AllocFailed;
+        return kStatus_Fail;
     }
 
     entry->vid             = vid;
