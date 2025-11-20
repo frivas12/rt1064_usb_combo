@@ -88,6 +88,8 @@ uint8_t s_GenericInBuffer[HID_GENERIC_IN_BUFFER_SIZE]; /*!< use to receive repor
 USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE)
 uint8_t s_GenericOutBuffer[HID_GENERIC_IN_BUFFER_SIZE]; /*!< use to send data */
 
+#define SPI_DEVICE_ID_INVALID (0xFFU)
+
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -98,9 +100,10 @@ static void USB_HostHidGenericProcessBuffer(usb_host_hid_generic_instance_t *gen
 
     usb_echo("%s", genericInstance->genericInBuffer);
 
-    if (genericInstance->lastInDataLength > 0U)
+    if ((genericInstance->lastInDataLength > 0U) && genericInstance->deviceAnnounced)
     {
-        (void)SPI_BridgeSendReport(true, genericInstance->genericInBuffer, genericInstance->lastInDataLength);
+        (void)SPI_BridgeSendReport(genericInstance->deviceId, true, 0U, genericInstance->genericInBuffer,
+                                   genericInstance->lastInDataLength);
     }
 }
 
@@ -188,9 +191,10 @@ static usb_status_t USB_HostHidGenericPrepareOutData(usb_host_hid_generic_instan
         genericInstance->sendIndex += genericInstance->outMaxPacketSize;
 
         genericInstance->lastOutDataLength = index;
-        if (genericInstance->lastOutDataLength > 0U)
+        if ((genericInstance->lastOutDataLength > 0U) && genericInstance->deviceAnnounced)
         {
-            (void)SPI_BridgeSendReport(false, genericInstance->genericOutBuffer, genericInstance->lastOutDataLength);
+            (void)SPI_BridgeSendReport(genericInstance->deviceId, false, 0U, genericInstance->genericOutBuffer,
+                                       genericInstance->lastOutDataLength);
         }
 
         return kStatus_USB_Success;
@@ -326,6 +330,21 @@ void USB_HostHidGenericTask(void *param)
 
             genericInstance->reportDescriptorLength = hidReportLength;
 
+            if (!genericInstance->deviceAnnounced)
+            {
+                uint8_t deviceId;
+                usb_host_interface_t *iface = (usb_host_interface_t *)genericInstance->interfaceHandle;
+                status_t bridgeStatus =
+                    SPI_BridgeAllocDevice(kSpiBridgeDeviceGenericHid, genericInstance->vid, genericInstance->pid,
+                                          iface->interfaceDesc->bInterfaceNumber,
+                                          (genericInstance->outMaxPacketSize > 0U), hidReportLength, &deviceId);
+                if (bridgeStatus == kStatus_Success)
+                {
+                    genericInstance->deviceId        = deviceId;
+                    genericInstance->deviceAnnounced = true;
+                }
+            }
+
             genericInstance->runWaitState = kUSB_HostHidRunWaitGetReportDescriptor;
             genericInstance->runState     = kUSB_HostHidRunIdle;
             /* second: get report descriptor */
@@ -334,9 +353,11 @@ void USB_HostHidGenericTask(void *param)
             break;
 
         case kUSB_HostHidRunGetReportDescriptorDone: /* 4. hid set protocol */
-            if (genericInstance->reportDescriptorLength > 0U)
+            if ((genericInstance->reportDescriptorLength > 0U) && genericInstance->deviceAnnounced &&
+                (genericInstance->deviceId != SPI_DEVICE_ID_INVALID))
             {
-                (void)SPI_BridgeSendReportDescriptor(genericInstance->genericInBuffer,
+                (void)SPI_BridgeSendReportDescriptor(genericInstance->deviceId, genericInstance->genericInBuffer,
+                                                     genericInstance->reportDescriptorLength, 0,
                                                      genericInstance->reportDescriptorLength);
             }
             genericInstance->runWaitState = kUSB_HostHidRunWaitSetProtocol;
@@ -464,6 +485,8 @@ usb_status_t USB_HostHidGenericEvent(usb_device_handle deviceHandle,
                         g_HostHidGeneric.configHandle     = configurationHandle;
                         g_HostHidGeneric.vid              = (uint16_t)vid;
                         g_HostHidGeneric.pid              = (uint16_t)pid;
+                        g_HostHidGeneric.deviceId         = SPI_DEVICE_ID_INVALID;
+                        g_HostHidGeneric.deviceAnnounced  = false;
                         return kStatus_USB_Success;
                     }
                     else
@@ -494,8 +517,6 @@ usb_status_t USB_HostHidGenericEvent(usb_device_handle deviceHandle,
                         usb_echo("vid=0x%x ", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceAddress, &infoValue);
                         usb_echo("address=%d\r\n", infoValue);
-
-                        (void)SPI_BridgeSendDeviceEvent(true, g_HostHidGeneric.vid, g_HostHidGeneric.pid);
                     }
                     else
                     {
@@ -513,7 +534,12 @@ usb_status_t USB_HostHidGenericEvent(usb_device_handle deviceHandle,
                 g_HostHidGeneric.configHandle = NULL;
                 if (g_HostHidGeneric.deviceState != kStatus_DEV_Idle)
                 {
-                    (void)SPI_BridgeSendDeviceEvent(false, g_HostHidGeneric.vid, g_HostHidGeneric.pid);
+                    if (g_HostHidGeneric.deviceAnnounced && (g_HostHidGeneric.deviceId != SPI_DEVICE_ID_INVALID))
+                    {
+                        (void)SPI_BridgeRemoveDevice(g_HostHidGeneric.deviceId);
+                    }
+                    g_HostHidGeneric.deviceAnnounced = false;
+                    g_HostHidGeneric.deviceId        = SPI_DEVICE_ID_INVALID;
                     g_HostHidGeneric.deviceState = kStatus_DEV_Detached;
                 }
             }

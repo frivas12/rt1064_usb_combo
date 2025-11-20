@@ -9,6 +9,8 @@
 #ifndef _HOST_HID_GENERIC_H_
 #define _HOST_HID_GENERIC_H_
 
+#include <stdbool.h>
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -57,6 +59,8 @@ typedef struct _usb_host_hid_generic_instance
     uint16_t lastOutDataLength;      /*!< most recent interrupt OUT payload size */
     uint16_t vid;                    /*!< attached device vendor ID */
     uint16_t pid;                    /*!< attached device product ID */
+    uint8_t deviceId;                /*!< logical device ID for SPI bridge */
+    bool deviceAnnounced;            /*!< true once DEVICE_ADD has been sent */
 } usb_host_hid_generic_instance_t;
 
 /*******************************************************************************
