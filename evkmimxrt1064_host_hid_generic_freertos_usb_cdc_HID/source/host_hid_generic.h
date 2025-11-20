@@ -11,6 +11,8 @@
 
 #include <stdbool.h>
 
+#include "spi_bridge.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -18,6 +20,8 @@
 #define HID_GENERIC_IN_BUFFER_SIZE (100U)
 /*! @brief buffer for sending data */
 #define HID_GENERIC_OUT_BUFFER_SIZE (8U)
+/*! @brief maximum number of HID instances tracked by the bridge */
+#define HID_GENERIC_MAX_DEVICES (SPI_BRIDGE_MAX_DEVICES)
 
 /*! @brief host app run status */
 typedef enum _usb_host_hid_generic_run_state
@@ -59,6 +63,11 @@ typedef struct _usb_host_hid_generic_instance
     uint16_t lastOutDataLength;      /*!< most recent interrupt OUT payload size */
     uint16_t vid;                    /*!< attached device vendor ID */
     uint16_t pid;                    /*!< attached device product ID */
+    uint8_t hubNumber;               /*!< parent hub address (0 = root hub) */
+    uint8_t portNumber;              /*!< parent hub port number */
+    uint8_t hsHubNumber;             /*!< upstream high-speed hub address */
+    uint8_t hsHubPort;               /*!< upstream high-speed hub port */
+    uint8_t level;                   /*!< hub depth level */
     uint8_t deviceId;                /*!< logical device ID for SPI bridge */
     bool deviceAnnounced;            /*!< true once DEVICE_ADD has been sent */
 } usb_host_hid_generic_instance_t;

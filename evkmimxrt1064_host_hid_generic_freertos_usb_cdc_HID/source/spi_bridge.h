@@ -71,6 +71,11 @@ typedef struct __attribute__((packed)) _spi_bridge_device_add
     uint8_t hasOutEndpoint;
     uint8_t deviceType;
     uint16_t reportDescLen;
+    uint8_t hubNumber;
+    uint8_t portNumber;
+    uint8_t hsHubNumber;
+    uint8_t hsHubPort;
+    uint8_t level;
 } spi_bridge_device_add_t;
 
 /*! @brief REPORT_DESCRIPTOR payload. */
@@ -131,6 +136,11 @@ status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
                                uint8_t interfaceNumber,
                                bool hasOutEndpoint,
                                uint16_t reportDescLen,
+                               uint8_t hubNumber,
+                               uint8_t portNumber,
+                               uint8_t hsHubNumber,
+                               uint8_t hsHubPort,
+                               uint8_t level,
                                uint8_t *deviceIdOut);
 
 /*!
