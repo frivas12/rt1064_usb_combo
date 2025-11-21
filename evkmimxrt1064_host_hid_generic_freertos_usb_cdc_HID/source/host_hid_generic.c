@@ -29,6 +29,7 @@
  * @param genericInstance   hid generic instance pointer.
  */
 static void USB_HostHidGenericProcessBuffer(usb_host_hid_generic_instance_t *genericInstance);
+static void USB_HostHidGenericPrintHex(const char *label, const uint8_t *data, uint32_t length);
 
 /*!
  * @brief host hid generic control transfer callback.
@@ -154,12 +155,36 @@ static void USB_HostHidGenericProcessBuffer(usb_host_hid_generic_instance_t *gen
 {
     genericInstance->genericInBuffer[genericInstance->inMaxPacketSize] = 0;
 
-    usb_echo("%s", genericInstance->genericInBuffer);
+    USB_HostHidGenericPrintHex("Input report", genericInstance->genericInBuffer,
+                               genericInstance->lastInDataLength);
 
     if ((genericInstance->lastInDataLength > 0U) && genericInstance->deviceAnnounced)
     {
         (void)SPI_BridgeSendReport(genericInstance->deviceId, true, 0U, genericInstance->genericInBuffer,
                                    genericInstance->lastInDataLength);
+    }
+}
+
+static void USB_HostHidGenericPrintHex(const char *label, const uint8_t *data, uint32_t length)
+{
+    if ((data == NULL) || (length == 0U))
+    {
+        return;
+    }
+
+    usb_echo("%s (%u bytes):\r\n", label, (unsigned int)length);
+
+    for (uint32_t offset = 0; offset < length; offset += 16U)
+    {
+        uint32_t remaining = length - offset;
+        uint32_t lineSize  = (remaining > 16U) ? 16U : remaining;
+
+        usb_echo("  %03u: ", (unsigned int)offset);
+        for (uint32_t index = 0; index < lineSize; ++index)
+        {
+            usb_echo("%02x ", data[offset + index]);
+        }
+        usb_echo("\r\n");
     }
 }
 
@@ -247,6 +272,8 @@ static usb_status_t USB_HostHidGenericPrepareOutData(usb_host_hid_generic_instan
         genericInstance->sendIndex += genericInstance->outMaxPacketSize;
 
         genericInstance->lastOutDataLength = index;
+        USB_HostHidGenericPrintHex("Output report", genericInstance->genericOutBuffer,
+                                   genericInstance->lastOutDataLength);
         if ((genericInstance->lastOutDataLength > 0U) && genericInstance->deviceAnnounced)
         {
             (void)SPI_BridgeSendReport(genericInstance->deviceId, false, 0U, genericInstance->genericOutBuffer,
@@ -418,12 +445,16 @@ void USB_HostHidGenericTask(void *param)
             break;
 
         case kUSB_HostHidRunGetReportDescriptorDone: /* 4. hid set protocol */
-            if ((genericInstance->reportDescriptorLength > 0U) && genericInstance->deviceAnnounced &&
-                (genericInstance->deviceId != SPI_DEVICE_ID_INVALID))
+            if (genericInstance->reportDescriptorLength > 0U)
             {
-                (void)SPI_BridgeSendReportDescriptor(genericInstance->deviceId, genericInstance->genericInBuffer,
-                                                     genericInstance->reportDescriptorLength, 0,
-                                                     genericInstance->reportDescriptorLength);
+                USB_HostHidGenericPrintHex("Report descriptor", genericInstance->genericInBuffer,
+                                           genericInstance->reportDescriptorLength);
+                if (genericInstance->deviceAnnounced && (genericInstance->deviceId != SPI_DEVICE_ID_INVALID))
+                {
+                    (void)SPI_BridgeSendReportDescriptor(genericInstance->deviceId, genericInstance->genericInBuffer,
+                                                         genericInstance->reportDescriptorLength, 0,
+                                                         genericInstance->reportDescriptorLength);
+                }
             }
             genericInstance->runWaitState = kUSB_HostHidRunWaitSetProtocol;
             genericInstance->runState     = kUSB_HostHidRunIdle;
