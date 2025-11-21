@@ -555,47 +555,36 @@ usb_status_t USB_HostHidGenericEvent(usb_device_handle deviceHandle,
                     usb_echo("  skip interface %u: subclass=0x%x unsupported\r\n", interfaceIndex, id);
                     continue;
                 }
-                if ((pid == 0x00a2) && (vid == 0x1fc9))
+                genericInstance = USB_HostHidGenericAllocateInstance();
+                if (genericInstance != NULL)
                 {
-                    genericInstance = USB_HostHidGenericAllocateInstance();
-                    if (genericInstance != NULL)
-                    {
-                        /* the interface is supported by the application */
-                        uint8_t instanceIndex        = (uint8_t)(genericInstance - g_HostHidGeneric);
-                        genericInstance->genericInBuffer  = &s_GenericInBuffer[instanceIndex][0];
-                        genericInstance->genericOutBuffer = &s_GenericOutBuffer[instanceIndex][0];
-                        genericInstance->deviceHandle     = deviceHandle;
-                        genericInstance->interfaceHandle  = interface;
-                        genericInstance->configHandle     = configurationHandle;
-                        genericInstance->vid              = (uint16_t)vid;
-                        genericInstance->pid              = (uint16_t)pid;
-                        genericInstance->deviceId         = SPI_DEVICE_ID_INVALID;
-                        genericInstance->deviceAnnounced  = false;
-                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHubNumber,
-                                                                 &infoValue);
-                        genericInstance->hubNumber = (uint8_t)infoValue;
-                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDevicePortNumber,
-                                                                 &infoValue);
-                        genericInstance->portNumber = (uint8_t)infoValue;
-                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubNumber,
-                                                                 &infoValue);
-                        genericInstance->hsHubNumber = (uint8_t)infoValue;
-                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubPort,
-                                                                 &infoValue);
-                        genericInstance->hsHubPort = (uint8_t)infoValue;
-                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceLevel,
-                                                                 &infoValue);
-                        genericInstance->level = (uint8_t)infoValue;
-                        return kStatus_USB_Success;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                else
-                {
-                    usb_echo("  skip interface %u: unsupported vid/pid (0x%x/0x%x)\r\n", interfaceIndex, vid, pid);
+                    /* the interface is supported by the application */
+                    uint8_t instanceIndex        = (uint8_t)(genericInstance - g_HostHidGeneric);
+                    genericInstance->genericInBuffer  = &s_GenericInBuffer[instanceIndex][0];
+                    genericInstance->genericOutBuffer = &s_GenericOutBuffer[instanceIndex][0];
+                    genericInstance->deviceHandle     = deviceHandle;
+                    genericInstance->interfaceHandle  = interface;
+                    genericInstance->configHandle     = configurationHandle;
+                    genericInstance->vid              = (uint16_t)vid;
+                    genericInstance->pid              = (uint16_t)pid;
+                    genericInstance->deviceId         = SPI_DEVICE_ID_INVALID;
+                    genericInstance->deviceAnnounced  = false;
+                    USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHubNumber,
+                                                             &infoValue);
+                    genericInstance->hubNumber = (uint8_t)infoValue;
+                    USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDevicePortNumber,
+                                                             &infoValue);
+                    genericInstance->portNumber = (uint8_t)infoValue;
+                    USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubNumber,
+                                                             &infoValue);
+                    genericInstance->hsHubNumber = (uint8_t)infoValue;
+                    USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubPort,
+                                                             &infoValue);
+                    genericInstance->hsHubPort = (uint8_t)infoValue;
+                    USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceLevel,
+                                                             &infoValue);
+                    genericInstance->level = (uint8_t)infoValue;
+                    return kStatus_USB_Success;
                 }
             }
             status = kStatus_USB_NotSupported;
