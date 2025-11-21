@@ -29,7 +29,10 @@
  * @param genericInstance   hid generic instance pointer.
  */
 static void USB_HostHidGenericProcessBuffer(usb_host_hid_generic_instance_t *genericInstance);
-static void USB_HostHidGenericPrintHex(const char *label, const uint8_t *data, uint32_t length);
+static void USB_HostHidGenericPrintHex(usb_host_hid_generic_instance_t *genericInstance,
+                                       const char *label,
+                                       const uint8_t *data,
+                                       uint32_t length);
 
 /*!
  * @brief host hid generic control transfer callback.
@@ -155,7 +158,7 @@ static void USB_HostHidGenericProcessBuffer(usb_host_hid_generic_instance_t *gen
 {
     genericInstance->genericInBuffer[genericInstance->inMaxPacketSize] = 0;
 
-    USB_HostHidGenericPrintHex("Input report", genericInstance->genericInBuffer,
+    USB_HostHidGenericPrintHex(genericInstance, "Input report", genericInstance->genericInBuffer,
                                genericInstance->lastInDataLength);
 
     if ((genericInstance->lastInDataLength > 0U) && genericInstance->deviceAnnounced)
@@ -165,14 +168,20 @@ static void USB_HostHidGenericProcessBuffer(usb_host_hid_generic_instance_t *gen
     }
 }
 
-static void USB_HostHidGenericPrintHex(const char *label, const uint8_t *data, uint32_t length)
+static void USB_HostHidGenericPrintHex(usb_host_hid_generic_instance_t *genericInstance,
+                                       const char *label,
+                                       const uint8_t *data,
+                                       uint32_t length)
 {
     if ((data == NULL) || (length == 0U))
     {
         return;
     }
 
-    usb_echo("%s (%u bytes):\r\n", label, (unsigned int)length);
+    usb_echo("%s (vid=0x%x pid=0x%x hub=%u port=%u hs hub=%u hs port=%u level=%u, %u bytes):\r\n",
+             label, genericInstance->vid, genericInstance->pid, genericInstance->hubNumber,
+             genericInstance->portNumber, genericInstance->hsHubNumber, genericInstance->hsHubPort,
+             genericInstance->level, (unsigned int)length);
 
     for (uint32_t offset = 0; offset < length; offset += 16U)
     {
@@ -272,7 +281,7 @@ static usb_status_t USB_HostHidGenericPrepareOutData(usb_host_hid_generic_instan
         genericInstance->sendIndex += genericInstance->outMaxPacketSize;
 
         genericInstance->lastOutDataLength = index;
-        USB_HostHidGenericPrintHex("Output report", genericInstance->genericOutBuffer,
+        USB_HostHidGenericPrintHex(genericInstance, "Output report", genericInstance->genericOutBuffer,
                                    genericInstance->lastOutDataLength);
         if ((genericInstance->lastOutDataLength > 0U) && genericInstance->deviceAnnounced)
         {
@@ -447,7 +456,8 @@ void USB_HostHidGenericTask(void *param)
         case kUSB_HostHidRunGetReportDescriptorDone: /* 4. hid set protocol */
             if (genericInstance->reportDescriptorLength > 0U)
             {
-                USB_HostHidGenericPrintHex("Report descriptor", genericInstance->genericInBuffer,
+                USB_HostHidGenericPrintHex(genericInstance, "Report descriptor",
+                                           genericInstance->genericInBuffer,
                                            genericInstance->reportDescriptorLength);
                 if (genericInstance->deviceAnnounced && (genericInstance->deviceId != SPI_DEVICE_ID_INVALID))
                 {
