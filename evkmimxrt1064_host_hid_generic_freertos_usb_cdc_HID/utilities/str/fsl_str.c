@@ -650,6 +650,12 @@ static int32_t ConvertRadixNumToString(char *numstr, void *nump, unsigned int ne
             ++nlen;
         }
     }
+    if ((16U == radix) && (nlen == 1))
+    {
+        *nstrp++ = '0';
+        ++nlen;
+    }
+
     return nlen;
 }
 
