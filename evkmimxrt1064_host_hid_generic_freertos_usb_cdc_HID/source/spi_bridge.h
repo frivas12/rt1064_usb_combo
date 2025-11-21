@@ -12,7 +12,7 @@
 #endif
 
 #if SPI_BRIDGE_ENABLE_DEBUG
-#define SPI_BRIDGE_LOG(...) usb_echo(__VA_ARGS__)
+#define SPI_BRIDGE_LOG(...) usb_echo("[USB Host] " __VA_ARGS__)
 #else
 #define SPI_BRIDGE_LOG(...) ((void)0)
 #endif
