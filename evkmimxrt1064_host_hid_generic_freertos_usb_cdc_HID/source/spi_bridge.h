@@ -7,6 +7,16 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
+#ifndef SPI_BRIDGE_ENABLE_DEBUG
+#define SPI_BRIDGE_ENABLE_DEBUG (0U)
+#endif
+
+#if SPI_BRIDGE_ENABLE_DEBUG
+#define SPI_BRIDGE_LOG(...) usb_echo(__VA_ARGS__)
+#else
+#define SPI_BRIDGE_LOG(...) ((void)0)
+#endif
+
 #ifndef SPI_BRIDGE_MAX_PAYLOAD
 #define SPI_BRIDGE_MAX_PAYLOAD (512U)
 #endif
