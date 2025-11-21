@@ -8,7 +8,7 @@
 #include "queue.h"
 
 #ifndef SPI_BRIDGE_ENABLE_DEBUG
-#define SPI_BRIDGE_ENABLE_DEBUG (0U)
+#define SPI_BRIDGE_ENABLE_DEBUG (1U)
 #endif
 
 #if SPI_BRIDGE_ENABLE_DEBUG
