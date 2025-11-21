@@ -7,6 +7,13 @@
 #ifndef _USB_HOST_CONFIG_H_
 #define _USB_HOST_CONFIG_H_
 
+/*
+ * Ensure debug logging is enabled so usb_echo() prints attach/detach and
+ * joystick activity to the console regardless of external build flags.
+ */
+#undef SDK_DEBUGCONSOLE
+#define SDK_DEBUGCONSOLE 1U
+
 #define USB_HOST_CONFIG_KHCI 0
 #define USB_HOST_CONFIG_KHCI_DMA_ALIGN_BUFFER 64
 #define USB_HOST_CONFIG_EHCI 1
