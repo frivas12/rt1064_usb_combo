@@ -16,7 +16,11 @@
 #define SPI_BRIDGE_SPI_BASE LPSPI1
 #endif
 
-#define SPI_BRIDGE_LOG_FAILURE(tag) usb_echo("[spi-bridge] %s failed\r\n", tag)
+#if SPI_BRIDGE_ENABLE_DEBUG
+#define SPI_BRIDGE_LOG_FAILURE(tag) SPI_BRIDGE_LOG("[spi-bridge] %s failed\r\n", tag)
+#else
+#define SPI_BRIDGE_LOG_FAILURE(tag) ((void)0)
+#endif
 
 typedef struct _spi_bridge_frame
 {
@@ -24,6 +28,33 @@ typedef struct _spi_bridge_frame
     uint16_t payloadLength;
     uint8_t payload[SPI_BRIDGE_MAX_PAYLOAD];
 } spi_bridge_frame_t;
+
+#if SPI_BRIDGE_ENABLE_DEBUG
+static void SPI_BridgeDumpFrame(const spi_bridge_frame_t *frame)
+{
+    SPI_BRIDGE_LOG("[spi-bridge] tx frame: type=0x%02x device=%u len=%u seq=%u crc=0x%04x\r\n",
+                   frame->header.msgType, frame->header.deviceId, frame->header.length, frame->header.seq,
+                   frame->header.crc);
+
+    if (frame->payloadLength == 0U)
+    {
+        return;
+    }
+
+    for (uint16_t offset = 0; offset < frame->payloadLength; offset += 16U)
+    {
+        uint16_t line = (uint16_t)((frame->payloadLength - offset) > 16U ? 16U : (frame->payloadLength - offset));
+        SPI_BRIDGE_LOG("  %03u: ", (unsigned int)offset);
+        for (uint16_t index = 0; index < line; ++index)
+        {
+            SPI_BRIDGE_LOG("%02x ", frame->payload[offset + index]);
+        }
+        SPI_BRIDGE_LOG("\r\n");
+    }
+}
+#else
+#define SPI_BridgeDumpFrame(frame) ((void)0)
+#endif
 
 typedef struct _spi_bridge_device_entry
 {
@@ -177,6 +208,8 @@ static status_t SPI_BridgeQueueFrame(spi_bridge_message_type_t type, uint8_t dev
     frame.header.crc = SPI_BridgeComputeCrc(frame.header.msgType, frame.header.deviceId, frame.header.length,
                                             frame.header.seq, frame.payload, frame.payloadLength);
 
+    SPI_BridgeDumpFrame(&frame);
+
     if (xQueueSend(s_bridgeQueue, &frame, 0) == pdPASS)
     {
         return kStatus_Success;
@@ -292,7 +325,7 @@ status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
     entry->hsHubPort       = hsHubPort;
     entry->level           = level;
 
-    usb_echo("[spi-bridge] allocate device %u: type=%u vid=0x%x pid=0x%x iface=%u outEp=%u reportLen=%u hub=%u port=%u hsHub=%u hsPort=%u level=%u\r\n",
+    SPI_BRIDGE_LOG("[spi-bridge] allocate device %u: type=%u vid=0x%x pid=0x%x iface=%u outEp=%u reportLen=%u hub=%u port=%u hsHub=%u hsPort=%u level=%u\r\n",
              entry->deviceId, deviceType, vid, pid, interfaceNumber, entry->hasOutEndpoint, reportDescLen, hubNumber,
              portNumber, hsHubNumber, hsHubPort, level);
 
@@ -319,7 +352,7 @@ status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
         return kStatus_Success;
     }
 
-    usb_echo("[spi-bridge] failed to queue device add for %u\r\n", entry->deviceId);
+    SPI_BRIDGE_LOG("[spi-bridge] failed to queue device add for %u\r\n", entry->deviceId);
 
     (void)memset(entry, 0, sizeof(*entry));
     return kStatus_Fail;

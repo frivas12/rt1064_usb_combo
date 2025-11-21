@@ -16,6 +16,17 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+/*! @brief Set to 0 to compile out all USB HID log messages. */
+#ifndef HID_GENERIC_ENABLE_LOG
+#define HID_GENERIC_ENABLE_LOG (1U)
+#endif
+
+#if HID_GENERIC_ENABLE_LOG
+#define HID_GENERIC_LOG(...) usb_echo(__VA_ARGS__)
+#else
+#define HID_GENERIC_LOG(...) ((void)0)
+#endif
+
 /*! @brief buffer for receiving report descriptor and data */
 #define HID_GENERIC_IN_BUFFER_SIZE (100U)
 /*! @brief buffer for sending data */

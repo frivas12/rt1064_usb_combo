@@ -178,7 +178,7 @@ static void USB_HostHidGenericPrintHex(usb_host_hid_generic_instance_t *genericI
         return;
     }
 
-    usb_echo("%s (vid=0x%x pid=0x%x hub=%u port=%u hs hub=%u hs port=%u level=%u, %u bytes):\r\n",
+    HID_GENERIC_LOG("%s (vid=0x%x pid=0x%x hub=%u port=%u hs hub=%u hs port=%u level=%u, %u bytes):\r\n",
              label, genericInstance->vid, genericInstance->pid, genericInstance->hubNumber,
              genericInstance->portNumber, genericInstance->hsHubNumber, genericInstance->hsHubPort,
              genericInstance->level, (unsigned int)length);
@@ -188,12 +188,12 @@ static void USB_HostHidGenericPrintHex(usb_host_hid_generic_instance_t *genericI
         uint32_t remaining = length - offset;
         uint32_t lineSize  = (remaining > 16U) ? 16U : remaining;
 
-        usb_echo("  %03u: ", (unsigned int)offset);
+        HID_GENERIC_LOG("  %03u: ", (unsigned int)offset);
         for (uint32_t index = 0; index < lineSize; ++index)
         {
-            usb_echo("%02x ", data[offset + index]);
+            HID_GENERIC_LOG("%02x ", data[offset + index]);
         }
-        usb_echo("\r\n");
+        HID_GENERIC_LOG("\r\n");
     }
 }
 
@@ -203,11 +203,11 @@ static void USB_HostHidControlCallback(void *param, uint8_t *data, uint32_t data
 
     if (kStatus_USB_TransferStall == status)
     {
-        usb_echo("device don't support this ruquest \r\n");
+        HID_GENERIC_LOG("device don't support this ruquest \r\n");
     }
     else if (kStatus_USB_Success != status)
     {
-        usb_echo("control transfer failed\r\n");
+        HID_GENERIC_LOG("control transfer failed\r\n");
     }
     else
     {
@@ -326,11 +326,11 @@ void USB_HostHidGenericTask(void *param)
                 if (USB_HostHidInit(genericInstance->deviceHandle, &genericInstance->classHandle) !=
                     kStatus_USB_Success)
                 {
-                    usb_echo("host hid class initialize fail\r\n");
+                    HID_GENERIC_LOG("host hid class initialize fail\r\n");
                 }
                 else
                 {
-                    usb_echo("hid generic attached\r\n");
+                    HID_GENERIC_LOG("hid generic attached\r\n");
                 }
                 genericInstance->sendIndex = 0;
                 genericInstance->lastInDataLength = 0U;
@@ -343,7 +343,7 @@ void USB_HostHidGenericTask(void *param)
                 genericInstance->runState    = kUSB_HostHidRunIdle;
                 USB_HostHidDeinit(genericInstance->deviceHandle, genericInstance->classHandle);
                 genericInstance->classHandle = NULL;
-                usb_echo("hid generic detached\r\n");
+                HID_GENERIC_LOG("hid generic detached\r\n");
                 USB_HostHidGenericResetInstance(genericInstance);
                 break;
 
@@ -364,7 +364,7 @@ void USB_HostHidGenericTask(void *param)
             if (USB_HostHidSetInterface(genericInstance->classHandle, genericInstance->interfaceHandle, 0,
                                         USB_HostHidControlCallback, genericInstance) != kStatus_USB_Success)
             {
-                usb_echo("set interface error\r\n");
+                HID_GENERIC_LOG("set interface error\r\n");
             }
             break;
 
@@ -380,7 +380,7 @@ void USB_HostHidGenericTask(void *param)
             if (USB_HostHidSetIdle(genericInstance->classHandle, 0, 0, USB_HostHidControlCallback, genericInstance) !=
                 kStatus_USB_Success)
             {
-                usb_echo("Error in USB_HostHidSetIdle\r\n");
+                HID_GENERIC_LOG("Error in USB_HostHidSetIdle\r\n");
             }
             break;
 
@@ -421,7 +421,7 @@ void USB_HostHidGenericTask(void *param)
             }
             if (hidReportLength > HID_GENERIC_IN_BUFFER_SIZE)
             {
-                usb_echo("hid buffer is too small\r\n");
+                HID_GENERIC_LOG("hid buffer is too small\r\n");
                 genericInstance->runState = kUSB_HostHidRunIdle;
                 return;
             }
@@ -472,7 +472,7 @@ void USB_HostHidGenericTask(void *param)
             if (USB_HostHidSetProtocol(genericInstance->classHandle, USB_HOST_HID_REQUEST_PROTOCOL_REPORT,
                                        USB_HostHidControlCallback, genericInstance) != kStatus_USB_Success)
             {
-                usb_echo("Error in USB_HostHidSetProtocol\r\n");
+                HID_GENERIC_LOG("Error in USB_HostHidSetProtocol\r\n");
             }
             break;
 
@@ -483,7 +483,7 @@ void USB_HostHidGenericTask(void *param)
                                 genericInstance->inMaxPacketSize, USB_HostHidInCallback,
                                 genericInstance) != kStatus_USB_Success)
             {
-                usb_echo("Error in USB_HostHidRecv\r\n");
+                HID_GENERIC_LOG("Error in USB_HostHidRecv\r\n");
             }
             status = USB_HostHidGenericPrepareOutData(genericInstance);
             if (status == kStatus_USB_Success)
@@ -492,7 +492,7 @@ void USB_HostHidGenericTask(void *param)
                                     genericInstance->outMaxPacketSize, USB_HostHidOutCallback,
                                     genericInstance) != kStatus_USB_Success)
                 {
-                    usb_echo("Error in USB_HostHidSend\r\n");
+                    HID_GENERIC_LOG("Error in USB_HostHidSend\r\n");
                 }
             }
             break;
@@ -506,7 +506,7 @@ void USB_HostHidGenericTask(void *param)
                                 genericInstance->inMaxPacketSize, USB_HostHidInCallback,
                                 genericInstance) != kStatus_USB_Success)
             {
-                usb_echo("Error in USB_HostHidRecv\r\n");
+                HID_GENERIC_LOG("Error in USB_HostHidRecv\r\n");
             }
             status = USB_HostHidGenericPrepareOutData(genericInstance);
             if (status == kStatus_USB_Success)
@@ -515,7 +515,7 @@ void USB_HostHidGenericTask(void *param)
                                     genericInstance->outMaxPacketSize, USB_HostHidOutCallback,
                                     genericInstance) != kStatus_USB_Success)
                 {
-                    usb_echo("Error in USB_HostHidSend\r\n");
+                    HID_GENERIC_LOG("Error in USB_HostHidSend\r\n");
                 }
             }
             break;
@@ -527,7 +527,7 @@ void USB_HostHidGenericTask(void *param)
                                 genericInstance->inMaxPacketSize, USB_HostHidInCallback,
                                 genericInstance) != kStatus_USB_Success)
             {
-                usb_echo("Error in USB_HostHidRecv\r\n");
+                HID_GENERIC_LOG("Error in USB_HostHidRecv\r\n");
             }
             status = USB_HostHidGenericPrepareOutData(genericInstance);
             if (status == kStatus_USB_Success)
@@ -536,7 +536,7 @@ void USB_HostHidGenericTask(void *param)
                                     genericInstance->outMaxPacketSize, USB_HostHidOutCallback,
                                     genericInstance) != kStatus_USB_Success)
                 {
-                    usb_echo("Error in USB_HostHidSend\r\n");
+                    HID_GENERIC_LOG("Error in USB_HostHidSend\r\n");
                 }
             }
             break;
@@ -572,28 +572,28 @@ usb_status_t USB_HostHidGenericEvent(usb_device_handle deviceHandle,
                 USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceVID, &vid);
                 USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHubNumber,
                                                          &infoValue);
-                usb_echo("attach event: vid=0x%x pid=0x%x hub=%u ", vid, pid, infoValue);
+                HID_GENERIC_LOG("attach event: vid=0x%x pid=0x%x hub=%u ", vid, pid, infoValue);
                 USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDevicePortNumber,
                                                          &infoValue);
-                usb_echo("port=%u ", infoValue);
+                HID_GENERIC_LOG("port=%u ", infoValue);
                 USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubNumber,
                                                          &infoValue);
-                usb_echo("hs hub=%u ", infoValue);
+                HID_GENERIC_LOG("hs hub=%u ", infoValue);
                 USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubPort,
                                                          &infoValue);
-                usb_echo("hs port=%u ", infoValue);
+                HID_GENERIC_LOG("hs port=%u ", infoValue);
                 USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceLevel, &infoValue);
-                usb_echo("level=%u\r\n", infoValue);
+                HID_GENERIC_LOG("level=%u\r\n", infoValue);
                 id        = interface->interfaceDesc->bInterfaceClass;
                 if (id != USB_HOST_HID_CLASS_CODE)
                 {
-                    usb_echo("  skip interface %u: class=0x%x not HID\r\n", interfaceIndex, id);
+                    HID_GENERIC_LOG("  skip interface %u: class=0x%x not HID\r\n", interfaceIndex, id);
                     continue;
                 }
                 id = interface->interfaceDesc->bInterfaceSubClass;
                 if ((id != USB_HOST_HID_SUBCLASS_CODE_NONE) && (id != USB_HOST_HID_SUBCLASS_CODE_BOOT))
                 {
-                    usb_echo("  skip interface %u: subclass=0x%x unsupported\r\n", interfaceIndex, id);
+                    HID_GENERIC_LOG("  skip interface %u: subclass=0x%x unsupported\r\n", interfaceIndex, id);
                     continue;
                 }
                 genericInstance = USB_HostHidGenericAllocateInstance();
@@ -646,30 +646,30 @@ usb_status_t USB_HostHidGenericEvent(usb_device_handle deviceHandle,
                         genericInstance->deviceState = kStatus_DEV_Attached;
 
                         USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDevicePID, &infoValue);
-                        usb_echo("hid generic attached:pid=0x%x", infoValue);
+                        HID_GENERIC_LOG("hid generic attached:pid=0x%x", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceVID, &infoValue);
-                        usb_echo("vid=0x%x ", infoValue);
+                        HID_GENERIC_LOG("vid=0x%x ", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHubNumber,
                                                                  &infoValue);
-                        usb_echo("hub=%u ", infoValue);
+                        HID_GENERIC_LOG("hub=%u ", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDevicePortNumber,
                                                                  &infoValue);
-                        usb_echo("port=%u ", infoValue);
+                        HID_GENERIC_LOG("port=%u ", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubNumber,
                                                                  &infoValue);
-                        usb_echo("hs hub=%u ", infoValue);
+                        HID_GENERIC_LOG("hs hub=%u ", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubPort,
                                                                  &infoValue);
-                        usb_echo("hs port=%u ", infoValue);
+                        HID_GENERIC_LOG("hs port=%u ", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceLevel,
                                                                  &infoValue);
-                        usb_echo("level=%u ", infoValue);
+                        HID_GENERIC_LOG("level=%u ", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceAddress, &infoValue);
-                        usb_echo("address=%d\r\n", infoValue);
+                        HID_GENERIC_LOG("address=%d\r\n", infoValue);
                     }
                     else
                     {
-                        usb_echo("not idle generic instance\r\n");
+                        HID_GENERIC_LOG("not idle generic instance\r\n");
                         status = kStatus_USB_Error;
                     }
                 }
