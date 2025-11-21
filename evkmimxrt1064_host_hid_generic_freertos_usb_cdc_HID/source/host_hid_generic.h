@@ -22,7 +22,7 @@
 #endif
 
 #if HID_GENERIC_ENABLE_LOG
-#define HID_GENERIC_LOG(...) usb_echo(__VA_ARGS__)
+#define HID_GENERIC_LOG(...) usb_echo("[USB Host] " __VA_ARGS__)
 #else
 #define HID_GENERIC_LOG(...) ((void)0)
 #endif

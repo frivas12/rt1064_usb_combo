@@ -98,7 +98,7 @@ static usb_status_t USB_HostEvent(usb_device_handle deviceHandle,
             break;
 
         case kUSB_HostEventNotSupported:
-            usb_echo("device not supported.\r\n");
+            usb_echo("[USB Host] device not supported.\r\n");
             break;
 
         case kUSB_HostEventEnumerationDone:
@@ -110,7 +110,7 @@ static usb_status_t USB_HostEvent(usb_device_handle deviceHandle,
             break;
 
         case kUSB_HostEventEnumerationFail:
-            usb_echo("enumeration failed\r\n");
+            usb_echo("[USB Host] enumeration failed\r\n");
             break;
 
         default:
@@ -132,12 +132,12 @@ static void USB_HostApplicationInit(void)
     status = USB_HostInit(CONTROLLER_ID, &g_HostHandle, USB_HostEvent);
     if (status != kStatus_USB_Success)
     {
-        usb_echo("host init error\r\n");
+        usb_echo("[USB Host] host init error\r\n");
         return;
     }
     USB_HostIsrEnable();
 
-    usb_echo("host init done\r\n");
+    usb_echo("[USB Host] host init done\r\n");
 }
 
 static void USB_HostTask(void *param)
@@ -169,21 +169,21 @@ int main(void)
 
     if (SPI_BridgeInit() != kStatus_Success)
     {
-        usb_echo("spi bridge init error\r\n");
+        usb_echo("[USB Host] spi bridge init error\r\n");
     }
 
     if (xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, APP_USB_TASK_PRIORITY, NULL) != pdPASS)
     {
-        usb_echo("create host task error\r\n");
+        usb_echo("[USB Host] create host task error\r\n");
     }
     if (xTaskCreate(USB_HostApplicationTask, "app task", 2000L / sizeof(portSTACK_TYPE), &g_HostHidGeneric, APP_MAIN_TASK_PRIORITY, NULL) !=
         pdPASS)
     {
-        usb_echo("create mouse task error\r\n");
+        usb_echo("[USB Host] create mouse task error\r\n");
     }
     if (xTaskCreate(SPI_BridgeTask, "spi bridge", 1024L / sizeof(portSTACK_TYPE), NULL, APP_MAIN_TASK_PRIORITY, NULL) != pdPASS)
     {
-        usb_echo("create spi bridge task error\r\n");
+        usb_echo("[USB Host] create spi bridge task error\r\n");
     }
 
     vTaskStartScheduler();
