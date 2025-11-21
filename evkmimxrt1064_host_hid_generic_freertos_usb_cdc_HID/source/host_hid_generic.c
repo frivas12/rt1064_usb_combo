@@ -527,18 +527,34 @@ usb_status_t USB_HostHidGenericEvent(usb_device_handle deviceHandle,
             for (interfaceIndex = 0; interfaceIndex < configuration->interfaceCount; ++interfaceIndex)
             {
                 interface = &configuration->interfaceList[interfaceIndex];
+                USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDevicePID, &pid);
+                USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceVID, &vid);
+                USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHubNumber,
+                                                         &infoValue);
+                usb_echo("attach event: vid=0x%x pid=0x%x hub=%u ", vid, pid, infoValue);
+                USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDevicePortNumber,
+                                                         &infoValue);
+                usb_echo("port=%u ", infoValue);
+                USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubNumber,
+                                                         &infoValue);
+                usb_echo("hs hub=%u ", infoValue);
+                USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubPort,
+                                                         &infoValue);
+                usb_echo("hs port=%u ", infoValue);
+                USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceLevel, &infoValue);
+                usb_echo("level=%u\r\n", infoValue);
                 id        = interface->interfaceDesc->bInterfaceClass;
                 if (id != USB_HOST_HID_CLASS_CODE)
                 {
+                    usb_echo("  skip interface %u: class=0x%x not HID\r\n", interfaceIndex, id);
                     continue;
                 }
                 id = interface->interfaceDesc->bInterfaceSubClass;
                 if ((id != USB_HOST_HID_SUBCLASS_CODE_NONE) && (id != USB_HOST_HID_SUBCLASS_CODE_BOOT))
                 {
+                    usb_echo("  skip interface %u: subclass=0x%x unsupported\r\n", interfaceIndex, id);
                     continue;
                 }
-                USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDevicePID, &pid);
-                USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceVID, &vid);
                 if ((pid == 0x00a2) && (vid == 0x1fc9))
                 {
                     genericInstance = USB_HostHidGenericAllocateInstance();
@@ -577,6 +593,10 @@ usb_status_t USB_HostHidGenericEvent(usb_device_handle deviceHandle,
                         continue;
                     }
                 }
+                else
+                {
+                    usb_echo("  skip interface %u: unsupported vid/pid (0x%x/0x%x)\r\n", interfaceIndex, vid, pid);
+                }
             }
             status = kStatus_USB_NotSupported;
             break;
@@ -599,6 +619,21 @@ usb_status_t USB_HostHidGenericEvent(usb_device_handle deviceHandle,
                         usb_echo("hid generic attached:pid=0x%x", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceVID, &infoValue);
                         usb_echo("vid=0x%x ", infoValue);
+                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHubNumber,
+                                                                 &infoValue);
+                        usb_echo("hub=%u ", infoValue);
+                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDevicePortNumber,
+                                                                 &infoValue);
+                        usb_echo("port=%u ", infoValue);
+                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubNumber,
+                                                                 &infoValue);
+                        usb_echo("hs hub=%u ", infoValue);
+                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceHSHubPort,
+                                                                 &infoValue);
+                        usb_echo("hs port=%u ", infoValue);
+                        USB_HostHelperGetPeripheralInformation(deviceHandle, (uint32_t)kUSB_HostGetDeviceLevel,
+                                                                 &infoValue);
+                        usb_echo("level=%u ", infoValue);
                         USB_HostHelperGetPeripheralInformation(deviceHandle, kUSB_HostGetDeviceAddress, &infoValue);
                         usb_echo("address=%d\r\n", infoValue);
                     }

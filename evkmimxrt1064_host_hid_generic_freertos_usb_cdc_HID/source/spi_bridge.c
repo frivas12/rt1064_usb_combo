@@ -292,6 +292,10 @@ status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
     entry->hsHubPort       = hsHubPort;
     entry->level           = level;
 
+    usb_echo("[spi-bridge] allocate device %u: type=%u vid=0x%x pid=0x%x iface=%u outEp=%u reportLen=%u hub=%u port=%u hsHub=%u hsPort=%u level=%u\r\n",
+             entry->deviceId, deviceType, vid, pid, interfaceNumber, entry->hasOutEndpoint, reportDescLen, hubNumber,
+             portNumber, hsHubNumber, hsHubPort, level);
+
     payload.vid             = vid;
     payload.pid             = pid;
     payload.interfaceNumber = interfaceNumber;
@@ -314,6 +318,8 @@ status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
         }
         return kStatus_Success;
     }
+
+    usb_echo("[spi-bridge] failed to queue device add for %u\r\n", entry->deviceId);
 
     (void)memset(entry, 0, sizeof(*entry));
     return kStatus_Fail;
