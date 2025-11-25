@@ -181,7 +181,7 @@ int main(void)
     {
         usb_echo("create mouse task error\r\n");
     }
-    if (xTaskCreate(SPI_BridgeTask, "spi bridge", 1024L / sizeof(portSTACK_TYPE), NULL, APP_MAIN_TASK_PRIORITY, NULL) != pdPASS)
+    if (xTaskCreate(SPI_BridgeTask, "spi bridge", 2048L / sizeof(portSTACK_TYPE), NULL, APP_MAIN_TASK_PRIORITY, NULL) != pdPASS)
     {
         usb_echo("create spi bridge task error\r\n");
     }

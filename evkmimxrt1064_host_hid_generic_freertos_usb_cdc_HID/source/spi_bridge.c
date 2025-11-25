@@ -28,6 +28,8 @@ static spi_bridge_block_t s_inBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_outBlocks[SPI_BRIDGE_MAX_DEVICES];
 static bool s_deviceInUse[SPI_BRIDGE_MAX_DEVICES];
 static uint8_t s_connectedTable[SPI_BRIDGE_MAX_DEVICES];
+static uint8_t s_txBuffer[SPI_BRIDGE_REGION_SIZE];
+static uint8_t s_rxBuffer[SPI_BRIDGE_REGION_SIZE];
 
 static uint8_t s_lastHubLoggedHeader;
 static uint8_t s_lastInLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
@@ -115,8 +117,9 @@ static void SPI_BridgeMarkDirty(spi_bridge_block_t *block, bool dirty)
 static void SPI_BridgeSetBlockPayload(spi_bridge_block_t *block, uint8_t type, const uint8_t *payload, uint8_t length)
 {
     uint8_t safeLength = (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) ? SPI_BRIDGE_MAX_PAYLOAD_LENGTH : length;
+    uint8_t cleanHeader = SPI_BridgeMakeHeader(false, type, safeLength);
 
-    block->header = SPI_BridgeMakeHeader(true, type, safeLength);
+    block->header = cleanHeader;
     if (safeLength > 0U)
     {
         (void)memcpy(block->payload, payload, safeLength);
@@ -125,6 +128,8 @@ static void SPI_BridgeSetBlockPayload(spi_bridge_block_t *block, uint8_t type, c
     {
         (void)memset(&block->payload[safeLength], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - safeLength);
     }
+
+    block->header = (uint8_t)(cleanHeader | SPI_BRIDGE_HEADER_DIRTY_MASK);
     SPI_BridgeUpdateBlockCrc(block);
 }
 
@@ -195,13 +200,16 @@ static void SPI_BridgeLogOut(uint8_t deviceId, bool done)
 static void SPI_BridgeRebuildHubStatus(void)
 {
     uint8_t payloadLength = SPI_BRIDGE_MAX_DEVICES;
+    uint8_t cleanHeader   = SPI_BridgeMakeHeader(false, 0U, payloadLength);
 
-    s_hubStatus.header = SPI_BridgeMakeHeader(true, 0U, payloadLength);
+    s_hubStatus.header = cleanHeader;
     (void)memcpy(s_hubStatus.payload, s_connectedTable, payloadLength);
     if (payloadLength < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
     {
         (void)memset(&s_hubStatus.payload[payloadLength], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - payloadLength);
     }
+
+    s_hubStatus.header = (uint8_t)(cleanHeader | SPI_BRIDGE_HEADER_DIRTY_MASK);
     SPI_BridgeUpdateBlockCrc(&s_hubStatus);
     SPI_BridgeLogHub();
 }
@@ -374,16 +382,14 @@ status_t SPI_BridgeInit(void)
 
 void SPI_BridgeTask(void *param)
 {
-    uint8_t txBuffer[SPI_BRIDGE_REGION_SIZE];
-    uint8_t rxBuffer[SPI_BRIDGE_REGION_SIZE];
     (void)param;
 
     while (1)
     {
-        SPI_BridgeSerializeMap(txBuffer);
-        if (SPI_BridgeTransferRegion(txBuffer, rxBuffer, SPI_BRIDGE_REGION_SIZE) == kStatus_Success)
+        SPI_BridgeSerializeMap(s_txBuffer);
+        if (SPI_BridgeTransferRegion(s_txBuffer, s_rxBuffer, SPI_BRIDGE_REGION_SIZE) == kStatus_Success)
         {
-            SPI_BridgeProcessIncoming(rxBuffer);
+            SPI_BridgeProcessIncoming(s_rxBuffer);
         }
         else
         {
