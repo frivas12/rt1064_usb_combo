@@ -212,28 +212,64 @@ static bool SPI_BridgeBlockHasValidCrc(const uint8_t *raw)
     return computed == received;
 }
 
-static void SPI_BridgeLogHub(void)
+static void SPI_BridgeLogGridRow(const char *label, uint8_t blockIndex, const spi_bridge_block_t *block)
+{
+    uint8_t length = SPI_BridgeExtractLength(block->header);
+
+    SPI_BRIDGE_LOG("| %-9s | 0x%04X | %-5s |   %u  | %3u | 0x%04X |\r\n", label,
+                   SPI_BridgeGetBlockAddress(blockIndex),
+                   (block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) ? "dirty" : "clean",
+                   (block->header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U, length, block->crc);
+}
+
+static void SPI_BridgeLogGrid(void)
+{
+    SPI_BRIDGE_LOG("SDI register grid:\r\n");
+    SPI_BRIDGE_LOG("+-----------+-------+-------+------+-----+-------+\r\n");
+    SPI_BRIDGE_LOG("| Block     | Addr  | Dirty | Type | Len |  CRC  |\r\n");
+    SPI_BRIDGE_LOG("+-----------+-------+-------+------+-----+-------+\r\n");
+
+    SPI_BridgeLogGridRow("HUB_STATUS", 0U, &s_hubStatus);
+
+    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
+    {
+        uint8_t deviceAddress = SPI_BridgeGetDeviceAddress(deviceId);
+        char label[16];
+
+        (void)snprintf(label, sizeof(label), "DEV_IN[%u]", deviceAddress);
+        SPI_BridgeLogGridRow(label, (uint8_t)(1U + (deviceId * 2U)), &s_inBlocks[deviceId]);
+
+        (void)snprintf(label, sizeof(label), "DEV_OUT[%u]", deviceAddress);
+        SPI_BridgeLogGridRow(label, (uint8_t)(2U + (deviceId * 2U)), &s_outBlocks[deviceId]);
+    }
+
+    SPI_BRIDGE_LOG("+-----------+-------+-------+------+-----+-------+\r\n");
+}
+
+static bool SPI_BridgeLogHub(void)
 {
     if (SPI_BridgeBlocksEqual(&s_hubStatus, &s_lastLoggedHubStatus))
     {
-        return;
+        return false;
     }
 
     SPI_BridgeLogBlock("HUB_STATUS", 0U, &s_hubStatus);
     s_lastLoggedHubStatus = s_hubStatus;
     s_lastHubLoggedHeader = s_hubStatus.header;
+
+    return true;
 }
 
-static void SPI_BridgeLogIn(uint8_t deviceId)
+static bool SPI_BridgeLogIn(uint8_t deviceId)
 {
     if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
     {
-        return;
+        return false;
     }
 
     if (SPI_BridgeBlocksEqual(&s_inBlocks[deviceId], &s_lastLoggedInBlocks[deviceId]))
     {
-        return;
+        return false;
     }
 
     uint8_t deviceAddress = SPI_BridgeGetDeviceAddress(deviceId);
@@ -244,13 +280,15 @@ static void SPI_BridgeLogIn(uint8_t deviceId)
     SPI_BridgeLogBlock(label, blockIndex, &s_inBlocks[deviceId]);
     s_lastInLoggedHeader[deviceId] = s_inBlocks[deviceId].header;
     s_lastLoggedInBlocks[deviceId] = s_inBlocks[deviceId];
+
+    return true;
 }
 
-static void SPI_BridgeLogOut(uint8_t deviceId, bool done)
+static bool SPI_BridgeLogOut(uint8_t deviceId, bool done)
 {
     if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
     {
-        return;
+        return false;
     }
 
     uint8_t header = s_outBlocks[deviceId].header;
@@ -260,23 +298,30 @@ static void SPI_BridgeLogOut(uint8_t deviceId, bool done)
 
     if (!done && SPI_BridgeBlocksEqual(&s_outBlocks[deviceId], &s_lastLoggedOutBlocks[deviceId]))
     {
-        return;
+        return false;
     }
 
     (void)snprintf(label, sizeof(label), "DEV_OUT[%u]", deviceAddress);
     SPI_BridgeLogBlock(label, blockIndex, &s_outBlocks[deviceId]);
     s_lastOutLoggedHeader[deviceId] = header;
     s_lastLoggedOutBlocks[deviceId] = s_outBlocks[deviceId];
+
+    return true;
 }
 
 static void SPI_BridgeLogState(void)
 {
-    SPI_BridgeLogHub();
+    bool stateChanged = SPI_BridgeLogHub();
 
     for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
     {
-        SPI_BridgeLogIn(deviceId);
-        SPI_BridgeLogOut(deviceId, false);
+        stateChanged |= SPI_BridgeLogIn(deviceId);
+        stateChanged |= SPI_BridgeLogOut(deviceId, false);
+    }
+
+    if (stateChanged)
+    {
+        SPI_BridgeLogGrid();
     }
 }
 
