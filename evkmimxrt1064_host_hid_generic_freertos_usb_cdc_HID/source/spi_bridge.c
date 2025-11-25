@@ -375,7 +375,7 @@ static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t
 
     if (timeout == 0U)
     {
-        return kStatus_Fail;
+        return kStatus_Timeout;
     }
 
     base->TDR = txData;
@@ -396,6 +396,18 @@ static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t
     base->SR = LPSPI_SR_RDF_MASK | LPSPI_SR_TDF_MASK;
 
     return kStatus_Success;
+}
+
+static bool SPI_BridgeMasterRequestPending(void)
+{
+    uint32_t status = SPI_BRIDGE_SPI_BASE->SR;
+
+    /*
+     * As an SPI slave we should only drive transfers while the master is actively
+     * clocking data. Treat both "RX FIFO has data" and "module busy" as evidence
+     * that PCS is asserted and the host wants a transaction.
+     */
+    return ((status & LPSPI_SR_RDF_MASK) != 0U) || ((status & LPSPI_SR_MBF_MASK) != 0U);
 }
 
 static status_t SPI_BridgeTransferRegion(const uint8_t *tx, uint8_t *rx, size_t length)
@@ -571,18 +583,29 @@ void SPI_BridgeTask(void *param)
 
     while (1)
     {
-        /* Push local state to the host and apply any incoming changes. */
-        SPI_BridgeSerializeMap(s_txBuffer);
-        if (SPI_BridgeTransferRegion(s_txBuffer, s_rxBuffer, SPI_BRIDGE_REGION_SIZE) == kStatus_Success)
+        /*
+         * Only attempt a full bridge transaction when the SPI master is
+         * actively polling us. This prevents repeated timeouts when the bus
+         * is idle.
+         */
+        if (SPI_BridgeMasterRequestPending())
         {
-            bool activity = SPI_BridgeProcessIncoming(s_rxBuffer);
-            SPI_BRIDGE_TASK_LOG(activity);
+            /* Push local state to the host and apply any incoming changes. */
+            SPI_BridgeSerializeMap(s_txBuffer);
+            status_t status = SPI_BridgeTransferRegion(s_txBuffer, s_rxBuffer, SPI_BRIDGE_REGION_SIZE);
+
+            if (status == kStatus_Success)
+            {
+                bool activity = SPI_BridgeProcessIncoming(s_rxBuffer);
+                SPI_BRIDGE_TASK_LOG(activity);
+            }
+            else if (status != kStatus_Timeout)
+            {
+                SPI_BRIDGE_LOG_FAILURE("transfer");
+            }
         }
-        else
-        {
-            SPI_BRIDGE_LOG_FAILURE("transfer");
-            vTaskDelay(pdMS_TO_TICKS(1));
-        }
+
+        vTaskDelay(pdMS_TO_TICKS(1));
     }
 }
 
