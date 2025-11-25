@@ -35,6 +35,11 @@ static uint8_t s_lastHubLoggedHeader;
 static uint8_t s_lastInLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
 static uint8_t s_lastOutLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
 
+static uint16_t SPI_BridgeGetBlockAddress(uint8_t blockIndex)
+{
+    return (uint16_t)(blockIndex * SPI_BRIDGE_BLOCK_SIZE);
+}
+
 static uint8_t SPI_BridgeExtractLength(uint8_t header)
 {
     return (uint8_t)((header & SPI_BRIDGE_HEADER_LENGTH_MASK) >> SPI_BRIDGE_HEADER_LENGTH_SHIFT);
@@ -150,7 +155,8 @@ static void SPI_BridgeLogHub(void)
     }
 
     uint8_t length = SPI_BridgeExtractLength(s_hubStatus.header);
-    SPI_BRIDGE_LOG("SPI_BRIDGE: HUB_STATUS changed, LENGTH = %u\r\n", length);
+    SPI_BRIDGE_LOG("SPI_BRIDGE: [HUB_STATUS @0x%04X] changed, LENGTH = %u\r\n",
+                   SPI_BridgeGetBlockAddress(0U), length);
     s_lastHubLoggedHeader = s_hubStatus.header;
 }
 
@@ -167,8 +173,10 @@ static void SPI_BridgeLogIn(uint8_t deviceId)
     }
 
     uint8_t header = s_inBlocks[deviceId].header;
-    SPI_BRIDGE_LOG("SPI_BRIDGE: D=%u IN updated, TYPE=%u, LEN=%u\r\n", deviceId,
-                   (header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U, SPI_BridgeExtractLength(header));
+    uint8_t blockIndex = 1U + (deviceId * 2U);
+    SPI_BRIDGE_LOG("SPI_BRIDGE: [DEV%u_IN @0x%04X] TYPE=%u, LEN=%u\r\n", deviceId,
+                   SPI_BridgeGetBlockAddress(blockIndex), (header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U,
+                   SPI_BridgeExtractLength(header));
     s_lastInLoggedHeader[deviceId] = header;
 }
 
@@ -180,9 +188,11 @@ static void SPI_BridgeLogOut(uint8_t deviceId, bool done)
     }
 
     uint8_t header = s_outBlocks[deviceId].header;
+    uint8_t blockIndex = 2U + (deviceId * 2U);
     if (done)
     {
-        SPI_BRIDGE_LOG("SPI_BRIDGE: D=%u OUT done, DIRTY cleared\r\n", deviceId);
+        SPI_BRIDGE_LOG("SPI_BRIDGE: [DEV%u_OUT @0x%04X] DIRTY cleared\r\n", deviceId,
+                       SPI_BridgeGetBlockAddress(blockIndex));
         s_lastOutLoggedHeader[deviceId] = header;
         return;
     }
@@ -192,8 +202,9 @@ static void SPI_BridgeLogOut(uint8_t deviceId, bool done)
         return;
     }
 
-    SPI_BRIDGE_LOG("SPI_BRIDGE: D=%u OUT send, TYPE=%u, LEN=%u\r\n", deviceId,
-                   (header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U, SPI_BridgeExtractLength(header));
+    SPI_BRIDGE_LOG("SPI_BRIDGE: [DEV%u_OUT @0x%04X] TYPE=%u, LEN=%u\r\n", deviceId,
+                   SPI_BridgeGetBlockAddress(blockIndex), (header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U,
+                   SPI_BridgeExtractLength(header));
     s_lastOutLoggedHeader[deviceId] = header;
 }
 
