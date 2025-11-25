@@ -368,8 +368,9 @@ static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t
     uint32_t timeout = SPI_BRIDGE_SPI_TIMEOUT;
 
     /* Wait for TX FIFO space then push a byte. */
-    while (((base->SR & LPSPI_SR_TDF_MASK) == 0U) && (timeout-- != 0U))
+    while (((base->SR & LPSPI_SR_TDF_MASK) == 0U) && (timeout > 0U))
     {
+        --timeout;
     }
 
     if (timeout == 0U)
@@ -381,8 +382,9 @@ static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t
 
     timeout = SPI_BRIDGE_SPI_TIMEOUT;
     /* Wait for RX data (the peer's response). */
-    while (((base->SR & LPSPI_SR_RDF_MASK) == 0U) && (timeout-- != 0U))
+    while (((base->SR & LPSPI_SR_RDF_MASK) == 0U) && (timeout > 0U))
     {
+        --timeout;
     }
 
     if (timeout == 0U)
@@ -579,6 +581,7 @@ void SPI_BridgeTask(void *param)
         else
         {
             SPI_BRIDGE_LOG_FAILURE("transfer");
+            vTaskDelay(pdMS_TO_TICKS(1));
         }
     }
 }
