@@ -23,6 +23,10 @@
 #define SPI_BRIDGE_SPI_BASE LPSPI1
 #endif
 
+#if defined(__GNUC__)
+#pragma message "SPI_BRIDGE_ENABLE_DEBUG=" SPI_BRIDGE_ENABLE_DEBUG_STRING
+#endif
+
 #if SPI_BRIDGE_ENABLE_DEBUG
 #define SPI_BRIDGE_LOG_FAILURE(tag) SPI_BRIDGE_LOG("[spi-bridge] %s failed\r\n", tag)
 #else
@@ -246,9 +250,9 @@ static void SPI_BridgeLogGrid(void)
     SPI_BRIDGE_LOG("+-----------+-------+-------+------+-----+-------+\r\n");
 }
 
-static bool SPI_BridgeLogHub(void)
+static bool SPI_BridgeLogHub(bool force)
 {
-    if (SPI_BridgeBlocksEqual(&s_hubStatus, &s_lastLoggedHubStatus))
+    if (!force && SPI_BridgeBlocksEqual(&s_hubStatus, &s_lastLoggedHubStatus))
     {
         return false;
     }
@@ -260,14 +264,14 @@ static bool SPI_BridgeLogHub(void)
     return true;
 }
 
-static bool SPI_BridgeLogIn(uint8_t deviceId)
+static bool SPI_BridgeLogIn(uint8_t deviceId, bool force)
 {
     if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
     {
         return false;
     }
 
-    if (SPI_BridgeBlocksEqual(&s_inBlocks[deviceId], &s_lastLoggedInBlocks[deviceId]))
+    if (!force && SPI_BridgeBlocksEqual(&s_inBlocks[deviceId], &s_lastLoggedInBlocks[deviceId]))
     {
         return false;
     }
@@ -284,7 +288,7 @@ static bool SPI_BridgeLogIn(uint8_t deviceId)
     return true;
 }
 
-static bool SPI_BridgeLogOut(uint8_t deviceId, bool done)
+static bool SPI_BridgeLogOut(uint8_t deviceId, bool done, bool force)
 {
     if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
     {
@@ -296,7 +300,7 @@ static bool SPI_BridgeLogOut(uint8_t deviceId, bool done)
     uint8_t blockIndex = 2U + (deviceId * 2U);
     char label[16];
 
-    if (!done && SPI_BridgeBlocksEqual(&s_outBlocks[deviceId], &s_lastLoggedOutBlocks[deviceId]))
+    if (!force && !done && SPI_BridgeBlocksEqual(&s_outBlocks[deviceId], &s_lastLoggedOutBlocks[deviceId]))
     {
         return false;
     }
@@ -309,17 +313,17 @@ static bool SPI_BridgeLogOut(uint8_t deviceId, bool done)
     return true;
 }
 
-static void SPI_BridgeLogState(void)
+static void SPI_BridgeLogState(bool force)
 {
-    bool stateChanged = SPI_BridgeLogHub();
+    bool stateChanged = SPI_BridgeLogHub(force);
 
     for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
     {
-        stateChanged |= SPI_BridgeLogIn(deviceId);
-        stateChanged |= SPI_BridgeLogOut(deviceId, false);
+        stateChanged |= SPI_BridgeLogIn(deviceId, force);
+        stateChanged |= SPI_BridgeLogOut(deviceId, false, force);
     }
 
-    if (stateChanged)
+    if (force || stateChanged)
     {
         SPI_BridgeLogGrid();
     }
@@ -406,12 +410,14 @@ static void SPI_BridgeSerializeMap(uint8_t *txBuffer)
     }
 }
 
-static void SPI_BridgeProcessHubWrite(const uint8_t *rxBlock)
+static bool SPI_BridgeProcessHubWrite(const uint8_t *rxBlock)
 {
     if (!SPI_BridgeBlockHasValidCrc(rxBlock))
     {
-        return;
+        return false;
     }
+
+    bool activity = true;
 
     if (((rxBlock[0] & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) &&
         ((s_hubStatus.header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U))
@@ -419,14 +425,18 @@ static void SPI_BridgeProcessHubWrite(const uint8_t *rxBlock)
         s_hubStatus.header &= (uint8_t)~SPI_BRIDGE_HEADER_DIRTY_MASK;
         SPI_BridgeUpdateBlockCrc(&s_hubStatus);
     }
+
+    return activity;
 }
 
-static void SPI_BridgeProcessInWrite(uint8_t deviceId, const uint8_t *rxBlock)
+static bool SPI_BridgeProcessInWrite(uint8_t deviceId, const uint8_t *rxBlock)
 {
     if ((deviceId >= SPI_BRIDGE_MAX_DEVICES) || !SPI_BridgeBlockHasValidCrc(rxBlock))
     {
-        return;
+        return false;
     }
+
+    bool activity = true;
 
     if (((rxBlock[0] & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) &&
         ((s_inBlocks[deviceId].header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U))
@@ -434,13 +444,15 @@ static void SPI_BridgeProcessInWrite(uint8_t deviceId, const uint8_t *rxBlock)
         s_inBlocks[deviceId].header &= (uint8_t)~SPI_BRIDGE_HEADER_DIRTY_MASK;
         SPI_BridgeUpdateBlockCrc(&s_inBlocks[deviceId]);
     }
+
+    return activity;
 }
 
-static void SPI_BridgeProcessOutWrite(uint8_t deviceId, const uint8_t *rxBlock)
+static bool SPI_BridgeProcessOutWrite(uint8_t deviceId, const uint8_t *rxBlock)
 {
     if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
     {
-        return;
+        return false;
     }
 
     uint8_t header  = rxBlock[0];
@@ -449,12 +461,12 @@ static void SPI_BridgeProcessOutWrite(uint8_t deviceId, const uint8_t *rxBlock)
 
     if (!dirty || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
     {
-        return;
+        return false;
     }
 
     if (!SPI_BridgeBlockHasValidCrc(rxBlock))
     {
-        return;
+        return false;
     }
 
     s_outBlocks[deviceId].header = header;
@@ -464,28 +476,36 @@ static void SPI_BridgeProcessOutWrite(uint8_t deviceId, const uint8_t *rxBlock)
         (void)memset(&s_outBlocks[deviceId].payload[length], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
     }
     SPI_BridgeUpdateBlockCrc(&s_outBlocks[deviceId]);
-    SPI_BridgeLogOut(deviceId, false);
+
+    /* Force logging so repeated writes of identical content are visible. */
+    SPI_BridgeLogOut(deviceId, false, true);
+
+    return true;
 }
 
-static void SPI_BridgeProcessIncoming(const uint8_t *rxBuffer)
+static bool SPI_BridgeProcessIncoming(const uint8_t *rxBuffer)
 {
     const uint8_t *cursor = rxBuffer;
+    bool activity         = false;
 
     /* Process hub, IN, and OUT regions in order. */
-    SPI_BridgeProcessHubWrite(cursor);
+    activity |= SPI_BridgeProcessHubWrite(cursor);
     cursor += SPI_BRIDGE_BLOCK_SIZE;
 
     for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
     {
-        SPI_BridgeProcessInWrite(deviceId, cursor);
+        activity |= SPI_BridgeProcessInWrite(deviceId, cursor);
         cursor += SPI_BRIDGE_BLOCK_SIZE;
-        SPI_BridgeProcessOutWrite(deviceId, cursor);
+        activity |= SPI_BridgeProcessOutWrite(deviceId, cursor);
         cursor += SPI_BRIDGE_BLOCK_SIZE;
     }
+
+    return activity;
 }
 
 status_t SPI_BridgeInit(void)
 {
+    SPI_BRIDGE_LOG("SPI_BridgeInit: starting\r\n");
     /* Configure LPSPI1 as an 8-bit slave before any transfers occur. */
     CLOCK_SetMux(kCLOCK_LpspiMux, 1U);
     CLOCK_SetDiv(kCLOCK_LpspiDiv, 7U);
@@ -513,6 +533,8 @@ status_t SPI_BridgeInit(void)
 
     SPI_BridgeRebuildHubStatus();
 
+    SPI_BRIDGE_LOG("SPI_BridgeInit: done\r\n");
+
     return kStatus_Success;
 }
 
@@ -520,14 +542,16 @@ void SPI_BridgeTask(void *param)
 {
     (void)param;
 
+    SPI_BRIDGE_LOG("SPI_BridgeTask: entering main loop\r\n");
+
     while (1)
     {
         /* Push local state to the host and apply any incoming changes. */
         SPI_BridgeSerializeMap(s_txBuffer);
         if (SPI_BridgeTransferRegion(s_txBuffer, s_rxBuffer, SPI_BRIDGE_REGION_SIZE) == kStatus_Success)
         {
-            SPI_BridgeProcessIncoming(s_rxBuffer);
-            SPI_BridgeLogState();
+            bool activity = SPI_BridgeProcessIncoming(s_rxBuffer);
+            SPI_BridgeLogState(activity);
         }
         else
         {
