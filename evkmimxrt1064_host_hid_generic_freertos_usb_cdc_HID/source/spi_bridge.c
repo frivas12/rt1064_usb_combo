@@ -255,6 +255,17 @@ static void SPI_BridgeLogOut(uint8_t deviceId, bool done)
     s_lastLoggedOutBlocks[deviceId] = s_outBlocks[deviceId];
 }
 
+static void SPI_BridgeLogState(void)
+{
+    SPI_BridgeLogHub();
+
+    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
+    {
+        SPI_BridgeLogIn(deviceId);
+        SPI_BridgeLogOut(deviceId, false);
+    }
+}
+
 static void SPI_BridgeRebuildHubStatus(void)
 {
     uint8_t payloadLength = SPI_BRIDGE_MAX_DEVICES;
@@ -269,7 +280,6 @@ static void SPI_BridgeRebuildHubStatus(void)
 
     s_hubStatus.header = (uint8_t)(cleanHeader | SPI_BRIDGE_HEADER_DIRTY_MASK);
     SPI_BridgeUpdateBlockCrc(&s_hubStatus);
-    SPI_BridgeLogHub();
 }
 
 static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t *rxData)
@@ -451,6 +461,7 @@ void SPI_BridgeTask(void *param)
         if (SPI_BridgeTransferRegion(s_txBuffer, s_rxBuffer, SPI_BRIDGE_REGION_SIZE) == kStatus_Success)
         {
             SPI_BridgeProcessIncoming(s_rxBuffer);
+            SPI_BridgeLogState();
         }
         else
         {
@@ -527,7 +538,6 @@ status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId, const uint8_t *descrip
     }
 
     SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 1U, descriptor, (uint8_t)length);
-    SPI_BridgeLogIn(deviceId);
     return kStatus_Success;
 }
 
@@ -545,7 +555,6 @@ status_t SPI_BridgeSendReport(uint8_t deviceId, bool inDirection, uint8_t report
     }
 
     SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 0U, data, (uint8_t)length);
-    SPI_BridgeLogIn(deviceId);
 
     return kStatus_Success;
 }
@@ -578,7 +587,6 @@ bool SPI_BridgeGetOutReport(uint8_t deviceId, uint8_t *typeOut, uint8_t *payload
         *lengthOut = length;
     }
 
-    SPI_BridgeLogOut(deviceId, false);
     return true;
 }
 
@@ -590,7 +598,6 @@ status_t SPI_BridgeClearOutReport(uint8_t deviceId)
     }
 
     SPI_BridgeMarkDirty(&s_outBlocks[deviceId], false);
-    SPI_BridgeLogOut(deviceId, true);
     return kStatus_Success;
 }
 
