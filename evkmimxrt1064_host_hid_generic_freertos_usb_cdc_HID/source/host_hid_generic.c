@@ -6,6 +6,16 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+/*
+ * USB host HID application task
+ *
+ * Drives device enumeration and HID transfers for multiple peripherals, then
+ * mirrors the observed traffic into the SPI bridge so a companion processor
+ * can consume the same reports. A per-device task state machine handles
+ * configuration, report descriptor publishing, IN report forwarding, and
+ * queued OUT transactions sourced from the bridge.
+ */
+
 #include "usb_host_config.h"
 #include "usb_host.h"
 #include "usb_host_hid.h"
@@ -91,6 +101,7 @@ uint8_t s_GenericOutBuffer[HID_GENERIC_MAX_DEVICES][HID_GENERIC_IN_BUFFER_SIZE];
 static void USB_HostHidGenericResetInstance(usb_host_hid_generic_instance_t *genericInstance)
 {
     (void)memset(genericInstance, 0, sizeof(*genericInstance));
+    /* Reinitialize the state machine to a clean idle configuration. */
     genericInstance->deviceState = kStatus_DEV_Idle;
     genericInstance->prevState   = kStatus_DEV_Idle;
     genericInstance->runState    = kUSB_HostHidRunIdle;
@@ -144,6 +155,7 @@ static void USB_HostHidGenericProcessBuffer(usb_host_hid_generic_instance_t *gen
 {
     genericInstance->genericInBuffer[genericInstance->inMaxPacketSize] = 0;
 
+    /* Log the inbound payload and mirror it over the SPI bridge. */
     USB_HostHidGenericPrintHex(genericInstance, "Input report", genericInstance->genericInBuffer,
                                genericInstance->lastInDataLength);
 
@@ -174,6 +186,7 @@ static void USB_HostHidGenericPrintHex(usb_host_hid_generic_instance_t *genericI
         uint32_t remaining = length - offset;
         uint32_t lineSize  = (remaining > 16U) ? 16U : remaining;
 
+        /* Print 16-byte rows so long payloads remain readable. */
         HID_GENERIC_LOG("  %03u: ", (unsigned int)offset);
         for (uint32_t index = 0; index < lineSize; ++index)
         {
@@ -281,6 +294,7 @@ static void USB_HostHidGenericProcessOutReport(usb_host_hid_generic_instance_t *
         length = (uint8_t)genericInstance->outMaxPacketSize;
     }
 
+    /* Trace what will be sent back to the HID device. */
     USB_HostHidGenericPrintHex(genericInstance, (type == 0U) ? "Output report" : "Output descriptor", payload, length);
 
     if (USB_HostHidSend(genericInstance->classHandle, payload, length, USB_HostHidOutCallback, genericInstance) ==

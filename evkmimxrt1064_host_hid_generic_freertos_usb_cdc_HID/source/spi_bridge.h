@@ -1,3 +1,10 @@
+/*
+ * SPI bridge API
+ *
+ * Exposes a register-map abstraction used by the SPI bridge task to mirror
+ * USB HID activity to an external coprocessor. Callers allocate logical device
+ * slots, publish IN reports, and retrieve OUT reports that arrive over SPI.
+ */
 #ifndef _SPI_BRIDGE_H_
 #define _SPI_BRIDGE_H_
 
