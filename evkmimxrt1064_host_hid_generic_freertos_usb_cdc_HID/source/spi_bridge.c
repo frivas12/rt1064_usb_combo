@@ -5,12 +5,10 @@
 #include "board.h"
 #include "fsl_clock.h"
 #include "pin_mux.h"
-#include "usb_host.h"
 
 #include <string.h>
 
-#define SPI_BRIDGE_TX_HEADER_SIZE (sizeof(spi_bridge_header_t))
-#define SPI_BRIDGE_SPI_TIMEOUT    (1000000U)
+#define SPI_BRIDGE_SPI_TIMEOUT (1000000U)
 
 #ifndef SPI_BRIDGE_SPI_BASE
 #define SPI_BRIDGE_SPI_BASE LPSPI1
@@ -22,117 +20,28 @@
 #define SPI_BRIDGE_LOG_FAILURE(tag) ((void)0)
 #endif
 
-typedef struct _spi_bridge_frame
+#define SPI_BRIDGE_BLOCK_COUNT (1U + (SPI_BRIDGE_MAX_DEVICES * 2U))
+#define SPI_BRIDGE_REGION_SIZE (SPI_BRIDGE_BLOCK_COUNT * SPI_BRIDGE_BLOCK_SIZE)
+
+static spi_bridge_block_t s_hubStatus;
+static spi_bridge_block_t s_inBlocks[SPI_BRIDGE_MAX_DEVICES];
+static spi_bridge_block_t s_outBlocks[SPI_BRIDGE_MAX_DEVICES];
+static bool s_deviceInUse[SPI_BRIDGE_MAX_DEVICES];
+static uint8_t s_connectedTable[SPI_BRIDGE_MAX_DEVICES];
+
+static uint8_t s_lastHubLoggedHeader;
+static uint8_t s_lastInLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
+static uint8_t s_lastOutLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
+
+static uint8_t SPI_BridgeExtractLength(uint8_t header)
 {
-    spi_bridge_header_t header;
-    uint16_t payloadLength;
-    uint8_t payload[SPI_BRIDGE_MAX_PAYLOAD];
-} spi_bridge_frame_t;
-
-#if SPI_BRIDGE_ENABLE_DEBUG
-static void SPI_BridgeDumpFrame(const spi_bridge_frame_t *frame)
-{
-    SPI_BRIDGE_LOG("[spi-bridge] tx frame: type=0x%02x device=%u len=%u seq=%u crc=0x%04x\r\n",
-                   frame->header.msgType, frame->header.deviceId, frame->header.length, frame->header.seq,
-                   frame->header.crc);
-
-    if (frame->payloadLength == 0U)
-    {
-        return;
-    }
-
-    for (uint16_t offset = 0; offset < frame->payloadLength; offset += 16U)
-    {
-        uint16_t line = (uint16_t)((frame->payloadLength - offset) > 16U ? 16U : (frame->payloadLength - offset));
-        SPI_BRIDGE_LOG("  %03u: ", (unsigned int)offset);
-        for (uint16_t index = 0; index < line; ++index)
-        {
-            SPI_BRIDGE_LOG("%02x ", frame->payload[offset + index]);
-        }
-        SPI_BRIDGE_LOG("\r\n");
-    }
-}
-#else
-#define SPI_BridgeDumpFrame(frame) ((void)0)
-#endif
-
-typedef struct _spi_bridge_device_entry
-{
-    bool inUse;
-    uint8_t deviceId;
-    uint16_t vid;
-    uint16_t pid;
-    uint8_t interfaceNumber;
-    uint8_t hasOutEndpoint;
-    uint8_t deviceType;
-    uint16_t reportDescLen;
-    uint8_t hubNumber;
-    uint8_t portNumber;
-    uint8_t hsHubNumber;
-    uint8_t hsHubPort;
-    uint8_t level;
-} spi_bridge_device_entry_t;
-
-static QueueHandle_t s_bridgeQueue;
-static spi_bridge_device_entry_t s_devices[SPI_BRIDGE_MAX_DEVICES];
-static uint16_t s_txSeq;
-
-static status_t SPI_BridgeWriteByte(LPSPI_Type *base, uint8_t data)
-{
-    uint32_t timeout = SPI_BRIDGE_SPI_TIMEOUT;
-
-    while (((base->SR & LPSPI_SR_TDF_MASK) == 0U) && (timeout-- != 0U))
-    {
-    }
-
-    if (timeout == 0U)
-    {
-        return kStatus_Fail;
-    }
-
-    base->TDR = data;
-
-    timeout = SPI_BRIDGE_SPI_TIMEOUT;
-    while (((base->SR & LPSPI_SR_RDF_MASK) == 0U) && (timeout-- != 0U))
-    {
-    }
-
-    if (timeout == 0U)
-    {
-        return kStatus_Fail;
-    }
-
-    (void)base->RDR; /* clear received data */
-    base->SR = LPSPI_SR_RDF_MASK | LPSPI_SR_TDF_MASK;
-
-    return kStatus_Success;
+    return (uint8_t)((header & SPI_BRIDGE_HEADER_LENGTH_MASK) >> SPI_BRIDGE_HEADER_LENGTH_SHIFT);
 }
 
-static status_t SPI_BridgeWriteFrame(const spi_bridge_frame_t *frame)
+static uint8_t SPI_BridgeMakeHeader(bool dirty, uint8_t type, uint8_t length)
 {
-    uint16_t index;
-    const uint8_t *rawHeader = (const uint8_t *)&frame->header;
-    status_t status;
-
-    for (index = 0; index < SPI_BRIDGE_TX_HEADER_SIZE; ++index)
-    {
-        status = SPI_BridgeWriteByte(SPI_BRIDGE_SPI_BASE, rawHeader[index]);
-        if (status != kStatus_Success)
-        {
-            return status;
-        }
-    }
-
-    for (index = 0; index < frame->payloadLength; ++index)
-    {
-        status = SPI_BridgeWriteByte(SPI_BRIDGE_SPI_BASE, frame->payload[index]);
-        if (status != kStatus_Success)
-        {
-            return status;
-        }
-    }
-
-    return kStatus_Success;
+    return (uint8_t)((dirty ? SPI_BRIDGE_HEADER_DIRTY_MASK : 0U) | (type ? SPI_BRIDGE_HEADER_TYPE_MASK : 0U) |
+                     ((length << SPI_BRIDGE_HEADER_LENGTH_SHIFT) & SPI_BRIDGE_HEADER_LENGTH_MASK));
 }
 
 static uint16_t SPI_BridgeCrcUpdate(uint16_t crc, uint8_t data)
@@ -152,108 +61,295 @@ static uint16_t SPI_BridgeCrcUpdate(uint16_t crc, uint8_t data)
     return crc;
 }
 
-static uint16_t SPI_BridgeComputeCrc(uint8_t msgType, uint8_t deviceId, uint16_t length, uint16_t seq,
-                                     const uint8_t *payload, uint16_t payloadLength)
+static uint16_t SPI_BridgeComputeBlockCrc(const uint8_t *block)
 {
-    uint16_t crc = SPI_BRIDGE_CRC_INIT;
+    uint8_t header = block[0];
+    uint8_t length = SPI_BridgeExtractLength(header);
+    uint16_t crc   = SPI_BRIDGE_CRC_INIT;
 
-    crc = SPI_BridgeCrcUpdate(crc, SPI_BRIDGE_VERSION);
-    crc = SPI_BridgeCrcUpdate(crc, msgType);
-    crc = SPI_BridgeCrcUpdate(crc, deviceId);
-    crc = SPI_BridgeCrcUpdate(crc, (uint8_t)(length & 0xFFU));
-    crc = SPI_BridgeCrcUpdate(crc, (uint8_t)(length >> 8U));
-    crc = SPI_BridgeCrcUpdate(crc, (uint8_t)(seq & 0xFFU));
-    crc = SPI_BridgeCrcUpdate(crc, (uint8_t)(seq >> 8U));
-
-    for (uint16_t i = 0; i < payloadLength; ++i)
+    crc = SPI_BridgeCrcUpdate(crc, header);
+    for (uint8_t i = 0; i < length; ++i)
     {
-        crc = SPI_BridgeCrcUpdate(crc, payload[i]);
+        crc = SPI_BridgeCrcUpdate(crc, block[1U + i]);
     }
 
     return crc;
 }
 
-static status_t SPI_BridgeQueueFrame(spi_bridge_message_type_t type, uint8_t deviceId, const uint8_t *payload,
-                                     uint16_t length)
+static void SPI_BridgeUpdateBlockCrc(spi_bridge_block_t *block)
 {
-    spi_bridge_frame_t frame;
+    uint8_t raw[SPI_BRIDGE_BLOCK_SIZE];
 
-    if (length > SPI_BRIDGE_MAX_PAYLOAD)
+    raw[0] = block->header;
+    (void)memcpy(&raw[1], block->payload, SPI_BRIDGE_MAX_PAYLOAD_LENGTH);
+    block->crc = SPI_BridgeComputeBlockCrc(raw);
+}
+
+static void SPI_BridgeSerializeBlock(const spi_bridge_block_t *block, uint8_t *output)
+{
+    uint8_t length = SPI_BridgeExtractLength(block->header);
+
+    output[0] = block->header;
+    (void)memcpy(&output[1], block->payload, SPI_BRIDGE_MAX_PAYLOAD_LENGTH);
+    output[1U + length] = (uint8_t)(block->crc & 0xFFU);
+    output[2U + length] = (uint8_t)(block->crc >> 8U);
+    if ((3U + length) < SPI_BRIDGE_BLOCK_SIZE)
     {
-        return kStatus_InvalidArgument;
+        (void)memset(&output[3U + length], 0, SPI_BRIDGE_BLOCK_SIZE - (3U + length));
+    }
+}
+
+static void SPI_BridgeMarkDirty(spi_bridge_block_t *block, bool dirty)
+{
+    if (dirty)
+    {
+        block->header |= SPI_BRIDGE_HEADER_DIRTY_MASK;
+    }
+    else
+    {
+        block->header &= (uint8_t)(~SPI_BRIDGE_HEADER_DIRTY_MASK);
+    }
+    SPI_BridgeUpdateBlockCrc(block);
+}
+
+static void SPI_BridgeSetBlockPayload(spi_bridge_block_t *block, uint8_t type, const uint8_t *payload, uint8_t length)
+{
+    uint8_t safeLength = (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) ? SPI_BRIDGE_MAX_PAYLOAD_LENGTH : length;
+
+    block->header = SPI_BridgeMakeHeader(true, type, safeLength);
+    if (safeLength > 0U)
+    {
+        (void)memcpy(block->payload, payload, safeLength);
+    }
+    if (safeLength < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        (void)memset(&block->payload[safeLength], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - safeLength);
+    }
+    SPI_BridgeUpdateBlockCrc(block);
+}
+
+static bool SPI_BridgeBlockHasValidCrc(const uint8_t *raw)
+{
+    uint16_t computed = SPI_BridgeComputeBlockCrc(raw);
+    uint8_t length    = SPI_BridgeExtractLength(raw[0]);
+    uint16_t received = (uint16_t)raw[1U + length] | ((uint16_t)raw[2U + length] << 8U);
+
+    return computed == received;
+}
+
+static void SPI_BridgeLogHub(void)
+{
+    if (s_hubStatus.header == s_lastHubLoggedHeader)
+    {
+        return;
     }
 
-    if (s_bridgeQueue == NULL)
+    uint8_t length = SPI_BridgeExtractLength(s_hubStatus.header);
+    SPI_BRIDGE_LOG("SPI_BRIDGE: HUB_STATUS changed, LENGTH = %u\r\n", length);
+    s_lastHubLoggedHeader = s_hubStatus.header;
+}
+
+static void SPI_BridgeLogIn(uint8_t deviceId)
+{
+    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
+    {
+        return;
+    }
+
+    if (s_inBlocks[deviceId].header == s_lastInLoggedHeader[deviceId])
+    {
+        return;
+    }
+
+    uint8_t header = s_inBlocks[deviceId].header;
+    SPI_BRIDGE_LOG("SPI_BRIDGE: D=%u IN updated, TYPE=%u, LEN=%u\r\n", deviceId,
+                   (header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U, SPI_BridgeExtractLength(header));
+    s_lastInLoggedHeader[deviceId] = header;
+}
+
+static void SPI_BridgeLogOut(uint8_t deviceId, bool done)
+{
+    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
+    {
+        return;
+    }
+
+    uint8_t header = s_outBlocks[deviceId].header;
+    if (done)
+    {
+        SPI_BRIDGE_LOG("SPI_BRIDGE: D=%u OUT done, DIRTY cleared\r\n", deviceId);
+        s_lastOutLoggedHeader[deviceId] = header;
+        return;
+    }
+
+    if (header == s_lastOutLoggedHeader[deviceId])
+    {
+        return;
+    }
+
+    SPI_BRIDGE_LOG("SPI_BRIDGE: D=%u OUT send, TYPE=%u, LEN=%u\r\n", deviceId,
+                   (header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U, SPI_BridgeExtractLength(header));
+    s_lastOutLoggedHeader[deviceId] = header;
+}
+
+static void SPI_BridgeRebuildHubStatus(void)
+{
+    uint8_t payloadLength = SPI_BRIDGE_MAX_DEVICES;
+
+    s_hubStatus.header = SPI_BridgeMakeHeader(true, 0U, payloadLength);
+    (void)memcpy(s_hubStatus.payload, s_connectedTable, payloadLength);
+    if (payloadLength < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        (void)memset(&s_hubStatus.payload[payloadLength], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - payloadLength);
+    }
+    SPI_BridgeUpdateBlockCrc(&s_hubStatus);
+    SPI_BridgeLogHub();
+}
+
+static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t *rxData)
+{
+    uint32_t timeout = SPI_BRIDGE_SPI_TIMEOUT;
+
+    while (((base->SR & LPSPI_SR_TDF_MASK) == 0U) && (timeout-- != 0U))
+    {
+    }
+
+    if (timeout == 0U)
     {
         return kStatus_Fail;
     }
 
-    frame.header.sync    = SPI_BRIDGE_SYNC_BYTE;
-    frame.header.version = SPI_BRIDGE_VERSION;
-    frame.header.msgType = (uint8_t)type;
-    frame.header.deviceId = deviceId;
-    frame.header.length  = length;
-    frame.header.seq     = s_txSeq++;
-    frame.payloadLength  = length;
+    base->TDR = txData;
 
-    if ((payload != NULL) && (length > 0U))
+    timeout = SPI_BRIDGE_SPI_TIMEOUT;
+    while (((base->SR & LPSPI_SR_RDF_MASK) == 0U) && (timeout-- != 0U))
     {
-        (void)memcpy(frame.payload, payload, length);
-    }
-    else if (length > 0U)
-    {
-        (void)memset(frame.payload, 0, length);
     }
 
-    frame.header.crc = SPI_BridgeComputeCrc(frame.header.msgType, frame.header.deviceId, frame.header.length,
-                                            frame.header.seq, frame.payload, frame.payloadLength);
-
-    SPI_BridgeDumpFrame(&frame);
-
-    if (xQueueSend(s_bridgeQueue, &frame, 0) == pdPASS)
+    if (timeout == 0U)
     {
-        return kStatus_Success;
+        return kStatus_Fail;
     }
 
-    return kStatus_Fail;
+    *rxData = (uint8_t)base->RDR;
+    base->SR = LPSPI_SR_RDF_MASK | LPSPI_SR_TDF_MASK;
+
+    return kStatus_Success;
 }
 
-static spi_bridge_device_entry_t *SPI_BridgeAllocateEntry(void)
+static status_t SPI_BridgeTransferRegion(const uint8_t *tx, uint8_t *rx, size_t length)
 {
-    for (uint8_t i = 0; i < SPI_BRIDGE_MAX_DEVICES; ++i)
+    for (size_t i = 0; i < length; ++i)
     {
-        if (!s_devices[i].inUse)
+        status_t status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, tx[i], &rx[i]);
+        if (status != kStatus_Success)
         {
-            s_devices[i].deviceId = i;
-            return &s_devices[i];
+            return status;
         }
     }
-    return NULL;
+
+    return kStatus_Success;
 }
 
-static spi_bridge_device_entry_t *SPI_BridgeFindDevice(uint8_t deviceId)
+static void SPI_BridgeSerializeMap(uint8_t *txBuffer)
+{
+    uint8_t *cursor = txBuffer;
+
+    SPI_BridgeSerializeBlock(&s_hubStatus, cursor);
+    cursor += SPI_BRIDGE_BLOCK_SIZE;
+
+    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
+    {
+        SPI_BridgeSerializeBlock(&s_inBlocks[deviceId], cursor);
+        cursor += SPI_BRIDGE_BLOCK_SIZE;
+        SPI_BridgeSerializeBlock(&s_outBlocks[deviceId], cursor);
+        cursor += SPI_BRIDGE_BLOCK_SIZE;
+    }
+}
+
+static void SPI_BridgeProcessHubWrite(const uint8_t *rxBlock)
+{
+    if (!SPI_BridgeBlockHasValidCrc(rxBlock))
+    {
+        return;
+    }
+
+    if (((rxBlock[0] & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) &&
+        ((s_hubStatus.header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U))
+    {
+        s_hubStatus.header &= (uint8_t)~SPI_BRIDGE_HEADER_DIRTY_MASK;
+        SPI_BridgeUpdateBlockCrc(&s_hubStatus);
+    }
+}
+
+static void SPI_BridgeProcessInWrite(uint8_t deviceId, const uint8_t *rxBlock)
+{
+    if ((deviceId >= SPI_BRIDGE_MAX_DEVICES) || !SPI_BridgeBlockHasValidCrc(rxBlock))
+    {
+        return;
+    }
+
+    if (((rxBlock[0] & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) &&
+        ((s_inBlocks[deviceId].header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U))
+    {
+        s_inBlocks[deviceId].header &= (uint8_t)~SPI_BRIDGE_HEADER_DIRTY_MASK;
+        SPI_BridgeUpdateBlockCrc(&s_inBlocks[deviceId]);
+    }
+}
+
+static void SPI_BridgeProcessOutWrite(uint8_t deviceId, const uint8_t *rxBlock)
 {
     if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
     {
-        return NULL;
+        return;
     }
 
-    if (s_devices[deviceId].inUse)
+    uint8_t header  = rxBlock[0];
+    uint8_t length  = SPI_BridgeExtractLength(header);
+    bool dirty      = (header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U;
+
+    if (!dirty || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
     {
-        return &s_devices[deviceId];
+        return;
     }
 
-    return NULL;
+    if (!SPI_BridgeBlockHasValidCrc(rxBlock))
+    {
+        return;
+    }
+
+    s_outBlocks[deviceId].header = header;
+    (void)memcpy(s_outBlocks[deviceId].payload, &rxBlock[1], length);
+    if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        (void)memset(&s_outBlocks[deviceId].payload[length], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
+    }
+    SPI_BridgeUpdateBlockCrc(&s_outBlocks[deviceId]);
+    SPI_BridgeLogOut(deviceId, false);
+}
+
+static void SPI_BridgeProcessIncoming(const uint8_t *rxBuffer)
+{
+    const uint8_t *cursor = rxBuffer;
+
+    SPI_BridgeProcessHubWrite(cursor);
+    cursor += SPI_BRIDGE_BLOCK_SIZE;
+
+    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
+    {
+        SPI_BridgeProcessInWrite(deviceId, cursor);
+        cursor += SPI_BRIDGE_BLOCK_SIZE;
+        SPI_BridgeProcessOutWrite(deviceId, cursor);
+        cursor += SPI_BRIDGE_BLOCK_SIZE;
+    }
 }
 
 status_t SPI_BridgeInit(void)
 {
-    /* Enable the LPSPI1 clock and select a safe divider. */
     CLOCK_SetMux(kCLOCK_LpspiMux, 1U);
     CLOCK_SetDiv(kCLOCK_LpspiDiv, 7U);
     CLOCK_EnableClock(kCLOCK_Lpspi1);
 
-    /* Reset and configure LPSPI1 for slave mode, 8-bit frames. */
     SPI_BRIDGE_SPI_BASE->CR = LPSPI_CR_RST_MASK;
     SPI_BRIDGE_SPI_BASE->CR = 0U;
     SPI_BRIDGE_SPI_BASE->CFGR1 = LPSPI_CFGR1_MASTER(0U) | LPSPI_CFGR1_NOSTALL(1U);
@@ -262,195 +358,172 @@ status_t SPI_BridgeInit(void)
                                LPSPI_TCR_CPOL(0U);
     SPI_BRIDGE_SPI_BASE->CR    = LPSPI_CR_MEN_MASK;
 
-    (void)memset(s_devices, 0, sizeof(s_devices));
-    s_txSeq = 0U;
+    (void)memset(&s_hubStatus, 0, sizeof(s_hubStatus));
+    (void)memset(s_inBlocks, 0, sizeof(s_inBlocks));
+    (void)memset(s_outBlocks, 0, sizeof(s_outBlocks));
+    (void)memset(s_deviceInUse, 0, sizeof(s_deviceInUse));
+    (void)memset(s_connectedTable, 0, sizeof(s_connectedTable));
+    (void)memset(s_lastInLoggedHeader, 0, sizeof(s_lastInLoggedHeader));
+    (void)memset(s_lastOutLoggedHeader, 0, sizeof(s_lastOutLoggedHeader));
+    s_lastHubLoggedHeader = 0U;
 
-    s_bridgeQueue = xQueueCreate(SPI_BRIDGE_QUEUE_DEPTH, sizeof(spi_bridge_frame_t));
-    if (s_bridgeQueue == NULL)
-    {
-        SPI_BRIDGE_LOG_FAILURE("queue create");
-        return kStatus_Fail;
-    }
+    SPI_BridgeRebuildHubStatus();
 
     return kStatus_Success;
 }
 
 void SPI_BridgeTask(void *param)
 {
-    spi_bridge_frame_t frame;
+    uint8_t txBuffer[SPI_BRIDGE_REGION_SIZE];
+    uint8_t rxBuffer[SPI_BRIDGE_REGION_SIZE];
     (void)param;
 
     while (1)
     {
-        if (xQueueReceive(s_bridgeQueue, &frame, portMAX_DELAY) == pdPASS)
+        SPI_BridgeSerializeMap(txBuffer);
+        if (SPI_BridgeTransferRegion(txBuffer, rxBuffer, SPI_BRIDGE_REGION_SIZE) == kStatus_Success)
         {
-            if (SPI_BridgeWriteFrame(&frame) != kStatus_Success)
-            {
-                SPI_BRIDGE_LOG_FAILURE("write frame");
-            }
+            SPI_BridgeProcessIncoming(rxBuffer);
+        }
+        else
+        {
+            SPI_BRIDGE_LOG_FAILURE("transfer");
         }
     }
 }
 
-status_t SPI_BridgeAllocDevice(spi_bridge_device_type_t deviceType,
-                               uint16_t vid,
-                               uint16_t pid,
-                               uint8_t interfaceNumber,
-                               bool hasOutEndpoint,
-                               uint16_t reportDescLen,
-                               uint8_t hubNumber,
-                               uint8_t portNumber,
-                               uint8_t hsHubNumber,
-                               uint8_t hsHubPort,
-                               uint8_t level,
-                               uint8_t *deviceIdOut)
+static int32_t SPI_BridgeFindFreeSlot(void)
 {
-    spi_bridge_device_entry_t *entry = SPI_BridgeAllocateEntry();
-    spi_bridge_device_add_t payload;
+    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
+    {
+        if (!s_deviceInUse[deviceId])
+        {
+            return deviceId;
+        }
+    }
+    return -1;
+}
 
-    if (entry == NULL)
+status_t SPI_BridgeAllocDevice(uint8_t *deviceIdOut)
+{
+    int32_t slot = SPI_BridgeFindFreeSlot();
+
+    if (slot < 0)
     {
         return kStatus_Fail;
     }
 
-    entry->vid             = vid;
-    entry->pid             = pid;
-    entry->interfaceNumber = interfaceNumber;
-    entry->hasOutEndpoint  = hasOutEndpoint ? 1U : 0U;
-    entry->deviceType      = (uint8_t)deviceType;
-    entry->reportDescLen   = reportDescLen;
-    entry->hubNumber       = hubNumber;
-    entry->portNumber      = portNumber;
-    entry->hsHubNumber     = hsHubNumber;
-    entry->hsHubPort       = hsHubPort;
-    entry->level           = level;
+    s_deviceInUse[slot]      = true;
+    s_connectedTable[slot]   = 1U;
+    s_inBlocks[slot].header  = SPI_BridgeMakeHeader(false, 0U, 0U);
+    s_outBlocks[slot].header = SPI_BridgeMakeHeader(false, 0U, 0U);
+    SPI_BridgeUpdateBlockCrc(&s_inBlocks[slot]);
+    SPI_BridgeUpdateBlockCrc(&s_outBlocks[slot]);
 
-    SPI_BRIDGE_LOG("[spi-bridge] allocate device %u: type=%u vid=0x%x pid=0x%x iface=%u outEp=%u reportLen=%u hub=%u port=%u hsHub=%u hsPort=%u level=%u\r\n",
-             entry->deviceId, deviceType, vid, pid, interfaceNumber, entry->hasOutEndpoint, reportDescLen, hubNumber,
-             portNumber, hsHubNumber, hsHubPort, level);
+    SPI_BridgeRebuildHubStatus();
 
-    payload.vid             = vid;
-    payload.pid             = pid;
-    payload.interfaceNumber = interfaceNumber;
-    payload.hasOutEndpoint  = entry->hasOutEndpoint;
-    payload.deviceType      = entry->deviceType;
-    payload.reportDescLen   = reportDescLen;
-    payload.hubNumber       = hubNumber;
-    payload.portNumber      = portNumber;
-    payload.hsHubNumber     = hsHubNumber;
-    payload.hsHubPort       = hsHubPort;
-    payload.level           = level;
-
-    if (SPI_BridgeQueueFrame(kSpiBridgeMessageDeviceAdd, entry->deviceId, (const uint8_t *)&payload,
-                             (uint16_t)sizeof(payload)) == kStatus_Success)
+    if (deviceIdOut != NULL)
     {
-        entry->inUse = true;
-        if (deviceIdOut != NULL)
-        {
-            *deviceIdOut = entry->deviceId;
-        }
-        return kStatus_Success;
+        *deviceIdOut = (uint8_t)slot;
     }
 
-    SPI_BRIDGE_LOG("[spi-bridge] failed to queue device add for %u\r\n", entry->deviceId);
-
-    (void)memset(entry, 0, sizeof(*entry));
-    return kStatus_Fail;
+    return kStatus_Success;
 }
 
 status_t SPI_BridgeRemoveDevice(uint8_t deviceId)
 {
-    spi_bridge_device_entry_t *entry = SPI_BridgeFindDevice(deviceId);
-
-    if (entry == NULL)
+    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
     {
         return kStatus_InvalidArgument;
     }
 
-    if (SPI_BridgeQueueFrame(kSpiBridgeMessageDeviceRemove, deviceId, NULL, 0U) == kStatus_Success)
+    if (!s_deviceInUse[deviceId])
     {
-        (void)memset(entry, 0, sizeof(*entry));
-        return kStatus_Success;
+        return kStatus_InvalidArgument;
     }
 
-    return kStatus_Fail;
+    s_deviceInUse[deviceId]    = false;
+    s_connectedTable[deviceId] = 0U;
+    (void)memset(&s_inBlocks[deviceId], 0, sizeof(s_inBlocks[deviceId]));
+    (void)memset(&s_outBlocks[deviceId], 0, sizeof(s_outBlocks[deviceId]));
+
+    SPI_BridgeRebuildHubStatus();
+
+    return kStatus_Success;
 }
 
-status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId,
-                                        const uint8_t *descriptor,
-                                        uint16_t totalLength,
-                                        uint16_t offset,
-                                        uint16_t chunkLength)
+status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId, const uint8_t *descriptor, uint16_t length)
 {
-    spi_bridge_device_entry_t *entry = SPI_BridgeFindDevice(deviceId);
-    spi_bridge_report_descriptor_t *payload;
-    uint8_t buffer[SPI_BRIDGE_MAX_PAYLOAD];
-
-    if ((entry == NULL) || (descriptor == NULL))
+    if ((deviceId >= SPI_BRIDGE_MAX_DEVICES) || (descriptor == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
     {
         return kStatus_InvalidArgument;
     }
 
-    if ((sizeof(*payload) + chunkLength) > sizeof(buffer))
-    {
-        return kStatus_InvalidArgument;
-    }
-
-    payload                = (spi_bridge_report_descriptor_t *)buffer;
-    payload->totalLength   = totalLength;
-    payload->offset        = offset;
-    payload->chunkLength   = chunkLength;
-    (void)memcpy(payload->data, descriptor, chunkLength);
-
-    return SPI_BridgeQueueFrame(kSpiBridgeMessageReportDescriptor, entry->deviceId, buffer,
-                                (uint16_t)(sizeof(*payload) + chunkLength));
+    SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 1U, descriptor, (uint8_t)length);
+    SPI_BridgeLogIn(deviceId);
+    return kStatus_Success;
 }
 
 status_t SPI_BridgeSendReport(uint8_t deviceId, bool inDirection, uint8_t reportId, const uint8_t *data, uint16_t length)
 {
-    spi_bridge_device_entry_t *entry = SPI_BridgeFindDevice(deviceId);
-    spi_bridge_report_t *payload;
-    uint8_t buffer[SPI_BRIDGE_MAX_PAYLOAD];
-
-    if ((entry == NULL) || (data == NULL))
+    (void)reportId;
+    if ((deviceId >= SPI_BRIDGE_MAX_DEVICES) || (data == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
     {
         return kStatus_InvalidArgument;
     }
 
-    if ((sizeof(*payload) + length) > sizeof(buffer))
+    if (!inDirection)
     {
         return kStatus_InvalidArgument;
     }
 
-    payload              = (spi_bridge_report_t *)buffer;
-    payload->reportId    = reportId;
-    payload->reportLength = length;
-    (void)memcpy(payload->data, data, length);
+    SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 0U, data, (uint8_t)length);
+    SPI_BridgeLogIn(deviceId);
 
-    return SPI_BridgeQueueFrame(inDirection ? kSpiBridgeMessageReportIn : kSpiBridgeMessageReportOut,
-                                entry->deviceId, buffer, (uint16_t)(sizeof(*payload) + length));
+    return kStatus_Success;
 }
 
-status_t SPI_BridgeSendCdcData(uint8_t deviceId, bool inDirection, const uint8_t *data, uint16_t length)
+bool SPI_BridgeGetOutReport(uint8_t deviceId, uint8_t *typeOut, uint8_t *payloadOut, uint8_t *lengthOut)
 {
-    spi_bridge_device_entry_t *entry = SPI_BridgeFindDevice(deviceId);
-    spi_bridge_cdc_data_t *payload;
-    uint8_t buffer[SPI_BRIDGE_MAX_PAYLOAD];
-
-    if ((entry == NULL) || (data == NULL))
+    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
     {
-        return kStatus_InvalidArgument;
+        return false;
     }
 
-    if ((sizeof(*payload) + length) > sizeof(buffer))
+    uint8_t header = s_outBlocks[deviceId].header;
+    uint8_t length = SPI_BridgeExtractLength(header);
+
+    if (((header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
     {
-        return kStatus_InvalidArgument;
+        return false;
     }
 
-    payload            = (spi_bridge_cdc_data_t *)buffer;
-    payload->dataLength = length;
-    (void)memcpy(payload->data, data, length);
+    if (payloadOut != NULL)
+    {
+        (void)memcpy(payloadOut, s_outBlocks[deviceId].payload, length);
+    }
+    if (typeOut != NULL)
+    {
+        *typeOut = (uint8_t)((header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U);
+    }
+    if (lengthOut != NULL)
+    {
+        *lengthOut = length;
+    }
 
-    return SPI_BridgeQueueFrame(inDirection ? kSpiBridgeMessageCdcDataIn : kSpiBridgeMessageCdcDataOut,
-                                entry->deviceId, buffer, (uint16_t)(sizeof(*payload) + length));
+    SPI_BridgeLogOut(deviceId, false);
+    return true;
 }
+
+status_t SPI_BridgeClearOutReport(uint8_t deviceId)
+{
+    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    SPI_BridgeMarkDirty(&s_outBlocks[deviceId], false);
+    SPI_BridgeLogOut(deviceId, true);
+    return kStatus_Success;
+}
+
