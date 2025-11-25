@@ -6,6 +6,7 @@
 #include "fsl_clock.h"
 #include "pin_mux.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #define SPI_BRIDGE_SPI_TIMEOUT (1000000U)
@@ -38,6 +39,11 @@ static uint8_t s_lastOutLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_lastLoggedHubStatus;
 static spi_bridge_block_t s_lastLoggedInBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_lastLoggedOutBlocks[SPI_BRIDGE_MAX_DEVICES];
+
+static uint8_t SPI_BridgeGetDeviceAddress(uint8_t deviceId)
+{
+    return (uint8_t)(deviceId + 1U);
+}
 
 static uint16_t SPI_BridgeGetBlockAddress(uint8_t blockIndex)
 {
@@ -216,8 +222,12 @@ static void SPI_BridgeLogIn(uint8_t deviceId)
         return;
     }
 
+    uint8_t deviceAddress = SPI_BridgeGetDeviceAddress(deviceId);
     uint8_t blockIndex = 1U + (deviceId * 2U);
-    SPI_BridgeLogBlock("DEV_IN", blockIndex, &s_inBlocks[deviceId]);
+    char label[16];
+
+    (void)snprintf(label, sizeof(label), "DEV_IN[%u]", deviceAddress);
+    SPI_BridgeLogBlock(label, blockIndex, &s_inBlocks[deviceId]);
     s_lastInLoggedHeader[deviceId] = s_inBlocks[deviceId].header;
     s_lastLoggedInBlocks[deviceId] = s_inBlocks[deviceId];
 }
@@ -230,14 +240,17 @@ static void SPI_BridgeLogOut(uint8_t deviceId, bool done)
     }
 
     uint8_t header = s_outBlocks[deviceId].header;
+    uint8_t deviceAddress = SPI_BridgeGetDeviceAddress(deviceId);
     uint8_t blockIndex = 2U + (deviceId * 2U);
+    char label[16];
 
     if (!done && SPI_BridgeBlocksEqual(&s_outBlocks[deviceId], &s_lastLoggedOutBlocks[deviceId]))
     {
         return;
     }
 
-    SPI_BridgeLogBlock("DEV_OUT", blockIndex, &s_outBlocks[deviceId]);
+    (void)snprintf(label, sizeof(label), "DEV_OUT[%u]", deviceAddress);
+    SPI_BridgeLogBlock(label, blockIndex, &s_outBlocks[deviceId]);
     s_lastOutLoggedHeader[deviceId] = header;
     s_lastLoggedOutBlocks[deviceId] = s_outBlocks[deviceId];
 }
