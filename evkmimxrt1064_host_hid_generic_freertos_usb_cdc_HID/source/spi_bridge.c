@@ -477,6 +477,10 @@ static bool SPI_BridgeProcessOutWrite(uint8_t deviceId, const uint8_t *rxBlock)
     }
     SPI_BridgeUpdateBlockCrc(&s_outBlocks[deviceId]);
 
+    /* Immediately trace what arrived from the SPI master instead of waiting for a later read. */
+    SPI_BRIDGE_LOG("SPI_BRIDGE: received OUT block for device %u (%u bytes)\r\n", deviceId, length);
+    SPI_BridgeLogHexBuffer(s_outBlocks[deviceId].payload, length);
+
     /* Force logging so repeated writes of identical content are visible. */
     SPI_BridgeLogOut(deviceId, false, true);
 

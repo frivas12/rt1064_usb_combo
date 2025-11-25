@@ -294,9 +294,6 @@ static void USB_HostHidGenericProcessOutReport(usb_host_hid_generic_instance_t *
         length = (uint8_t)genericInstance->outMaxPacketSize;
     }
 
-    /* Trace what will be sent back to the HID device. */
-    USB_HostHidGenericPrintHex(genericInstance, (type == 0U) ? "Output report" : "Output descriptor", payload, length);
-
     if (USB_HostHidSend(genericInstance->classHandle, payload, length, USB_HostHidOutCallback, genericInstance) ==
         kStatus_USB_Success)
     {
