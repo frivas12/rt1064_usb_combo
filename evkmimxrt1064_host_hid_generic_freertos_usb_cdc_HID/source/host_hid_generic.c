@@ -69,16 +69,7 @@ static void USB_HostHidInCallback(void *param, uint8_t *data, uint32_t dataLengt
  * @status         transfer result status.
  */
 static void USB_HostHidOutCallback(void *param, uint8_t *data, uint32_t dataLength, usb_status_t status);
-
-/*!
- * @brief host hid generic prepare data for sending.
- *
- * @param genericInstance  the host hid generic instance pointer.
- *
- * @retval kStatus_USB_Sucess  there is data.
- * @retval kStatus_USB_Error   data is sent done.
- */
-static usb_status_t USB_HostHidGenericPrepareOutData(usb_host_hid_generic_instance_t *genericInstance);
+static void USB_HostHidGenericProcessOutReport(usb_host_hid_generic_instance_t *genericInstance);
 
 static usb_host_hid_generic_instance_t *USB_HostHidGenericAllocateInstance(void);
 static usb_host_hid_generic_instance_t *USB_HostHidGenericFindInstanceByConfig(
@@ -91,16 +82,11 @@ static void USB_HostHidGenericResetInstance(usb_host_hid_generic_instance_t *gen
  ******************************************************************************/
 
 usb_host_hid_generic_instance_t g_HostHidGeneric[HID_GENERIC_MAX_DEVICES]; /* hid generic instances */
-uint8_t testData[] =
-    "Test string: This is usb host hid generic demo, it only support pid=0x00a2 and vid=0x1fc9 hid device. Host send "
-    "this test string to device, device reply the data to host then host print the data\r\n";
 
 USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE)
 uint8_t s_GenericInBuffer[HID_GENERIC_MAX_DEVICES][HID_GENERIC_IN_BUFFER_SIZE]; /*!< use to receive report descriptor and data */
 USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE)
 uint8_t s_GenericOutBuffer[HID_GENERIC_MAX_DEVICES][HID_GENERIC_IN_BUFFER_SIZE]; /*!< use to send data */
-
-#define SPI_DEVICE_ID_INVALID (0xFFU)
 
 static void USB_HostHidGenericResetInstance(usb_host_hid_generic_instance_t *genericInstance)
 {
@@ -258,43 +244,49 @@ static void USB_HostHidInCallback(void *param, uint8_t *data, uint32_t dataLengt
 }
 
 static void USB_HostHidOutCallback(void *param, uint8_t *data, uint32_t dataLength, usb_status_t status)
-{ /* NULL */
+{
+    usb_host_hid_generic_instance_t *genericInstance = (usb_host_hid_generic_instance_t *)param;
+    (void)data;
+    (void)dataLength;
+    (void)status;
+
+    if (genericInstance != NULL)
+    {
+        genericInstance->outTransferPending = false;
+        if (status == kStatus_USB_Success)
+        {
+            (void)SPI_BridgeClearOutReport(genericInstance->deviceId);
+        }
+    }
 }
 
-static usb_status_t USB_HostHidGenericPrepareOutData(usb_host_hid_generic_instance_t *genericInstance)
+static void USB_HostHidGenericProcessOutReport(usb_host_hid_generic_instance_t *genericInstance)
 {
-    uint16_t index = 0;
+    uint8_t payload[SPI_BRIDGE_MAX_PAYLOAD_LENGTH];
+    uint8_t length = 0U;
+    uint8_t type   = 0U;
 
-    if (genericInstance->sendIndex < (sizeof(testData) - 1)) /* sendIndex indicate the current position of testData */
+    if ((genericInstance == NULL) || (genericInstance->classHandle == NULL) || (genericInstance->outTransferPending))
     {
-        /* get the max packet data, note: the data should be 0 when there is no actual data to send */
-        for (index = 0; ((index + genericInstance->sendIndex) < (sizeof(testData) - 1)) &&
-                        (index < genericInstance->outMaxPacketSize);
-             ++index)
-        {
-            genericInstance->genericOutBuffer[index] = testData[index + genericInstance->sendIndex];
-        }
-        for (; index < genericInstance->outMaxPacketSize; ++index)
-        {
-            genericInstance->genericOutBuffer[index] = 0x00;
-        }
-        genericInstance->sendIndex += genericInstance->outMaxPacketSize;
-
-        genericInstance->lastOutDataLength = index;
-        USB_HostHidGenericPrintHex(genericInstance, "Output report", genericInstance->genericOutBuffer,
-                                   genericInstance->lastOutDataLength);
-        if ((genericInstance->lastOutDataLength > 0U) && genericInstance->deviceAnnounced)
-        {
-            (void)SPI_BridgeSendReport(genericInstance->deviceId, false, 0U, genericInstance->genericOutBuffer,
-                                       genericInstance->lastOutDataLength);
-        }
-
-        return kStatus_USB_Success;
+        return;
     }
-    else
+
+    if (!SPI_BridgeGetOutReport(genericInstance->deviceId, &type, payload, &length))
     {
-        genericInstance->lastOutDataLength = 0U;
-        return kStatus_USB_Error; /* there is no data to send */
+        return;
+    }
+
+    if (length > genericInstance->outMaxPacketSize)
+    {
+        length = (uint8_t)genericInstance->outMaxPacketSize;
+    }
+
+    USB_HostHidGenericPrintHex(genericInstance, (type == 0U) ? "Output report" : "Output descriptor", payload, length);
+
+    if (USB_HostHidSend(genericInstance->classHandle, payload, length, USB_HostHidOutCallback, genericInstance) ==
+        kStatus_USB_Success)
+    {
+        genericInstance->outTransferPending = true;
     }
 }
 
@@ -431,14 +423,7 @@ void USB_HostHidGenericTask(void *param)
             if (!genericInstance->deviceAnnounced)
             {
                 uint8_t deviceId;
-                usb_host_interface_t *iface = (usb_host_interface_t *)genericInstance->interfaceHandle;
-                status_t bridgeStatus =
-                    SPI_BridgeAllocDevice(kSpiBridgeDeviceGenericHid, genericInstance->vid, genericInstance->pid,
-                                          iface->interfaceDesc->bInterfaceNumber,
-                                          (genericInstance->outMaxPacketSize > 0U), hidReportLength,
-                                          genericInstance->hubNumber, genericInstance->portNumber,
-                                          genericInstance->hsHubNumber, genericInstance->hsHubPort,
-                                          genericInstance->level, &deviceId);
+                status_t bridgeStatus = SPI_BridgeAllocDevice(&deviceId);
                 if (bridgeStatus == kStatus_Success)
                 {
                     genericInstance->deviceId        = deviceId;
@@ -462,7 +447,6 @@ void USB_HostHidGenericTask(void *param)
                 if (genericInstance->deviceAnnounced && (genericInstance->deviceId != SPI_DEVICE_ID_INVALID))
                 {
                     (void)SPI_BridgeSendReportDescriptor(genericInstance->deviceId, genericInstance->genericInBuffer,
-                                                         genericInstance->reportDescriptorLength, 0,
                                                          genericInstance->reportDescriptorLength);
                 }
             }
@@ -485,16 +469,7 @@ void USB_HostHidGenericTask(void *param)
             {
                 HID_GENERIC_LOG("Error in USB_HostHidRecv\r\n");
             }
-            status = USB_HostHidGenericPrepareOutData(genericInstance);
-            if (status == kStatus_USB_Success)
-            {
-                if (USB_HostHidSend(genericInstance->classHandle, genericInstance->genericOutBuffer,
-                                    genericInstance->outMaxPacketSize, USB_HostHidOutCallback,
-                                    genericInstance) != kStatus_USB_Success)
-                {
-                    HID_GENERIC_LOG("Error in USB_HostHidSend\r\n");
-                }
-            }
+            USB_HostHidGenericProcessOutReport(genericInstance);
             break;
 
         case kUSB_HostHidRunDataReceived: /* process received data, receive next data and send next data */
@@ -508,16 +483,7 @@ void USB_HostHidGenericTask(void *param)
             {
                 HID_GENERIC_LOG("Error in USB_HostHidRecv\r\n");
             }
-            status = USB_HostHidGenericPrepareOutData(genericInstance);
-            if (status == kStatus_USB_Success)
-            {
-                if (USB_HostHidSend(genericInstance->classHandle, genericInstance->genericOutBuffer,
-                                    genericInstance->outMaxPacketSize, USB_HostHidOutCallback,
-                                    genericInstance) != kStatus_USB_Success)
-                {
-                    HID_GENERIC_LOG("Error in USB_HostHidSend\r\n");
-                }
-            }
+            USB_HostHidGenericProcessOutReport(genericInstance);
             break;
 
         case kUSB_HostHidRunPrimeDataReceive: /* receive next data and send next data */
@@ -529,16 +495,7 @@ void USB_HostHidGenericTask(void *param)
             {
                 HID_GENERIC_LOG("Error in USB_HostHidRecv\r\n");
             }
-            status = USB_HostHidGenericPrepareOutData(genericInstance);
-            if (status == kStatus_USB_Success)
-            {
-                if (USB_HostHidSend(genericInstance->classHandle, genericInstance->genericOutBuffer,
-                                    genericInstance->outMaxPacketSize, USB_HostHidOutCallback,
-                                    genericInstance) != kStatus_USB_Success)
-                {
-                    HID_GENERIC_LOG("Error in USB_HostHidSend\r\n");
-                }
-            }
+            USB_HostHidGenericProcessOutReport(genericInstance);
             break;
 
         default:

@@ -81,6 +81,7 @@ typedef struct _usb_host_hid_generic_instance
     uint8_t level;                   /*!< hub depth level */
     uint8_t deviceId;                /*!< logical device ID for SPI bridge */
     bool deviceAnnounced;            /*!< true once DEVICE_ADD has been sent */
+    bool outTransferPending;         /*!< true while an OUT USB transfer is in flight */
 } usb_host_hid_generic_instance_t;
 
 /*******************************************************************************
