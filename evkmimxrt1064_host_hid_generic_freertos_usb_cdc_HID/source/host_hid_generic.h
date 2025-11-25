@@ -6,6 +6,15 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+/*
+ * USB host HID application definitions
+ *
+ * Declares the instance tracking structures and task entry points that manage
+ * HID-class devices for the USB host demo. The runtime ties discovered devices
+ * into the SPI bridge so HID reports can be forwarded to an external
+ * controller.
+ */
+
 #ifndef _HOST_HID_GENERIC_H_
 #define _HOST_HID_GENERIC_H_
 

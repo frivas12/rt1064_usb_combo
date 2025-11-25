@@ -1,3 +1,11 @@
+/*
+ * SPI bridge task
+ *
+ * Streams a compact register map over the LPSPI1 slave interface so the
+ * companion V70 can mirror HID traffic. The task builds a contiguous memory
+ * image (hub status + per-device IN/OUT blocks), pushes it over SPI, and
+ * ingests any host-side writes to keep the shared state in sync.
+ */
 #include "spi_bridge.h"
 
 #include "FreeRTOS.h"
@@ -24,6 +32,7 @@
 #define SPI_BRIDGE_BLOCK_COUNT (1U + (SPI_BRIDGE_MAX_DEVICES * 2U))
 #define SPI_BRIDGE_REGION_SIZE (SPI_BRIDGE_BLOCK_COUNT * SPI_BRIDGE_BLOCK_SIZE)
 
+/* State mirrored over the SPI connection. */
 static spi_bridge_block_t s_hubStatus;
 static spi_bridge_block_t s_inBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_outBlocks[SPI_BRIDGE_MAX_DEVICES];
@@ -84,6 +93,7 @@ static uint16_t SPI_BridgeComputeBlockCrc(const uint8_t *block)
     uint8_t length = SPI_BridgeExtractLength(header);
     uint16_t crc   = SPI_BRIDGE_CRC_INIT;
 
+    /* CRC covers the header and the active payload bytes. */
     crc = SPI_BridgeCrcUpdate(crc, header);
     for (uint8_t i = 0; i < length; ++i)
     {
@@ -97,6 +107,7 @@ static void SPI_BridgeUpdateBlockCrc(spi_bridge_block_t *block)
 {
     uint8_t raw[SPI_BRIDGE_BLOCK_SIZE];
 
+    /* Serialize to the raw wire format before recomputing CRC. */
     raw[0] = block->header;
     (void)memcpy(&raw[1], block->payload, SPI_BRIDGE_MAX_PAYLOAD_LENGTH);
     block->crc = SPI_BridgeComputeBlockCrc(raw);
@@ -106,6 +117,7 @@ static void SPI_BridgeSerializeBlock(const spi_bridge_block_t *block, uint8_t *o
 {
     uint8_t length = SPI_BridgeExtractLength(block->header);
 
+    /* Copy header and payload, append CRC, pad unused payload bytes with 0. */
     output[0] = block->header;
     (void)memcpy(&output[1], block->payload, SPI_BRIDGE_MAX_PAYLOAD_LENGTH);
     output[1U + length] = (uint8_t)(block->crc & 0xFFU);
@@ -159,6 +171,7 @@ static void SPI_BridgeLogBlock(const char *label, uint8_t blockIndex, const spi_
     uint8_t length = SPI_BridgeExtractLength(block->header);
     uint8_t serialized[SPI_BRIDGE_BLOCK_SIZE];
 
+    /* Render the logical block and its on-the-wire representation. */
     SPI_BridgeSerializeBlock(block, serialized);
     SPI_BRIDGE_LOG("SPI_BRIDGE: [%s @0x%04X] DIRTY=%u TYPE=%u LEN=%u CRC=0x%04X\r\n", label,
                    SPI_BridgeGetBlockAddress(blockIndex),
@@ -175,6 +188,7 @@ static void SPI_BridgeSetBlockPayload(spi_bridge_block_t *block, uint8_t type, c
     uint8_t safeLength = (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) ? SPI_BRIDGE_MAX_PAYLOAD_LENGTH : length;
     uint8_t cleanHeader = SPI_BridgeMakeHeader(false, type, safeLength);
 
+    /* Replace payload, mark as dirty, and regenerate CRC. */
     block->header = cleanHeader;
     if (safeLength > 0U)
     {
@@ -271,6 +285,7 @@ static void SPI_BridgeRebuildHubStatus(void)
     uint8_t payloadLength = SPI_BRIDGE_MAX_DEVICES;
     uint8_t cleanHeader   = SPI_BridgeMakeHeader(false, 0U, payloadLength);
 
+    /* Populate the hub bitmap payload then flag it dirty so the host reads it. */
     s_hubStatus.header = cleanHeader;
     (void)memcpy(s_hubStatus.payload, s_connectedTable, payloadLength);
     if (payloadLength < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
@@ -286,6 +301,7 @@ static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t
 {
     uint32_t timeout = SPI_BRIDGE_SPI_TIMEOUT;
 
+    /* Wait for TX FIFO space then push a byte. */
     while (((base->SR & LPSPI_SR_TDF_MASK) == 0U) && (timeout-- != 0U))
     {
     }
@@ -298,6 +314,7 @@ static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t
     base->TDR = txData;
 
     timeout = SPI_BRIDGE_SPI_TIMEOUT;
+    /* Wait for RX data (the peer's response). */
     while (((base->SR & LPSPI_SR_RDF_MASK) == 0U) && (timeout-- != 0U))
     {
     }
@@ -331,6 +348,7 @@ static void SPI_BridgeSerializeMap(uint8_t *txBuffer)
 {
     uint8_t *cursor = txBuffer;
 
+    /* Serialize hub + IN/OUT blocks sequentially into the transfer region. */
     SPI_BridgeSerializeBlock(&s_hubStatus, cursor);
     cursor += SPI_BRIDGE_BLOCK_SIZE;
 
@@ -408,6 +426,7 @@ static void SPI_BridgeProcessIncoming(const uint8_t *rxBuffer)
 {
     const uint8_t *cursor = rxBuffer;
 
+    /* Process hub, IN, and OUT regions in order. */
     SPI_BridgeProcessHubWrite(cursor);
     cursor += SPI_BRIDGE_BLOCK_SIZE;
 
@@ -422,6 +441,7 @@ static void SPI_BridgeProcessIncoming(const uint8_t *rxBuffer)
 
 status_t SPI_BridgeInit(void)
 {
+    /* Configure LPSPI1 as an 8-bit slave before any transfers occur. */
     CLOCK_SetMux(kCLOCK_LpspiMux, 1U);
     CLOCK_SetDiv(kCLOCK_LpspiDiv, 7U);
     CLOCK_EnableClock(kCLOCK_Lpspi1);
@@ -457,6 +477,7 @@ void SPI_BridgeTask(void *param)
 
     while (1)
     {
+        /* Push local state to the host and apply any incoming changes. */
         SPI_BridgeSerializeMap(s_txBuffer);
         if (SPI_BridgeTransferRegion(s_txBuffer, s_rxBuffer, SPI_BRIDGE_REGION_SIZE) == kStatus_Success)
         {
