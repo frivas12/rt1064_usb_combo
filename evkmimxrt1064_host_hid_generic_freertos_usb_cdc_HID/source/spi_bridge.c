@@ -36,7 +36,10 @@
 #define SPI_BRIDGE_BLOCK_COUNT (1U + (SPI_BRIDGE_MAX_DEVICES * 2U))
 #define SPI_BRIDGE_REGION_SIZE (SPI_BRIDGE_BLOCK_COUNT * SPI_BRIDGE_BLOCK_SIZE)
 
-/* State mirrored over the SPI connection. */
+/* State mirrored over the SPI connection. The hub status block is followed by
+ * paired IN/OUT blocks for each logical device slot. The *_last* structures are
+ * used purely for change-detection logging so we can avoid spamming the console
+ * unless the register image actually changes. */
 static spi_bridge_block_t s_hubStatus;
 static spi_bridge_block_t s_inBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_outBlocks[SPI_BRIDGE_MAX_DEVICES];
@@ -85,6 +88,9 @@ static uint8_t SPI_BridgeExtractLength(uint8_t header)
 
 static uint8_t SPI_BridgeMakeHeader(bool dirty, uint8_t type, uint8_t length)
 {
+    /* The header packs DIRTY/TYPE/LEN so the on-wire representation stays
+     * compact. DIRTY tells the master which blocks changed since the last
+     * transaction, TYPE tags payload meaning, and LEN lists active bytes. */
     return (uint8_t)((dirty ? SPI_BRIDGE_HEADER_DIRTY_MASK : 0U) | (type ? SPI_BRIDGE_HEADER_TYPE_MASK : 0U) |
                      ((length << SPI_BRIDGE_HEADER_LENGTH_SHIFT) & SPI_BRIDGE_HEADER_LENGTH_MASK));
 }
@@ -428,7 +434,10 @@ static void SPI_BridgeSerializeMap(uint8_t *txBuffer)
 {
     uint8_t *cursor = txBuffer;
 
-    /* Serialize hub + IN/OUT blocks sequentially into the transfer region. */
+    /* Serialize hub + IN/OUT blocks sequentially into the transfer region.
+     * The SPI master treats this as a contiguous register image, so the order
+     * must remain stable: hub block first, then alternating IN/OUT pairs for
+     * each device. */
     SPI_BridgeSerializeBlock(&s_hubStatus, cursor);
     cursor += SPI_BRIDGE_BLOCK_SIZE;
 
@@ -525,7 +534,12 @@ static bool SPI_BridgeProcessIncoming(const uint8_t *rxBuffer)
     const uint8_t *cursor = rxBuffer;
     bool activity         = false;
 
-    /* Process hub, IN, and OUT regions in order. */
+    /* Process hub, IN, and OUT regions in order.
+     *
+     * The SPI master is allowed to clear DIRTY bits (acknowledging reads) and
+     * to write OUT blocks destined for USB devices. For hub/IN blocks we only
+     * honor DIRTY clears; OUT blocks are fully replaced when a valid CRC
+     * accompanies the master's write. */
     activity |= SPI_BridgeProcessHubWrite(cursor);
     cursor += SPI_BRIDGE_BLOCK_SIZE;
 
@@ -605,6 +619,8 @@ void SPI_BridgeTask(void *param)
             }
         }
 
+        /* Yield briefly; the bridge is host-driven so a tiny pause keeps CPU
+         * usage down while still reacting quickly when PCS is asserted. */
         vTaskDelay(pdMS_TO_TICKS(1));
     }
 }

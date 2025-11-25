@@ -98,6 +98,11 @@ uint8_t s_GenericInBuffer[HID_GENERIC_MAX_DEVICES][HID_GENERIC_IN_BUFFER_SIZE]; 
 USB_DMA_NONINIT_DATA_ALIGN(USB_DATA_ALIGN_SIZE)
 uint8_t s_GenericOutBuffer[HID_GENERIC_MAX_DEVICES][HID_GENERIC_IN_BUFFER_SIZE]; /*!< use to send data */
 
+/* The global buffers above are shared by all device instances. They are carved
+ * into per-instance slices once a HID interface is attached so the USB ISR can
+ * DMA directly into aligned memory while the SPI bridge reuses the same
+ * storage for mirroring. */
+
 static void USB_HostHidGenericResetInstance(usb_host_hid_generic_instance_t *genericInstance)
 {
     (void)memset(genericInstance, 0, sizeof(*genericInstance));
@@ -155,7 +160,13 @@ static void USB_HostHidGenericProcessBuffer(usb_host_hid_generic_instance_t *gen
 {
     genericInstance->genericInBuffer[genericInstance->inMaxPacketSize] = 0;
 
-    /* Log the inbound payload and mirror it over the SPI bridge. */
+    /* Log the inbound payload and mirror it over the SPI bridge.
+     *
+     * The USB host stack delivers raw interrupt-IN reports here. Beyond simply
+     * printing them for debugging, we immediately publish them to the SPI
+     * bridge so the external V70 can observe the same stream. This function is
+     * the only place HID IN traffic exits the USB domain and enters the SPI
+     * mirror. */
     USB_HostHidGenericPrintHex(genericInstance, "Input report", genericInstance->genericInBuffer,
                                genericInstance->lastInDataLength);
 
@@ -289,6 +300,10 @@ static void USB_HostHidGenericProcessOutReport(usb_host_hid_generic_instance_t *
         return;
     }
 
+    /* The SPI master can enqueue OUT traffic for any mirrored device. Cap the
+     * USB write length to the negotiated packet size so we do not overflow the
+     * pipe, then push the payload over USB. Once the transfer finishes the
+     * OUT callback clears the DIRTY bit inside the bridge map. */
     if (length > genericInstance->outMaxPacketSize)
     {
         length = (uint8_t)genericInstance->outMaxPacketSize;
@@ -356,6 +371,13 @@ void USB_HostHidGenericTask(void *param)
     }
 
     /* run state */
+    /*
+     * The runState state machine sequences the standard HID host bring-up:
+     * 1) set interface, 2) set idle, 3) fetch report descriptor, 4) set
+     * protocol, 5) stream IN reports while opportunistically sending any
+     * pending OUT data harvested from the SPI bridge. This loop is the glue
+     * that converts USB events into SPI bridge updates.
+     */
     switch (genericInstance->runState)
     {
         case kUSB_HostHidRunIdle:
@@ -439,6 +461,8 @@ void USB_HostHidGenericTask(void *param)
                 {
                     genericInstance->deviceId        = deviceId;
                     genericInstance->deviceAnnounced = true;
+                    /* Reserve a slot in the SPI register map so future IN
+                     * reports and the descriptor can be mirrored. */
                 }
             }
 
@@ -457,6 +481,8 @@ void USB_HostHidGenericTask(void *param)
                                            genericInstance->reportDescriptorLength);
                 if (genericInstance->deviceAnnounced && (genericInstance->deviceId != SPI_DEVICE_ID_INVALID))
                 {
+                    /* Publish the descriptor first so the remote side can
+                     * decode subsequent IN reports. */
                     (void)SPI_BridgeSendReportDescriptor(genericInstance->deviceId, genericInstance->genericInBuffer,
                                                          genericInstance->reportDescriptorLength);
                 }
