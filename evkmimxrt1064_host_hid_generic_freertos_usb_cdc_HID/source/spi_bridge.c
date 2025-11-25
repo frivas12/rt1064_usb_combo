@@ -53,6 +53,21 @@ static spi_bridge_block_t s_lastLoggedHubStatus;
 static spi_bridge_block_t s_lastLoggedInBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_lastLoggedOutBlocks[SPI_BRIDGE_MAX_DEVICES];
 
+static void SPI_BridgeLogState(bool force);
+
+#if SPI_BRIDGE_ENABLE_STATE_TRACE
+#define SPI_BRIDGE_TRACE(reason)                                                                                \
+    do                                                                                                          \
+    {                                                                                                           \
+        SPI_BRIDGE_LOG("[spi-bridge] %s\r\n", reason);                                                         \
+        SPI_BridgeLogState(true);                                                                               \
+    } while (0)
+#define SPI_BRIDGE_TASK_LOG(activity) ((void)(activity))
+#else
+#define SPI_BRIDGE_TRACE(reason) ((void)(reason))
+#define SPI_BRIDGE_TASK_LOG(activity) SPI_BridgeLogState(activity)
+#endif
+
 static uint8_t SPI_BridgeGetDeviceAddress(uint8_t deviceId)
 {
     return (uint8_t)(deviceId + 1U);
@@ -344,6 +359,8 @@ static void SPI_BridgeRebuildHubStatus(void)
 
     s_hubStatus.header = (uint8_t)(cleanHeader | SPI_BRIDGE_HEADER_DIRTY_MASK);
     SPI_BridgeUpdateBlockCrc(&s_hubStatus);
+
+    SPI_BRIDGE_TRACE("hub status updated for SPI mirror");
 }
 
 static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t *rxData)
@@ -481,6 +498,8 @@ static bool SPI_BridgeProcessOutWrite(uint8_t deviceId, const uint8_t *rxBlock)
     SPI_BRIDGE_LOG("SPI_BRIDGE: received OUT block for device %u (%u bytes)\r\n", deviceId, length);
     SPI_BridgeLogHexBuffer(s_outBlocks[deviceId].payload, length);
 
+    SPI_BRIDGE_TRACE("SPI master wrote OUT report");
+
     /* Force logging so repeated writes of identical content are visible. */
     SPI_BridgeLogOut(deviceId, false, true);
 
@@ -555,7 +574,7 @@ void SPI_BridgeTask(void *param)
         if (SPI_BridgeTransferRegion(s_txBuffer, s_rxBuffer, SPI_BRIDGE_REGION_SIZE) == kStatus_Success)
         {
             bool activity = SPI_BridgeProcessIncoming(s_rxBuffer);
-            SPI_BridgeLogState(activity);
+            SPI_BRIDGE_TASK_LOG(activity);
         }
         else
         {
@@ -594,6 +613,8 @@ status_t SPI_BridgeAllocDevice(uint8_t *deviceIdOut)
 
     SPI_BridgeRebuildHubStatus();
 
+    SPI_BRIDGE_TRACE("allocated SPI bridge slot");
+
     if (deviceIdOut != NULL)
     {
         *deviceIdOut = (uint8_t)slot;
@@ -621,6 +642,8 @@ status_t SPI_BridgeRemoveDevice(uint8_t deviceId)
 
     SPI_BridgeRebuildHubStatus();
 
+    SPI_BRIDGE_TRACE("removed SPI bridge slot");
+
     return kStatus_Success;
 }
 
@@ -632,6 +655,7 @@ status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId, const uint8_t *descrip
     }
 
     SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 1U, descriptor, (uint8_t)length);
+    SPI_BRIDGE_TRACE("updated IN descriptor for V70");
     return kStatus_Success;
 }
 
@@ -649,6 +673,8 @@ status_t SPI_BridgeSendReport(uint8_t deviceId, bool inDirection, uint8_t report
     }
 
     SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 0U, data, (uint8_t)length);
+
+    SPI_BRIDGE_TRACE("updated IN report payload for V70");
 
     return kStatus_Success;
 }
@@ -692,6 +718,7 @@ status_t SPI_BridgeClearOutReport(uint8_t deviceId)
     }
 
     SPI_BridgeMarkDirty(&s_outBlocks[deviceId], false);
+    SPI_BRIDGE_TRACE("host consumed OUT report");
     return kStatus_Success;
 }
 

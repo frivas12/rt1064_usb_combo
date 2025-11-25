@@ -16,6 +16,11 @@
 #define SPI_BRIDGE_ENABLE_DEBUG (1U)
 #endif
 
+/* When enabled, every register-map update is logged at the moment it is applied. */
+#ifndef SPI_BRIDGE_ENABLE_STATE_TRACE
+#define SPI_BRIDGE_ENABLE_STATE_TRACE (0U)
+#endif
+
 #if !SPI_BRIDGE_ENABLE_DEBUG
 #warning "SPI bridge debug is disabled in this build"
 #endif
