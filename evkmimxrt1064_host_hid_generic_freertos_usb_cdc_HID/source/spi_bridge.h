@@ -16,6 +16,14 @@
 #define SPI_BRIDGE_ENABLE_DEBUG (1U)
 #endif
 
+#if !SPI_BRIDGE_ENABLE_DEBUG
+#warning "SPI bridge debug is disabled in this build"
+#endif
+
+#define SPI_BRIDGE_STRINGIFY(x) #x
+#define SPI_BRIDGE_TOSTRING(x) SPI_BRIDGE_STRINGIFY(x)
+#define SPI_BRIDGE_ENABLE_DEBUG_STRING SPI_BRIDGE_TOSTRING(SPI_BRIDGE_ENABLE_DEBUG)
+
 #if SPI_BRIDGE_ENABLE_DEBUG
 #define SPI_BRIDGE_LOG(...) usb_echo(__VA_ARGS__)
 #else
