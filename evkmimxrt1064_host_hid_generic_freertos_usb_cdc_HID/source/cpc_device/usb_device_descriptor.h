@@ -14,8 +14,8 @@
 #define USB_DEVICE_SPECIFIC_BCD_VERSION (0x0200U)
 #define USB_DEVICE_DEMO_BCD_VERSION     (0x0101U)
 
-#define USB_DEVICE_VID (0x1FC9U)
-#define USB_DEVICE_PID (0x0094U)
+#define USB_DEVICE_VID (0x1313U)
+#define USB_DEVICE_PID (0x2003U)
 
 /* Communication  Class Codes */
 #define CDC_COMM_CLASS (0x02U)

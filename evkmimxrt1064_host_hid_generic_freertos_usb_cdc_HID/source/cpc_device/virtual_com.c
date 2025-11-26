@@ -571,7 +571,7 @@ void USB_DeviceApplicationInit(void)
     SYSMPU_Enable(SYSMPU, 0);
 #endif /* FSL_FEATURE_SOC_SYSMPU_COUNT */
 
-    s_cdcVcom.speed        = USB_SPEED_FULL;
+    s_cdcVcom.speed        = USB_SPEED_HIGH;
     s_cdcVcom.attach       = 0;
     s_cdcVcom.cdcAcmHandle = (class_handle_t)NULL;
     s_cdcVcom.deviceHandle = NULL;
