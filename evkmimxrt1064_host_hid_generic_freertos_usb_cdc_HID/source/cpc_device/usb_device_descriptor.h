@@ -11,6 +11,9 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+#include "usb.h"
+#include "usb_device.h"
+#include "usb_device_class.h"
 #define USB_DEVICE_SPECIFIC_BCD_VERSION (0x0200U)
 #define USB_DEVICE_DEMO_BCD_VERSION     (0x0101U)
 
