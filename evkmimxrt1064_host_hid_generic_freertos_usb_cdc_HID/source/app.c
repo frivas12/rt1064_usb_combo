@@ -14,7 +14,7 @@
 #include "fsl_common.h"
 #include "board.h"
 #include "spi_bridge.h"
-#include "virtual_com.h"
+#include "cpc_device/virtual_com.h"
 #if (defined(FSL_FEATURE_SOC_SYSMPU_COUNT) && (FSL_FEATURE_SOC_SYSMPU_COUNT > 0U))
 #include "fsl_sysmpu.h"
 #endif /* FSL_FEATURE_SOC_SYSMPU_COUNT */
