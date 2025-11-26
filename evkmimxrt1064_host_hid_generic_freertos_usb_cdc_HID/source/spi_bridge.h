@@ -1,16 +1,17 @@
 /*
- * SPI bridge API
+ * SPI bridge API (SBIBridge.h)
  *
- * Exposes a register-map abstraction used by the SPI bridge task to mirror
- * USB HID activity to an external coprocessor. Callers allocate logical device
- * slots, publish IN reports, and retrieve OUT reports that arrive over SPI.
+ * Describes the SPI Bridge Interface (SBI) register map mirrored by the
+ * SPI bridge task so an external coprocessor can monitor USB HID activity
+ * without implementing a USB stack. Callers allocate logical device slots,
+ * publish IN reports, and retrieve OUT reports that arrive over SPI.
  *
- * The mapping intentionally resembles a tiny memory-mapped peripheral: one
- * hub-status block followed by per-device IN/OUT blocks. Each block contains a
- * one-byte header with DIRTY/TYPE/LEN fields, a payload, and a CRC. The SPI
- * slave task streams those blocks whenever the host clocks the bus, so an
- * external MCU can see HID activity without speaking USB.
- */
+ * The layout mimics a small memory-mapped peripheral: a hub-status block
+ * followed by per-device IN/OUT blocks. Each block includes a one-byte
+ * header with DIRTY/TYPE/LEN fields, a payload, and a CRC. The SPI slave task
+ * streams those blocks whenever the host clocks the bus, keeping the
+ * coprocessor in sync with real-time HID traffic.
+*/
 #ifndef _SPI_BRIDGE_H_
 #define _SPI_BRIDGE_H_
 
