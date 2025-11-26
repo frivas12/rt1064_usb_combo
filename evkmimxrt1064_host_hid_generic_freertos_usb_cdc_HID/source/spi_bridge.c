@@ -700,6 +700,9 @@ status_t SPI_BridgeInit(void)
 
     SPI_BRIDGE_LOG("SPI_BridgeInit: done\r\n");
 
+# if SPI_BRIDGE_ENABLE_DEBUG
+    SPI_BridgeSetStateTraceEnabled(true); // temp for debug prints when regs change
+#endif
     return kStatus_Success;
 }
 

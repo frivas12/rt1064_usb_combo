@@ -12,6 +12,7 @@
 #include "semphr.h"
 #include "event_groups.h"
 #include "fsl_common.h"
+#include "usb_device_descriptor.h"
 
 /*******************************************************************************
  * Definitions
