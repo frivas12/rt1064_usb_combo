@@ -1,10 +1,80 @@
 /*
  * SPI bridge task
  *
- * Streams a compact register map over the LPSPI1 slave interface so the
- * companion V70 can mirror HID traffic. The task builds a contiguous memory
- * image (hub status + per-device IN/OUT blocks), pushes it over SPI, and
- * ingests any host-side writes to keep the shared state in sync.
+ * This file implements the "SDI" (SPI Debug Interface) bridge that lets a
+ * companion processor scrape USB host state without speaking USB. The MIMXRT
+ * acts as an SPI *slave* on LPSPI1 and exposes a register-map image that the
+ * external master clocks out. The bridge continuously rebuilds that image from
+ * the USB host stack so the master always sees a fresh snapshot of the hub and
+ * every attached joystick.
+ *
+ * USB → SPI data flow
+ * -------------------
+ * 1. The FreeRTOS USB host stack enumerates HID devices (e.g., hubs and
+ *    joysticks) and publishes their data through the SPI bridge API
+ *    (see SPI_BridgeSendReportDescriptor / SPI_BridgeSendReport /
+ *    SPI_BridgeAllocDevice / SPI_BridgeRemoveDevice in this file).
+ * 2. Each API call mutates an in-memory register block and marks it DIRTY; the
+ *    block's CRC is regenerated so the SPI master can trust the update.
+ * 3. SPI_BridgeTask() notices PCS asserted by the master, serializes the full
+ *    register image into s_txBuffer, and clocks it out while simultaneously
+ *    receiving any writes from the master into s_rxBuffer.
+ * 4. The companion MCU (master) parses the streamed blocks to learn hub status
+ *    and joystick reports; if it wants to send an OUT report to a joystick it
+ *    writes a DIRTY OUT block back on the same transaction. The bridge applies
+ *    those writes to s_outBlocks and the USB host consumes them via
+ *    SPI_BridgeGetOutReport/SPI_BridgeClearOutReport.
+ *
+ * Register map layout
+ * -------------------
+ * The SPI master sees a contiguous image composed of fixed-size blocks. Each
+ * block is 66 bytes: one header, up to 63 payload bytes, and a 16-bit CRC.
+ * Blocks are always streamed in the following order:
+ *
+ *   Offset  Block        Description
+ *   ------  -----------  ----------------------------------------------------
+ *   0x0000  HUB_STATUS   Bit-per-slot connection bitmap for up to
+ *                        SPI_BRIDGE_MAX_DEVICES devices. Payload byte i is 1
+ *                        when logical slot i is allocated (see
+ *                        s_connectedTable and SPI_BridgeRebuildHubStatus()).
+ *   0x0042  DEV_IN[1]    IN payload for logical device 0 (USB address 1).
+ *   0x0084  DEV_OUT[1]   OUT payload consumed by logical device 0.
+ *   0x00C6  DEV_IN[2]    IN payload for logical device 1.
+ *   0x0108  DEV_OUT[2]   OUT payload consumed by logical device 1.
+ *   ...     ...          Slots continue for SPI_BRIDGE_MAX_DEVICES.
+ *
+ * Header and CRC fields
+ * ---------------------
+ * The one-byte header packs three fields that all blocks share:
+ *   - DIRTY (bit0): Set by whichever side last updated the block. The master
+ *     clears DIRTY to acknowledge reads; the bridge clears DIRTY when the host
+ *     consumes OUT data.
+ *   - TYPE (bit1): Meaning depends on direction. For IN blocks TYPE=1 carries
+ *     a HID report descriptor, TYPE=0 carries a live HID report. For OUT blocks
+ *     TYPE is mirrored back to the host so it knows whether the payload is a
+ *     descriptor-style or data-style write from the master.
+ *   - LEN  (bits2-7): Active payload byte count (0–63). Any unused payload
+ *     bytes are zero padded on the wire.
+ * The 16-bit CRC (poly 0x1021, init 0xFFFF) covers the header and LEN bytes of
+ * payload. SPI_BridgeBlockHasValidCrc() validates incoming blocks from the
+ * master before applying them.
+ *
+ * Host-visible registers
+ * ----------------------
+ * From the SPI master's perspective, the readable/writable registers are the
+ * serialized blocks above. The master may:
+ *   - Read any block to learn hub connectivity (HUB_STATUS) or joystick IN
+ *     data (DEV_IN[n]).
+ *   - Clear DIRTY on HUB_STATUS or DEV_IN[n] by writing back the same header
+ *     with DIRTY=0 to acknowledge receipt; payload is ignored.
+ *   - Overwrite DEV_OUT[n] by presenting a DIRTY header, TYPE bit, LEN, payload
+ *     bytes, and matching CRC. The bridge immediately mirrors that into
+ *     s_outBlocks for the USB host to fetch.
+ *   - Leave other bytes untouched; any write with bad CRC or LEN > 63 is
+ *     discarded.
+ * All register addresses are implicit in the stream order above; there is no
+ * separate address phase. The master simply clocks SPI_BRIDGE_REGION_SIZE bytes
+ * per transaction and treats the response as a shadow register file.
  */
 #include "spi_bridge.h"
 
