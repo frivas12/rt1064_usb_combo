@@ -14,7 +14,7 @@
 #include "usb_host.h"
 #include "app.h"
 
-#include "virtual_com.h"
+#include "cpc_device/virtual_com.h"
 #include "pin_mux.h"
 #include "usb_phy.h"
 #include "clock_config.h"
