@@ -35,6 +35,7 @@ provide a simple project for further development.
 ### Hardware Settings
 
 > Set the hardware jumpers (Tower system/base module) to default settings.
+> Connect the USB cable to the OTG2/J10 connector so the device enumerates on the EHCI1 controller.
 
 
 ### Prepare the example 

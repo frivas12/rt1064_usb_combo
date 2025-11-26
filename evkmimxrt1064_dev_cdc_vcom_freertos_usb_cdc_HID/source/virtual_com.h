@@ -20,7 +20,7 @@
 
 #if defined(USB_DEVICE_CONFIG_EHCI) && (USB_DEVICE_CONFIG_EHCI > 0)
 #ifndef CONTROLLER_ID
-#define CONTROLLER_ID kUSB_ControllerEhci0
+#define CONTROLLER_ID kUSB_ControllerEhci1
 #endif
 #define DATA_BUFF_SIZE HS_CDC_VCOM_BULK_OUT_PACKET_SIZE
 #endif
