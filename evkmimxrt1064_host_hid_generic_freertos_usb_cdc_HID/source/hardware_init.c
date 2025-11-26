@@ -8,11 +8,13 @@
 /*${header:start}*/
 #include "fsl_device_registers.h"
 
+#include "usb_device_config.h"
+#include "usb_device.h"
 #include "usb_host_config.h"
 #include "usb_host.h"
-#include "fsl_device_registers.h"
 #include "app.h"
 
+#include "virtual_com.h"
 #include "pin_mux.h"
 #include "usb_phy.h"
 #include "clock_config.h"
@@ -20,6 +22,7 @@
 /*${header:end}*/
 
 extern usb_host_handle g_HostHandle;
+extern usb_cdc_vcom_struct_t s_cdcVcom;
 
 /*${function:start}*/
 void BOARD_InitHardware(void)
@@ -34,12 +37,58 @@ void BOARD_InitHardware(void)
 void USB_OTG1_IRQHandler(void)
 {
     USB_HostEhciIsrFunction(g_HostHandle);
+    USB_DeviceEhciIsrFunction(s_cdcVcom.deviceHandle);
 }
 
 void USB_OTG2_IRQHandler(void)
 {
     USB_HostEhciIsrFunction(g_HostHandle);
+    USB_DeviceEhciIsrFunction(s_cdcVcom.deviceHandle);
 }
+
+void USB_DeviceClockInit(void)
+{
+    usb_phy_config_struct_t phyConfig = {
+        BOARD_USB_PHY_D_CAL,
+        BOARD_USB_PHY_TXCAL45DP,
+        BOARD_USB_PHY_TXCAL45DM,
+    };
+
+    if (CONTROLLER_ID == kUSB_ControllerEhci0)
+    {
+        CLOCK_EnableUsbhs0PhyPllClock(kCLOCK_Usbphy480M, 480000000U);
+        CLOCK_EnableUsbhs0Clock(kCLOCK_Usb480M, 480000000U);
+    }
+    else
+    {
+        CLOCK_EnableUsbhs1PhyPllClock(kCLOCK_Usbphy480M, 480000000U);
+        CLOCK_EnableUsbhs1Clock(kCLOCK_Usb480M, 480000000U);
+    }
+    USB_EhciPhyInit(CONTROLLER_ID, BOARD_XTAL0_CLK_HZ, &phyConfig);
+}
+
+void USB_DeviceIsrEnable(void)
+{
+    uint8_t irqNumber;
+
+    uint8_t usbDeviceEhciIrq[] = USBHS_IRQS;
+    irqNumber                  = usbDeviceEhciIrq[CONTROLLER_ID - kUSB_ControllerEhci0];
+
+    /* Install isr, set priority, and enable IRQ. */
+#if defined(__GIC_PRIO_BITS)
+    GIC_SetPriority((IRQn_Type)irqNumber, USB_DEVICE_INTERRUPT_PRIORITY);
+#else
+    NVIC_SetPriority((IRQn_Type)irqNumber, USB_DEVICE_INTERRUPT_PRIORITY);
+#endif
+    EnableIRQ((IRQn_Type)irqNumber);
+}
+
+#if USB_DEVICE_CONFIG_USE_TASK
+void USB_DeviceTaskFn(void *deviceHandle)
+{
+    USB_DeviceEhciTaskFunction(deviceHandle);
+}
+#endif
 
 void USB_HostClockInit(void)
 {

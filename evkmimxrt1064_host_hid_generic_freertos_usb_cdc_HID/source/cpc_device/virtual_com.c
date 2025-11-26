@@ -9,6 +9,7 @@
 #include <stdlib.h>
 /*${standard_header_anchor}*/
 #include "fsl_device_registers.h"
+#include "fsl_common.h"
 #include "clock_config.h"
 #include "fsl_debug_console.h"
 #include "board.h"
@@ -717,14 +718,8 @@ void APPTask(void *handle)
     }
 }
 
-#if defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__)
-int main(void)
-#else
-void main(void)
-#endif
+status_t VirtualComInit(void)
 {
-    BOARD_InitHardware();
-
     if (xTaskCreate(APPTask,                                      /* pointer to the task                      */
                     s_appName,                                    /* task name for kernel awareness debugging */
                     APP_TASK_STACK_SIZE / sizeof(portSTACK_TYPE), /* task stack size                          */
@@ -734,16 +729,8 @@ void main(void)
                     ) != pdPASS)
     {
         usb_echo("app task create failed!\r\n");
-#if (defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__))
-        return 1;
-#else
-        return;
-#endif
+        return kStatus_Fail;
     }
 
-    vTaskStartScheduler();
-
-#if (defined(__CC_ARM) || (defined(__ARMCC_VERSION)) || defined(__GNUC__))
-    return 1;
-#endif
+    return kStatus_Success;
 }
