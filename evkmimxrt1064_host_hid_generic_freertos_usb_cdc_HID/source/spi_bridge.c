@@ -1,80 +1,22 @@
 /*
  * SPI bridge task
  *
- * This file implements the "SDI" (SPI Debug Interface) bridge that lets a
- * companion processor scrape USB host state without speaking USB. The MIMXRT
- * acts as an SPI *slave* on LPSPI1 and exposes a register-map image that the
- * external master clocks out. The bridge continuously rebuilds that image from
- * the USB host stack so the master always sees a fresh snapshot of the hub and
- * every attached joystick.
+ * This file implements the RT1064 ⇄ SAMV70 SPI bridge using the EN-indexed
+ * command protocol. The MIMXRT acts as an SPI *slave* on LPSPI1 and serves one
+ * block per transaction based on the first command byte clocked in by the
+ * SAMV70 master:
+ *   - READ_HEADER streams a single header byte for the requested EN slot.
+ *   - READ_BLOCK streams header + payload + CRC for that EN and clears DIRTY
+ *     once all bytes have been shifted out.
+ *   - WRITE_BLOCK receives header + payload + CRC for an OUT endpoint, verifies
+ *     CRC/LEN, and mirrors the payload into the matching OUT block so the USB
+ *     host can consume it.
  *
- * USB → SPI data flow
- * -------------------
- * 1. The FreeRTOS USB host stack enumerates HID devices (e.g., hubs and
- *    joysticks) and publishes their data through the SPI bridge API
- *    (see SPI_BridgeSendReportDescriptor / SPI_BridgeSendReport /
- *    SPI_BridgeAllocDevice / SPI_BridgeRemoveDevice in this file).
- * 2. Each API call mutates an in-memory register block and marks it DIRTY; the
- *    block's CRC is regenerated so the SPI master can trust the update.
- * 3. SPI_BridgeTask() notices PCS asserted by the master, serializes the full
- *    register image into s_txBuffer, and clocks it out while simultaneously
- *    receiving any writes from the master into s_rxBuffer.
- * 4. The companion MCU (master) parses the streamed blocks to learn hub status
- *    and joystick reports; if it wants to send an OUT report to a joystick it
- *    writes a DIRTY OUT block back on the same transaction. The bridge applies
- *    those writes to s_outBlocks and the USB host consumes them via
- *    SPI_BridgeGetOutReport/SPI_BridgeClearOutReport.
- *
- * Register map layout
- * -------------------
- * The SPI master sees a contiguous image composed of fixed-size blocks. Each
- * block is 66 bytes: one header, up to 63 payload bytes, and a 16-bit CRC.
- * Blocks are always streamed in the following order:
- *
- *   Offset  Block        Description
- *   ------  -----------  ----------------------------------------------------
- *   0x0000  HUB_STATUS   Bit-per-slot connection bitmap for up to
- *                        SPI_BRIDGE_MAX_DEVICES devices. Payload byte i is 1
- *                        when logical slot i is allocated (see
- *                        s_connectedTable and SPI_BridgeRebuildHubStatus()).
- *   0x0042  DEV_IN[1]    IN payload for logical device 0 (USB address 1).
- *   0x0084  DEV_OUT[1]   OUT payload consumed by logical device 0.
- *   0x00C6  DEV_IN[2]    IN payload for logical device 1.
- *   0x0108  DEV_OUT[2]   OUT payload consumed by logical device 1.
- *   ...     ...          Slots continue for SPI_BRIDGE_MAX_DEVICES.
- *
- * Header and CRC fields
- * ---------------------
- * The one-byte header packs three fields that all blocks share:
- *   - DIRTY (bit0): Set by whichever side last updated the block. The master
- *     clears DIRTY to acknowledge reads; the bridge clears DIRTY when the host
- *     consumes OUT data.
- *   - TYPE (bit1): Meaning depends on direction. For IN blocks TYPE=1 carries
- *     a HID report descriptor, TYPE=0 carries a live HID report. For OUT blocks
- *     TYPE is mirrored back to the host so it knows whether the payload is a
- *     descriptor-style or data-style write from the master.
- *   - LEN  (bits2-7): Active payload byte count (0–63). Any unused payload
- *     bytes are zero padded on the wire.
- * The 16-bit CRC (poly 0x1021, init 0xFFFF) covers the header and LEN bytes of
- * payload. SPI_BridgeBlockHasValidCrc() validates incoming blocks from the
- * master before applying them.
- *
- * Host-visible registers
- * ----------------------
- * From the SPI master's perspective, the readable/writable registers are the
- * serialized blocks above. The master may:
- *   - Read any block to learn hub connectivity (HUB_STATUS) or joystick IN
- *     data (DEV_IN[n]).
- *   - Clear DIRTY on HUB_STATUS or DEV_IN[n] by writing back the same header
- *     with DIRTY=0 to acknowledge receipt; payload is ignored.
- *   - Overwrite DEV_OUT[n] by presenting a DIRTY header, TYPE bit, LEN, payload
- *     bytes, and matching CRC. The bridge immediately mirrors that into
- *     s_outBlocks for the USB host to fetch.
- *   - Leave other bytes untouched; any write with bad CRC or LEN > 63 is
- *     discarded.
- * All register addresses are implicit in the stream order above; there is no
- * separate address phase. The master simply clocks SPI_BRIDGE_REGION_SIZE bytes
- * per transaction and treats the response as a shadow register file.
+ * Logical endpoints (EN = 0–4) include the hub status block (EN 0) and up to
+ * four device slots (EN 1–4). Each block stays 66 bytes in memory
+ * (1-byte header, 63-byte payload, 2-byte CRC) but transfers only
+ * 1 + LEN + 2 bytes on the wire so the master avoids clocking the entire
+ * register image on every poll.
  */
 #include "spi_bridge.h"
 
@@ -93,6 +35,19 @@
 #define SPI_BRIDGE_SPI_BASE LPSPI1
 #endif
 
+#define SPI_BRIDGE_CMD_OP_MASK  (0xC0U)
+#define SPI_BRIDGE_CMD_EN_MASK  (0x3FU)
+#define SPI_BRIDGE_CMD_OP_SHIFT (6U)
+
+typedef enum _spi_bridge_command
+{
+    kSPI_BridgeCommandReadHeader = 0U,
+    kSPI_BridgeCommandReadBlock  = 1U,
+    kSPI_BridgeCommandWriteBlock = 2U,
+} spi_bridge_command_t;
+
+#define SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS (5U)
+
 #if defined(__GNUC__)
 #pragma message "SPI_BRIDGE_ENABLE_DEBUG=" SPI_BRIDGE_ENABLE_DEBUG_STRING
 #endif
@@ -103,9 +58,6 @@
 #define SPI_BRIDGE_LOG_FAILURE(tag) ((void)0)
 #endif
 
-#define SPI_BRIDGE_BLOCK_COUNT (1U + (SPI_BRIDGE_MAX_DEVICES * 2U))
-#define SPI_BRIDGE_REGION_SIZE (SPI_BRIDGE_BLOCK_COUNT * SPI_BRIDGE_BLOCK_SIZE)
-
 /* State mirrored over the SPI connection. The hub status block is followed by
  * paired IN/OUT blocks for each logical device slot. The *_last* structures are
  * used purely for change-detection logging so we can avoid spamming the console
@@ -115,8 +67,6 @@ static spi_bridge_block_t s_inBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_outBlocks[SPI_BRIDGE_MAX_DEVICES];
 static bool s_deviceInUse[SPI_BRIDGE_MAX_DEVICES];
 static uint8_t s_connectedTable[SPI_BRIDGE_MAX_DEVICES];
-static uint8_t s_txBuffer[SPI_BRIDGE_REGION_SIZE];
-static uint8_t s_rxBuffer[SPI_BRIDGE_REGION_SIZE];
 
 static uint8_t s_lastHubLoggedHeader;
 static uint8_t s_lastInLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
@@ -223,6 +173,18 @@ static void SPI_BridgeSerializeBlock(const spi_bridge_block_t *block, uint8_t *o
     }
 }
 
+static uint8_t SPI_BridgeSerializeBlockWindow(const spi_bridge_block_t *block, uint8_t *output)
+{
+    uint8_t length = SPI_BridgeExtractLength(block->header);
+
+    output[0]          = block->header;
+    (void)memcpy(&output[1], block->payload, length);
+    output[1U + length] = (uint8_t)(block->crc & 0xFFU);
+    output[2U + length] = (uint8_t)(block->crc >> 8U);
+
+    return (uint8_t)(length + 3U);
+}
+
 static void SPI_BridgeMarkDirty(spi_bridge_block_t *block, bool dirty)
 {
     if (dirty)
@@ -234,6 +196,38 @@ static void SPI_BridgeMarkDirty(spi_bridge_block_t *block, bool dirty)
         block->header &= (uint8_t)(~SPI_BRIDGE_HEADER_DIRTY_MASK);
     }
     SPI_BridgeUpdateBlockCrc(block);
+}
+
+static uint8_t SPI_BridgeGetWireLength(const spi_bridge_block_t *block)
+{
+    return (uint8_t)(SPI_BridgeExtractLength(block->header) + 3U);
+}
+
+static spi_bridge_block_t *SPI_BridgeMapEnToBlock(uint8_t en, bool writeDirection)
+{
+    if (en >= SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS)
+    {
+        return NULL;
+    }
+
+    if (en == 0U)
+    {
+        return writeDirection ? NULL : &s_hubStatus;
+    }
+
+    uint8_t deviceId = (uint8_t)(en - 1U);
+
+    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
+    {
+        return NULL;
+    }
+
+    if (writeDirection && !s_deviceInUse[deviceId])
+    {
+        return NULL;
+    }
+
+    return writeDirection ? &s_outBlocks[deviceId] : &s_inBlocks[deviceId];
 }
 
 static bool SPI_BridgeBlocksEqual(const spi_bridge_block_t *a, const spi_bridge_block_t *b)
@@ -486,139 +480,158 @@ static bool SPI_BridgeMasterRequestPending(void)
     return ((status & LPSPI_SR_RDF_MASK) != 0U) || ((status & LPSPI_SR_MBF_MASK) != 0U);
 }
 
-static status_t SPI_BridgeTransferRegion(const uint8_t *tx, uint8_t *rx, size_t length)
+static status_t SPI_BridgeHandleReadHeader(uint8_t en)
 {
-    for (size_t i = 0; i < length; ++i)
+    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, false);
+    uint8_t header            = (block != NULL) ? block->header : 0U;
+    uint8_t sink;
+
+    return SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, header, &sink);
+}
+
+static status_t SPI_BridgeHandleReadBlock(uint8_t en)
+{
+    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, false);
+    uint8_t serialized[SPI_BRIDGE_BLOCK_SIZE];
+    uint8_t length = 3U;
+
+    if (block != NULL)
     {
-        status_t status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, tx[i], &rx[i]);
+        length = SPI_BridgeGetWireLength(block);
+        (void)SPI_BridgeSerializeBlockWindow(block, serialized);
+    }
+    else
+    {
+        (void)memset(serialized, 0, sizeof(serialized));
+    }
+
+    status_t status = kStatus_Success;
+
+    for (uint8_t i = 0; i < length; ++i)
+    {
+        uint8_t rx;
+        status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, serialized[i], &rx);
+        if (status != kStatus_Success)
+        {
+            break;
+        }
+    }
+
+    if ((status == kStatus_Success) && (block != NULL))
+    {
+        SPI_BridgeMarkDirty(block, false);
+    }
+
+    return status;
+}
+
+static status_t SPI_BridgeHandleWriteBlock(uint8_t en, bool *activityOut)
+{
+    if (activityOut != NULL)
+    {
+        *activityOut = false;
+    }
+
+    uint8_t raw[SPI_BRIDGE_BLOCK_SIZE];
+    status_t status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &raw[0]);
+
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    uint8_t length = SPI_BridgeExtractLength(raw[0]);
+    uint8_t total  = (uint8_t)(length + 3U);
+
+    if (total > SPI_BRIDGE_BLOCK_SIZE)
+    {
+        total = SPI_BRIDGE_BLOCK_SIZE;
+    }
+
+    for (uint8_t i = 1U; i < total; ++i)
+    {
+        status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &raw[i]);
         if (status != kStatus_Success)
         {
             return status;
         }
     }
 
-    return kStatus_Success;
-}
+    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, true);
 
-static void SPI_BridgeSerializeMap(uint8_t *txBuffer)
-{
-    uint8_t *cursor = txBuffer;
-
-    /* Serialize hub + IN/OUT blocks sequentially into the transfer region.
-     * The SPI master treats this as a contiguous register image, so the order
-     * must remain stable: hub block first, then alternating IN/OUT pairs for
-     * each device. */
-    SPI_BridgeSerializeBlock(&s_hubStatus, cursor);
-    cursor += SPI_BRIDGE_BLOCK_SIZE;
-
-    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
+    if ((block != NULL) && (length <= SPI_BRIDGE_MAX_PAYLOAD_LENGTH) && SPI_BridgeBlockHasValidCrc(raw))
     {
-        SPI_BridgeSerializeBlock(&s_inBlocks[deviceId], cursor);
-        cursor += SPI_BRIDGE_BLOCK_SIZE;
-        SPI_BridgeSerializeBlock(&s_outBlocks[deviceId], cursor);
-        cursor += SPI_BRIDGE_BLOCK_SIZE;
+        block->header = (uint8_t)(raw[0] | SPI_BRIDGE_HEADER_DIRTY_MASK);
+        (void)memcpy(block->payload, &raw[1], length);
+        if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+        {
+            (void)memset(&block->payload[length], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
+        }
+        SPI_BridgeUpdateBlockCrc(block);
+
+        uint8_t deviceId = (uint8_t)(en - 1U);
+        SPI_BRIDGE_LOG("SPI_BRIDGE: received OUT block for device %u (%u bytes)\r\n", deviceId, length);
+        SPI_BridgeLogHexBuffer(block->payload, length);
+        SPI_BridgeLogOut(deviceId, false, true);
+
+        if (activityOut != NULL)
+        {
+            *activityOut = true;
+        }
     }
+
+    return status;
 }
 
-static bool SPI_BridgeProcessHubWrite(const uint8_t *rxBlock)
+static bool SPI_BridgeHandleCommand(void)
 {
-    if (!SPI_BridgeBlockHasValidCrc(rxBlock))
+    uint8_t command = 0U;
+    status_t status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &command);
+
+    if (status != kStatus_Success)
     {
+        if (status != kStatus_Timeout)
+        {
+            SPI_BRIDGE_LOG_FAILURE("command");
+        }
         return false;
     }
 
-    bool activity = true;
+    uint8_t op = (command & SPI_BRIDGE_CMD_OP_MASK) >> SPI_BRIDGE_CMD_OP_SHIFT;
+    uint8_t en = command & SPI_BRIDGE_CMD_EN_MASK;
+    bool activity = false;
+    bool dirtyBefore = false;
+    spi_bridge_block_t *block = NULL;
 
-    if (((rxBlock[0] & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) &&
-        ((s_hubStatus.header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U))
+    switch ((spi_bridge_command_t)op)
     {
-        s_hubStatus.header &= (uint8_t)~SPI_BRIDGE_HEADER_DIRTY_MASK;
-        SPI_BridgeUpdateBlockCrc(&s_hubStatus);
+        case kSPI_BridgeCommandReadHeader:
+            (void)SPI_BridgeHandleReadHeader(en);
+            break;
+        case kSPI_BridgeCommandReadBlock:
+            block  = SPI_BridgeMapEnToBlock(en, false);
+            dirtyBefore = (block != NULL) && ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U);
+            status = SPI_BridgeHandleReadBlock(en);
+            if ((status == kStatus_Success) && dirtyBefore)
+            {
+                activity = true;
+            }
+            break;
+        case kSPI_BridgeCommandWriteBlock:
+        {
+            bool writeActivity = false;
+            status            = SPI_BridgeHandleWriteBlock(en, &writeActivity);
+            activity |= writeActivity;
+            break;
+        }
+        default:
+            /* Reserved opcodes are ignored but we still consumed the command byte. */
+            break;
     }
 
-    return activity;
-}
-
-static bool SPI_BridgeProcessInWrite(uint8_t deviceId, const uint8_t *rxBlock)
-{
-    if ((deviceId >= SPI_BRIDGE_MAX_DEVICES) || !SPI_BridgeBlockHasValidCrc(rxBlock))
+    if ((status != kStatus_Success) && (status != kStatus_Timeout))
     {
-        return false;
-    }
-
-    bool activity = true;
-
-    if (((rxBlock[0] & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) &&
-        ((s_inBlocks[deviceId].header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U))
-    {
-        s_inBlocks[deviceId].header &= (uint8_t)~SPI_BRIDGE_HEADER_DIRTY_MASK;
-        SPI_BridgeUpdateBlockCrc(&s_inBlocks[deviceId]);
-    }
-
-    return activity;
-}
-
-static bool SPI_BridgeProcessOutWrite(uint8_t deviceId, const uint8_t *rxBlock)
-{
-    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
-    {
-        return false;
-    }
-
-    uint8_t header  = rxBlock[0];
-    uint8_t length  = SPI_BridgeExtractLength(header);
-    bool dirty      = (header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U;
-
-    if (!dirty || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
-    {
-        return false;
-    }
-
-    if (!SPI_BridgeBlockHasValidCrc(rxBlock))
-    {
-        return false;
-    }
-
-    s_outBlocks[deviceId].header = header;
-    (void)memcpy(s_outBlocks[deviceId].payload, &rxBlock[1], length);
-    if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-    {
-        (void)memset(&s_outBlocks[deviceId].payload[length], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
-    }
-    SPI_BridgeUpdateBlockCrc(&s_outBlocks[deviceId]);
-
-    /* Immediately trace what arrived from the SPI master instead of waiting for a later read. */
-    SPI_BRIDGE_LOG("SPI_BRIDGE: received OUT block for device %u (%u bytes)\r\n", deviceId, length);
-    SPI_BridgeLogHexBuffer(s_outBlocks[deviceId].payload, length);
-
-    SPI_BRIDGE_TRACE("SPI master wrote OUT report");
-
-    /* Force logging so repeated writes of identical content are visible. */
-    SPI_BridgeLogOut(deviceId, false, true);
-
-    return true;
-}
-
-static bool SPI_BridgeProcessIncoming(const uint8_t *rxBuffer)
-{
-    const uint8_t *cursor = rxBuffer;
-    bool activity         = false;
-
-    /* Process hub, IN, and OUT regions in order.
-     *
-     * The SPI master is allowed to clear DIRTY bits (acknowledging reads) and
-     * to write OUT blocks destined for USB devices. For hub/IN blocks we only
-     * honor DIRTY clears; OUT blocks are fully replaced when a valid CRC
-     * accompanies the master's write. */
-    activity |= SPI_BridgeProcessHubWrite(cursor);
-    cursor += SPI_BRIDGE_BLOCK_SIZE;
-
-    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
-    {
-        activity |= SPI_BridgeProcessInWrite(deviceId, cursor);
-        cursor += SPI_BRIDGE_BLOCK_SIZE;
-        activity |= SPI_BridgeProcessOutWrite(deviceId, cursor);
-        cursor += SPI_BRIDGE_BLOCK_SIZE;
+        SPI_BRIDGE_LOG_FAILURE("transfer");
     }
 
     return activity;
@@ -668,25 +681,13 @@ void SPI_BridgeTask(void *param)
     while (1)
     {
         /*
-         * Only attempt a full bridge transaction when the SPI master is
-         * actively polling us. This prevents repeated timeouts when the bus
-         * is idle.
+         * Only attempt a bridge transaction when the SPI master is actively
+         * polling us. This prevents repeated timeouts when the bus is idle.
          */
         if (SPI_BridgeMasterRequestPending())
         {
-            /* Push local state to the host and apply any incoming changes. */
-            SPI_BridgeSerializeMap(s_txBuffer);
-            status_t status = SPI_BridgeTransferRegion(s_txBuffer, s_rxBuffer, SPI_BRIDGE_REGION_SIZE);
-
-            if (status == kStatus_Success)
-            {
-                bool activity = SPI_BridgeProcessIncoming(s_rxBuffer);
-                SPI_BRIDGE_TASK_LOG(activity);
-            }
-            else if (status != kStatus_Timeout)
-            {
-                SPI_BRIDGE_LOG_FAILURE("transfer");
-            }
+            bool activity = SPI_BridgeHandleCommand();
+            SPI_BRIDGE_TASK_LOG(activity);
         }
 
         /* Yield briefly; the bridge is host-driven so a tiny pause keeps CPU
