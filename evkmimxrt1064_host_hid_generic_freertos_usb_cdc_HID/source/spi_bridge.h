@@ -112,4 +112,18 @@ bool SPI_BridgeGetOutReport(uint8_t deviceId, uint8_t *typeOut, uint8_t *payload
  */
 status_t SPI_BridgeClearOutReport(uint8_t deviceId);
 
+/*!
+ * @brief Enables or disables state-change logging at runtime.
+ *
+ * When enabled, SPI_BridgeLogState() is invoked whenever a block changes. When
+ * disabled, the bridge falls back to task-driven logging so the SPI host can
+ * trigger dumps on demand.
+ */
+void SPI_BridgeSetStateTraceEnabled(bool enabled);
+
+/*!
+ * @brief Returns whether state-change logging is currently enabled.
+ */
+bool SPI_BridgeStateTraceEnabled(void);
+
 #endif /* _SPI_BRIDGE_H_ */
