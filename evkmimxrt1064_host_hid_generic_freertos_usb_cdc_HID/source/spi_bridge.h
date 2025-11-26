@@ -43,7 +43,8 @@
 #endif
 
 #ifndef SPI_BRIDGE_MAX_DEVICES
-#define SPI_BRIDGE_MAX_DEVICES (5U)
+/* Maximum device slots mirrored over SPI (hub + 4 devices = 5 endpoints). */
+#define SPI_BRIDGE_MAX_DEVICES (4U)
 #endif
 
 #define SPI_DEVICE_ID_INVALID (0xFFU)
