@@ -11,6 +11,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "event_groups.h"
+#include "fsl_common.h"
 
 /*******************************************************************************
  * Definitions
@@ -56,6 +57,8 @@
 
 #define APP_USB_TASK_PRIORITY (tskIDLE_PRIORITY + 5)
 #define APP_MAIN_TASK_PRIORITY (APP_USB_TASK_PRIORITY - 1)
+
+status_t VirtualComInit(void);
 
 /* Currently configured line coding */
 #define LINE_CODING_SIZE (0x07)
