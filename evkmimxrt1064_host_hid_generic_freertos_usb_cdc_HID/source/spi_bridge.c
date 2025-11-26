@@ -46,7 +46,10 @@ typedef enum _spi_bridge_command
     kSPI_BridgeCommandWriteBlock = 2U,
 } spi_bridge_command_t;
 
-#define SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS (5U)
+#define SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS (SPI_BRIDGE_MAX_DEVICES + 1U)
+
+_Static_assert(SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS == (SPI_BRIDGE_MAX_DEVICES + 1U),
+               "EN count must be hub + device slots");
 
 #if defined(__GNUC__)
 #pragma message "SPI_BRIDGE_ENABLE_DEBUG=" SPI_BRIDGE_ENABLE_DEBUG_STRING
@@ -507,6 +510,12 @@ static status_t SPI_BridgeHandleReadBlock(uint8_t en)
 
     status_t status = kStatus_Success;
 
+    /*
+     * The master must clock exactly (1 + LEN + 2) bytes after issuing
+     * READ_BLOCK|EN. Additional clocks are treated as undefined padding by the
+     * slave and should be ignored by the host if it chooses to send more than
+     * the requested window.
+     */
     for (uint8_t i = 0; i < length; ++i)
     {
         uint8_t rx;
@@ -548,6 +557,11 @@ static status_t SPI_BridgeHandleWriteBlock(uint8_t en, bool *activityOut)
         total = SPI_BRIDGE_BLOCK_SIZE;
     }
 
+    /*
+     * The master must send exactly (1 + LEN + 2) bytes for WRITE_BLOCK. Extra
+     * clocks would leave data queued in the RX FIFO and corrupt subsequent
+     * commands.
+     */
     for (uint8_t i = 1U; i < total; ++i)
     {
         status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &raw[i]);
