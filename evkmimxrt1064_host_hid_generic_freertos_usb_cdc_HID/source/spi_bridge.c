@@ -80,19 +80,36 @@ static spi_bridge_block_t s_lastLoggedInBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_lastLoggedOutBlocks[SPI_BRIDGE_MAX_DEVICES];
 
 static void SPI_BridgeLogState(bool force);
+static bool s_stateTraceEnabled = (SPI_BRIDGE_ENABLE_STATE_TRACE != 0U);
 
-#if SPI_BRIDGE_ENABLE_STATE_TRACE
 #define SPI_BRIDGE_TRACE(reason)                                                                                \
     do                                                                                                          \
     {                                                                                                           \
-        SPI_BRIDGE_LOG("[spi-bridge] %s\r\n", reason);                                                         \
-        SPI_BridgeLogState(true);                                                                               \
+        if (SPI_BridgeStateTraceEnabled())                                                                      \
+        {                                                                                                       \
+            SPI_BRIDGE_LOG("[spi-bridge] %s\r\n", reason);                                                     \
+            SPI_BridgeLogState(true);                                                                           \
+        }                                                                                                       \
     } while (0)
-#define SPI_BRIDGE_TASK_LOG(activity) ((void)(activity))
-#else
-#define SPI_BRIDGE_TRACE(reason) ((void)(reason))
-#define SPI_BRIDGE_TASK_LOG(activity) SPI_BridgeLogState(activity)
-#endif
+
+#define SPI_BRIDGE_TASK_LOG(activity)                                                                           \
+    do                                                                                                          \
+    {                                                                                                           \
+        if (!SPI_BridgeStateTraceEnabled())                                                                     \
+        {                                                                                                       \
+            SPI_BridgeLogState(activity);                                                                       \
+        }                                                                                                       \
+    } while (0)
+
+void SPI_BridgeSetStateTraceEnabled(bool enabled)
+{
+    s_stateTraceEnabled = enabled;
+}
+
+bool SPI_BridgeStateTraceEnabled(void)
+{
+    return s_stateTraceEnabled;
+}
 
 static uint8_t SPI_BridgeGetDeviceAddress(uint8_t deviceId)
 {
