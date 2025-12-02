@@ -37,13 +37,15 @@ void BOARD_InitHardware(void)
 void USB_OTG1_IRQHandler(void)
 {
     USB_HostEhciIsrFunction(g_HostHandle);
-    USB_DeviceEhciIsrFunction(s_cdcVcom.deviceHandle);
+    /* Temporarily disable the CDC VCOM device ISR while testing. */
+    /* USB_DeviceEhciIsrFunction(s_cdcVcom.deviceHandle); */
 }
 
 void USB_OTG2_IRQHandler(void)
 {
     USB_HostEhciIsrFunction(g_HostHandle);
-    USB_DeviceEhciIsrFunction(s_cdcVcom.deviceHandle);
+    /* Temporarily disable the CDC VCOM device ISR while testing. */
+    /* USB_DeviceEhciIsrFunction(s_cdcVcom.deviceHandle); */
 }
 
 void USB_DeviceClockInit(void)

@@ -168,10 +168,11 @@ int main(void)
 
     USB_HostApplicationInit();
 
-    if (VirtualComInit() != kStatus_Success)
+    /* Temporarily disable the CDC VCOM device to prevent crashes during testing. */
+    /* if (VirtualComInit() != kStatus_Success)
     {
         usb_echo("virtual com init error\r\n");
-    }
+    } */
 
     if (SPI_BridgeInit() != kStatus_Success)
     {
