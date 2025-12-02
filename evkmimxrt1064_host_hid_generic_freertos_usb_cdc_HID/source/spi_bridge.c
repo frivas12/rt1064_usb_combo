@@ -357,6 +357,11 @@ static void SPI_BridgeLogGrid(void)
 
 static bool SPI_BridgeLogHub(bool force)
 {
+    if (!force && ((s_hubStatus.header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
+    {
+        return false;
+    }
+
     if (!force && SPI_BridgeBlocksEqual(&s_hubStatus, &s_lastLoggedHubStatus))
     {
         return false;
@@ -372,6 +377,11 @@ static bool SPI_BridgeLogHub(bool force)
 static bool SPI_BridgeLogIn(uint8_t deviceId, bool force)
 {
     if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
+    {
+        return false;
+    }
+
+    if (!force && ((s_inBlocks[deviceId].header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
     {
         return false;
     }
@@ -404,6 +414,11 @@ static bool SPI_BridgeLogOut(uint8_t deviceId, bool done, bool force)
     uint8_t deviceAddress = SPI_BridgeGetDeviceAddress(deviceId);
     uint8_t blockIndex = 2U + (deviceId * 2U);
     char label[16];
+
+    if (!force && ((s_outBlocks[deviceId].header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
+    {
+        return false;
+    }
 
     if (!force && !done && SPI_BridgeBlocksEqual(&s_outBlocks[deviceId], &s_lastLoggedOutBlocks[deviceId]))
     {
