@@ -27,7 +27,7 @@
  ******************************************************************************/
 /*! @brief Set to 0 to compile out all USB HID log messages. */
 #ifndef HID_GENERIC_ENABLE_LOG
-#define HID_GENERIC_ENABLE_LOG (1U)
+#define HID_GENERIC_ENABLE_LOG (0U)
 #endif
 
 #if HID_GENERIC_ENABLE_LOG

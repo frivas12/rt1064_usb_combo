@@ -25,7 +25,7 @@
 
 /* When enabled, every register-map update is logged at the moment it is applied. */
 #ifndef SPI_BRIDGE_ENABLE_STATE_TRACE
-#define SPI_BRIDGE_ENABLE_STATE_TRACE (0U)
+#define SPI_BRIDGE_ENABLE_STATE_TRACE (1U)
 #endif
 
 #if !SPI_BRIDGE_ENABLE_DEBUG
