@@ -30,9 +30,10 @@ The application sends one test string to the device. The device receives and sen
 ### Hardware Settings
 
 > Set the hardware jumpers (Tower system/base module) to default settings.
+> Connect host cables and devices to the USB OTG2 (J10) connector on the EVK.
 
 
-### Prepare the example 
+### Prepare the example
 
 1.  Download the program to the target board.
 2.  Power off the target board and power on again.
