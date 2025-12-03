@@ -15,7 +15,7 @@
 #include "usb_device_config.h"
 #include "usb_device.h"
 #include "usb_device_ch9.h"
-#include "usb_device_class.h"
+#include "class/usb_device_class.h"
 #include "virtual_com.h"
 
 #include "pin_mux.h"
