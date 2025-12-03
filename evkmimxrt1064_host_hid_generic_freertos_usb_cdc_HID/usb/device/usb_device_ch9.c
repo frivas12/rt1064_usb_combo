@@ -11,7 +11,7 @@
 
 #include "usb_device.h"
 #include "usb_device_dci.h"
-#include "usb_device_class.h"
+#include "class/usb_device_class.h"
 #include "usb_device_ch9.h"
 #if ((defined(USB_DEVICE_CONFIG_NUM)) && (USB_DEVICE_CONFIG_NUM > 0U))
 /*******************************************************************************
