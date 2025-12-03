@@ -277,6 +277,11 @@ static void SPI_BridgeLogHexBuffer(const uint8_t *data, uint8_t length)
 
 static void SPI_BridgeLogBlock(const char *label, uint8_t blockIndex, const spi_bridge_block_t *block)
 {
+    if ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U)
+    {
+        return;
+    }
+
     uint8_t length = SPI_BridgeExtractLength(block->header);
     uint8_t serialized[SPI_BRIDGE_BLOCK_SIZE];
 
