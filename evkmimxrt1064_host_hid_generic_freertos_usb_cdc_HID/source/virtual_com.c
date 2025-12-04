@@ -578,11 +578,11 @@ static void USB_DeviceCdcVcomApplicationInit(void)
 
     if (kStatus_USB_Success != USB_DeviceClassInit(CDC_CONTROLLER_ID, &s_cdcAcmConfigList, &s_cdcVcom.deviceHandle))
     {
-        usb_echo("USB device init failed\r\n");
+        usb_echo("\r\nUSB device init failed\r\n");
     }
     else
     {
-        usb_echo("USB device CDC virtual com demo\r\n");
+        usb_echo("\r\nUSB device CDC virtual com demo\r\n");
         s_cdcVcom.cdcAcmHandle = s_cdcAcmConfigList.config->classHandle;
     }
 
