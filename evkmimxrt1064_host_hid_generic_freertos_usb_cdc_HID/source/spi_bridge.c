@@ -831,8 +831,10 @@ status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId, const uint8_t *descrip
 
     /* Force a log so the descriptor is printed as soon as it is mirrored,
      * regardless of whether state tracing is enabled or the SPI master has
-     * requested a transaction yet. */
+     * requested a transaction yet. Also dump the full register image so the
+     * descriptor is visible even if the SPI master never polls us. */
     SPI_BridgeLogIn(deviceId, true);
+    SPI_BridgeLogState(true);
     return kStatus_Success;
 }
 
