@@ -275,13 +275,12 @@ static void SPI_BridgeLogHexBuffer(const uint8_t *data, uint8_t length)
     }
 }
 
-static void SPI_BridgeLogBlock(const char *label, uint8_t blockIndex, const spi_bridge_block_t *block)
+static void SPI_BridgeLogBlock(const char *label, uint8_t blockIndex, const spi_bridge_block_t *block, bool force)
 {
-    if ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U)
+    if (!force && ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
     {
         return;
     }
-
     uint8_t length = SPI_BridgeExtractLength(block->header);
     uint8_t serialized[SPI_BRIDGE_BLOCK_SIZE];
 
@@ -372,7 +371,7 @@ static bool SPI_BridgeLogHub(bool force)
         return false;
     }
 
-    SPI_BridgeLogBlock("HUB_STATUS", 0U, &s_hubStatus);
+    SPI_BridgeLogBlock("HUB_STATUS", 0U, &s_hubStatus, force);
     s_lastLoggedHubStatus = s_hubStatus;
     s_lastHubLoggedHeader = s_hubStatus.header;
 
@@ -401,7 +400,7 @@ static bool SPI_BridgeLogIn(uint8_t deviceId, bool force)
     char label[16];
 
     (void)snprintf(label, sizeof(label), "DEV_IN[%u]", deviceAddress);
-    SPI_BridgeLogBlock(label, blockIndex, &s_inBlocks[deviceId]);
+    SPI_BridgeLogBlock(label, blockIndex, &s_inBlocks[deviceId], force);
     s_lastInLoggedHeader[deviceId] = s_inBlocks[deviceId].header;
     s_lastLoggedInBlocks[deviceId] = s_inBlocks[deviceId];
 
@@ -431,7 +430,7 @@ static bool SPI_BridgeLogOut(uint8_t deviceId, bool done, bool force)
     }
 
     (void)snprintf(label, sizeof(label), "DEV_OUT[%u]", deviceAddress);
-    SPI_BridgeLogBlock(label, blockIndex, &s_outBlocks[deviceId]);
+    SPI_BridgeLogBlock(label, blockIndex, &s_outBlocks[deviceId], force);
     s_lastOutLoggedHeader[deviceId] = header;
     s_lastLoggedOutBlocks[deviceId] = s_outBlocks[deviceId];
 
