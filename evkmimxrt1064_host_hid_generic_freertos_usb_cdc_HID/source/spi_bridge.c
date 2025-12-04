@@ -87,7 +87,7 @@ static bool s_stateTraceEnabled = (SPI_BRIDGE_ENABLE_STATE_TRACE != 0U);
     {                                                                                                           \
         if (SPI_BridgeStateTraceEnabled())                                                                      \
         {                                                                                                       \
-            SPI_BRIDGE_LOG("[spi-bridge] %s\r\n", reason);                                                     \
+            SPI_BRIDGE_LOG("\r\n[spi-bridge] %s\r\n", reason);                                                     \
             SPI_BridgeLogState(true);                                                                           \
         }                                                                                                       \
     } while (0)
@@ -267,7 +267,7 @@ static void SPI_BridgeLogHexBuffer(const uint8_t *data, uint8_t length)
 
     for (uint8_t i = 0U; i < length; ++i)
     {
-        SPI_BRIDGE_LOG("    %02x%s", data[i], (((i + 1U) % 16U) == 0U) ? "\r\n" : " ");
+        SPI_BRIDGE_LOG("    %02x%s", data[i], (((i + 1U) % 16U) == 0U) ? "\r\n\r\n" : " ");
     }
     if ((length % 16U) != 0U)
     {
@@ -277,10 +277,14 @@ static void SPI_BridgeLogHexBuffer(const uint8_t *data, uint8_t length)
 
 static void SPI_BridgeLogBlock(const char *label, uint8_t blockIndex, const spi_bridge_block_t *block, bool force)
 {
-    if (!force && ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
+    if (((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
     {
         return;
     }
+//    if (!force && ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
+//    {
+//        return;
+//    }
     uint8_t length = SPI_BridgeExtractLength(block->header);
     uint8_t serialized[SPI_BRIDGE_BLOCK_SIZE];
 
@@ -290,8 +294,8 @@ static void SPI_BridgeLogBlock(const char *label, uint8_t blockIndex, const spi_
                    SPI_BridgeGetBlockAddress(blockIndex),
                    (block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) ? 1U : 0U,
                    (block->header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U, length, block->crc);
-    SPI_BRIDGE_LOG("SPI_BRIDGE: [%s] payload:\r\n", label);
-    SPI_BridgeLogHexBuffer(block->payload, length);
+//    SPI_BRIDGE_LOG("SPI_BRIDGE: [%s] payload:\r\n", label);
+//    SPI_BridgeLogHexBuffer(block->payload, length);
     SPI_BRIDGE_LOG("SPI_BRIDGE: [%s] register image:\r\n", label);
     SPI_BridgeLogHexBuffer(serialized, (uint8_t)(3U + length));
 }
@@ -447,10 +451,10 @@ static void SPI_BridgeLogState(bool force)
         stateChanged |= SPI_BridgeLogOut(deviceId, false, force);
     }
 
-    if (force || stateChanged)
-    {
-        SPI_BridgeLogGrid();
-    }
+//    if (force || stateChanged)
+//    {
+//        SPI_BridgeLogGrid();
+//    }
 }
 
 static void SPI_BridgeRebuildHubStatus(void)
