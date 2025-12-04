@@ -827,6 +827,8 @@ status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId, const uint8_t *descrip
     }
 
     SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 1U, descriptor, (uint8_t)length);
+    SPI_BRIDGE_LOG("SPI_BRIDGE: queued report descriptor for device %u (%u bytes); DIRTY set\r\n", deviceId,
+                   length);
     SPI_BRIDGE_TRACE("updated IN descriptor for V70");
 
     /* Force a log so the descriptor is printed as soon as it is mirrored,
