@@ -723,6 +723,11 @@ status_t SPI_BridgeInit(void)
 
     SPI_BRIDGE_LOG("SPI_BridgeInit: done\r\n");
 
+    /* Print the freshly initialized register image so descriptors and hub
+     * state are visible immediately after boot, even before the SPI master
+     * polls us. */
+    SPI_BridgeLogState(true);
+
     return kStatus_Success;
 }
 
@@ -823,6 +828,11 @@ status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId, const uint8_t *descrip
 
     SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 1U, descriptor, (uint8_t)length);
     SPI_BRIDGE_TRACE("updated IN descriptor for V70");
+
+    /* Force a log so the descriptor is printed as soon as it is mirrored,
+     * regardless of whether state tracing is enabled or the SPI master has
+     * requested a transaction yet. */
+    SPI_BridgeLogIn(deviceId, true);
     return kStatus_Success;
 }
 
