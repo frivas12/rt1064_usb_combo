@@ -38,12 +38,32 @@ void BOARD_InitHardware(void)
 
 void USB_OTG1_IRQHandler(void)
 {
-    USB_DeviceCdcVcomIsr();
+#if ((defined USB_HOST_CONFIG_EHCI) && (USB_HOST_CONFIG_EHCI))
+    if (CONTROLLER_ID == kUSB_ControllerEhci0)
+    {
+        USB_HostEhciIsrFunction(g_HostHandle);
+    }
+#endif
+
+    if (CDC_CONTROLLER_ID == kUSB_ControllerEhci0)
+    {
+        USB_DeviceCdcVcomIsr();
+    }
 }
 
 void USB_OTG2_IRQHandler(void)
 {
-    USB_HostEhciIsrFunction(g_HostHandle);
+#if ((defined USB_HOST_CONFIG_EHCI) && (USB_HOST_CONFIG_EHCI))
+    if (CONTROLLER_ID == kUSB_ControllerEhci1)
+    {
+        USB_HostEhciIsrFunction(g_HostHandle);
+    }
+#endif
+
+    if (CDC_CONTROLLER_ID == kUSB_ControllerEhci1)
+    {
+        USB_DeviceCdcVcomIsr();
+    }
 }
 
 void USB_HostClockInit(void)
