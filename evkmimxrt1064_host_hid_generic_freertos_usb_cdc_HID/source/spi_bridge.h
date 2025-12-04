@@ -43,8 +43,11 @@
 #endif
 
 #ifndef SPI_BRIDGE_MAX_DEVICES
-/* Maximum device slots mirrored over SPI (hub + 4 devices = 5 endpoints). */
+/* Maximum HID device slots mirrored over SPI (hub + 4 devices + 1 CDC endpoint = 6 endpoints). */
 #define SPI_BRIDGE_MAX_DEVICES (4U)
+
+/* Dedicated logical endpoint index reserved for the CDC data channel. */
+#define SPI_BRIDGE_CDC_ENDPOINT_INDEX (SPI_BRIDGE_MAX_DEVICES + 1U)
 #endif
 
 #define SPI_DEVICE_ID_INVALID (0xFFU)
@@ -103,6 +106,16 @@ status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId, const uint8_t *descrip
 status_t SPI_BridgeSendReport(uint8_t deviceId, bool inDirection, uint8_t reportId, const uint8_t *data, uint16_t length);
 
 /*!
+ * @brief Publishes CDC bulk data (TYPE=0) to the dedicated CDC IN buffer.
+ */
+status_t SPI_BridgeSendCdcIn(const uint8_t *data, uint8_t length);
+
+/*!
+ * @brief Publishes a CDC descriptor or notification (TYPE=1) to the CDC IN buffer.
+ */
+status_t SPI_BridgeSendCdcDescriptor(const uint8_t *descriptor, uint8_t length);
+
+/*!
  * @brief Reads OUT buffer content if DIRTY is set and CRC is valid.
  */
 bool SPI_BridgeGetOutReport(uint8_t deviceId, uint8_t *typeOut, uint8_t *payloadOut, uint8_t *lengthOut);
@@ -111,6 +124,16 @@ bool SPI_BridgeGetOutReport(uint8_t deviceId, uint8_t *typeOut, uint8_t *payload
  * @brief Clears the DIRTY flag for an OUT buffer after the payload is consumed.
  */
 status_t SPI_BridgeClearOutReport(uint8_t deviceId);
+
+/*!
+ * @brief Reads CDC OUT payload if DIRTY is set and CRC is valid.
+ */
+bool SPI_BridgeGetCdcOut(uint8_t *typeOut, uint8_t *payloadOut, uint8_t *lengthOut);
+
+/*!
+ * @brief Clears DIRTY flag for CDC OUT buffer after consumption.
+ */
+status_t SPI_BridgeClearCdcOut(void);
 
 /*!
  * @brief Enables or disables state-change logging at runtime.

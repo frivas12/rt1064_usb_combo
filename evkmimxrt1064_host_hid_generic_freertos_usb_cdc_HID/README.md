@@ -51,8 +51,13 @@ The RT1064 exposes up to **6 logical endpoints**:
 Each EN holds:
 
 - 1 header byte  
-- 1–63 bytes of payload  
-- 2-byte CRC16  
+- 1–63 bytes of payload
+- 2-byte CRC16
+
+The CDC endpoint (EN5) mirrors the USB device's CDC ACM bulk pipes. Bytes received from the host PC on BULK OUT are
+published to the SPI master as TYPE=0 payloads, while bytes the master writes to EN5 are transmitted to the PC over the
+CDC BULK IN pipe. The hub bitmap includes an extra slot for this channel and stays asserted so the SAMS70 always knows
+the CDC lane is available.
 
 TYPE bit:
 
