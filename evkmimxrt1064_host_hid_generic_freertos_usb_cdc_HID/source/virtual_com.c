@@ -23,6 +23,7 @@
 
 #include "usb_device_descriptor.h"
 #include "virtual_com.h"
+#include "spi_bridge.h"
 #if (defined(FSL_FEATURE_SOC_SYSMPU_COUNT) && (FSL_FEATURE_SOC_SYSMPU_COUNT > 0U))
 #include "fsl_sysmpu.h"
 #endif /* FSL_FEATURE_SOC_SYSMPU_COUNT */
@@ -648,19 +649,23 @@ static void USB_DeviceCdcVcomAppTask(void *handle)
             /* endpoint callback length is USB_CANCELLED_TRANSFER_LENGTH (0xFFFFFFFFU) when transfer is canceled */
             if ((0 != s_recvSize) && (USB_CANCELLED_TRANSFER_LENGTH != s_recvSize))
             {
-                /* The operating timing sequence has guaranteed there is no conflict to access the s_recvSize between
-                   USB ISR and this task. Therefore, the following code of Enter/Exit ctitical mode is useless, only to
-                   mention users the exclusive access of s_recvSize if users implement their own
-                   application referred to this SDK demo */
                 CDC_VCOM_FreeRTOSEnterCritical(&usbOsaCurrentSr);
                 if ((0U != s_recvSize) && (USB_CANCELLED_TRANSFER_LENGTH != s_recvSize))
                 {
-                    /* Copy Buffer to Send Buff */
-                    memcpy(s_currSendBuf, s_currRecvBuf, s_recvSize);
-                    s_sendSize = s_recvSize;
+                    uint32_t mirroredLength = (s_recvSize > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) ? SPI_BRIDGE_MAX_PAYLOAD_LENGTH : s_recvSize;
+                    (void)SPI_BridgeSendCdcIn(s_currRecvBuf, (uint8_t)mirroredLength);
                     s_recvSize = 0;
                 }
                 CDC_VCOM_FreeRTOSExitCritical(usbOsaCurrentSr);
+            }
+
+            uint8_t cdcOutPayload[SPI_BRIDGE_MAX_PAYLOAD_LENGTH];
+            uint8_t cdcOutLength = 0U;
+            if (SPI_BridgeGetCdcOut(NULL, cdcOutPayload, &cdcOutLength))
+            {
+                memcpy(s_currSendBuf, cdcOutPayload, cdcOutLength);
+                s_sendSize = cdcOutLength;
+                (void)SPI_BridgeClearCdcOut();
             }
 
             if (0U != s_sendSize)

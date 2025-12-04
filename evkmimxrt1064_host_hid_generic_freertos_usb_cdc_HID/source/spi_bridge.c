@@ -46,10 +46,10 @@ typedef enum _spi_bridge_command
     kSPI_BridgeCommandWriteBlock = 2U,
 } spi_bridge_command_t;
 
-#define SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS (SPI_BRIDGE_MAX_DEVICES + 1U)
+#define SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS (SPI_BRIDGE_MAX_DEVICES + 2U)
 
-_Static_assert(SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS == (SPI_BRIDGE_MAX_DEVICES + 1U),
-               "EN count must be hub + device slots");
+_Static_assert(SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS == (SPI_BRIDGE_MAX_DEVICES + 2U),
+               "EN count must be hub + device slots + CDC endpoint");
 
 #if defined(__GNUC__)
 #pragma message "SPI_BRIDGE_ENABLE_DEBUG=" SPI_BRIDGE_ENABLE_DEBUG_STRING
@@ -68,16 +68,22 @@ _Static_assert(SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS == (SPI_BRIDGE_MAX_DEVICES + 1U)
 static spi_bridge_block_t s_hubStatus;
 static spi_bridge_block_t s_inBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_outBlocks[SPI_BRIDGE_MAX_DEVICES];
+static spi_bridge_block_t s_cdcInBlock;
+static spi_bridge_block_t s_cdcOutBlock;
 static bool s_deviceInUse[SPI_BRIDGE_MAX_DEVICES];
-static uint8_t s_connectedTable[SPI_BRIDGE_MAX_DEVICES];
+static uint8_t s_connectedTable[SPI_BRIDGE_MAX_DEVICES + 1U];
 
 static uint8_t s_lastHubLoggedHeader;
 static uint8_t s_lastInLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
 static uint8_t s_lastOutLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
+static uint8_t s_lastCdcInLoggedHeader;
+static uint8_t s_lastCdcOutLoggedHeader;
 
 static spi_bridge_block_t s_lastLoggedHubStatus;
 static spi_bridge_block_t s_lastLoggedInBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_lastLoggedOutBlocks[SPI_BRIDGE_MAX_DEVICES];
+static spi_bridge_block_t s_lastLoggedCdcInBlock;
+static spi_bridge_block_t s_lastLoggedCdcOutBlock;
 
 static void SPI_BridgeLogState(bool force);
 static bool s_stateTraceEnabled = (SPI_BRIDGE_ENABLE_STATE_TRACE != 0U);
@@ -233,6 +239,11 @@ static spi_bridge_block_t *SPI_BridgeMapEnToBlock(uint8_t en, bool writeDirectio
     if (en == 0U)
     {
         return writeDirection ? NULL : &s_hubStatus;
+    }
+
+    if (en == SPI_BRIDGE_CDC_ENDPOINT_INDEX)
+    {
+        return writeDirection ? &s_cdcOutBlock : &s_cdcInBlock;
     }
 
     uint8_t deviceId = (uint8_t)(en - 1U);
@@ -441,6 +452,32 @@ static bool SPI_BridgeLogOut(uint8_t deviceId, bool done, bool force)
     return true;
 }
 
+static bool SPI_BridgeLogCdc(bool inDirection, bool force)
+{
+    spi_bridge_block_t *block           = inDirection ? &s_cdcInBlock : &s_cdcOutBlock;
+    uint8_t *lastHeader                 = inDirection ? &s_lastCdcInLoggedHeader : &s_lastCdcOutLoggedHeader;
+    spi_bridge_block_t *lastLoggedBlock = inDirection ? &s_lastLoggedCdcInBlock : &s_lastLoggedCdcOutBlock;
+    const char *label                   = inDirection ? "CDC_IN" : "CDC_OUT";
+    uint8_t header                      = block->header;
+    bool dirty                          = (header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U;
+
+    if (!force && !dirty && (header == *lastHeader))
+    {
+        return false;
+    }
+
+    if (!force && !dirty && SPI_BridgeBlocksEqual(block, lastLoggedBlock))
+    {
+        return false;
+    }
+
+    SPI_BridgeLogBlock(label, (uint8_t)(SPI_BRIDGE_CDC_ENDPOINT_INDEX + 1U), block, force || dirty);
+    *lastHeader      = header;
+    *lastLoggedBlock = *block;
+
+    return true;
+}
+
 static void SPI_BridgeLogState(bool force)
 {
     bool stateChanged = SPI_BridgeLogHub(force);
@@ -451,6 +488,9 @@ static void SPI_BridgeLogState(bool force)
         stateChanged |= SPI_BridgeLogOut(deviceId, false, force);
     }
 
+    stateChanged |= SPI_BridgeLogCdc(true, force);
+    stateChanged |= SPI_BridgeLogCdc(false, force);
+
 //    if (force || stateChanged)
 //    {
 //        SPI_BridgeLogGrid();
@@ -459,8 +499,9 @@ static void SPI_BridgeLogState(bool force)
 
 static void SPI_BridgeRebuildHubStatus(void)
 {
-    uint8_t payloadLength = SPI_BRIDGE_MAX_DEVICES;
-    uint8_t cleanHeader   = SPI_BridgeMakeHeader(false, 0U, payloadLength);
+    uint8_t payloadLength            = SPI_BRIDGE_MAX_DEVICES + 1U;
+    uint8_t cleanHeader              = SPI_BridgeMakeHeader(false, 0U, payloadLength);
+    s_connectedTable[SPI_BRIDGE_MAX_DEVICES] = 1U; /* CDC endpoint is always available. */
 
     /* Populate the hub bitmap payload then flag it dirty so the host reads it. */
     s_hubStatus.header = cleanHeader;
@@ -710,13 +751,19 @@ status_t SPI_BridgeInit(void)
     (void)memset(&s_hubStatus, 0, sizeof(s_hubStatus));
     (void)memset(s_inBlocks, 0, sizeof(s_inBlocks));
     (void)memset(s_outBlocks, 0, sizeof(s_outBlocks));
+    (void)memset(&s_cdcInBlock, 0, sizeof(s_cdcInBlock));
+    (void)memset(&s_cdcOutBlock, 0, sizeof(s_cdcOutBlock));
     (void)memset(s_deviceInUse, 0, sizeof(s_deviceInUse));
     (void)memset(s_connectedTable, 0, sizeof(s_connectedTable));
     (void)memset(s_lastInLoggedHeader, 0, sizeof(s_lastInLoggedHeader));
     (void)memset(s_lastOutLoggedHeader, 0, sizeof(s_lastOutLoggedHeader));
+    s_lastCdcInLoggedHeader  = 0U;
+    s_lastCdcOutLoggedHeader = 0U;
     (void)memset(&s_lastLoggedHubStatus, 0, sizeof(s_lastLoggedHubStatus));
     (void)memset(s_lastLoggedInBlocks, 0, sizeof(s_lastLoggedInBlocks));
     (void)memset(s_lastLoggedOutBlocks, 0, sizeof(s_lastLoggedOutBlocks));
+    (void)memset(&s_lastLoggedCdcInBlock, 0, sizeof(s_lastLoggedCdcInBlock));
+    (void)memset(&s_lastLoggedCdcOutBlock, 0, sizeof(s_lastLoggedCdcOutBlock));
     s_lastHubLoggedHeader = 0U;
 
     SPI_BridgeRebuildHubStatus();
@@ -900,6 +947,63 @@ status_t SPI_BridgeClearOutReport(uint8_t deviceId)
 
     SPI_BridgeMarkDirty(&s_outBlocks[deviceId], false);
     SPI_BRIDGE_TRACE("host consumed OUT report");
+    return kStatus_Success;
+}
+
+status_t SPI_BridgeSendCdcIn(const uint8_t *data, uint8_t length)
+{
+    if ((data == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    SPI_BridgeSetBlockPayload(&s_cdcInBlock, 0U, data, length);
+    SPI_BRIDGE_TRACE("updated CDC IN payload for V70");
+    return kStatus_Success;
+}
+
+status_t SPI_BridgeSendCdcDescriptor(const uint8_t *descriptor, uint8_t length)
+{
+    if ((descriptor == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
+    {
+        return kStatus_InvalidArgument;
+    }
+
+    SPI_BridgeSetBlockPayload(&s_cdcInBlock, 1U, descriptor, length);
+    SPI_BRIDGE_TRACE("updated CDC descriptor for V70");
+    return kStatus_Success;
+}
+
+bool SPI_BridgeGetCdcOut(uint8_t *typeOut, uint8_t *payloadOut, uint8_t *lengthOut)
+{
+    uint8_t header = s_cdcOutBlock.header;
+    uint8_t length = SPI_BridgeExtractLength(header);
+
+    if (((header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
+    {
+        return false;
+    }
+
+    if (payloadOut != NULL)
+    {
+        (void)memcpy(payloadOut, s_cdcOutBlock.payload, length);
+    }
+    if (typeOut != NULL)
+    {
+        *typeOut = (uint8_t)((header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U);
+    }
+    if (lengthOut != NULL)
+    {
+        *lengthOut = length;
+    }
+
+    return true;
+}
+
+status_t SPI_BridgeClearCdcOut(void)
+{
+    SPI_BridgeMarkDirty(&s_cdcOutBlock, false);
+    SPI_BRIDGE_TRACE("host consumed CDC OUT payload");
     return kStatus_Success;
 }
 
