@@ -483,6 +483,8 @@ void USB_HostHidGenericTask(void *param)
                 {
                     /* Publish the descriptor first so the remote side can
                      * decode subsequent IN reports. */
+                    HID_GENERIC_LOG("Sending report descriptor to SPI bridge (id=%u, len=%u)\r\n",
+                                     genericInstance->deviceId, genericInstance->reportDescriptorLength);
                     (void)SPI_BridgeSendReportDescriptor(genericInstance->deviceId, genericInstance->genericInBuffer,
                                                          genericInstance->reportDescriptorLength);
                 }
