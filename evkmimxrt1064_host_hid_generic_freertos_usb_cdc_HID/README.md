@@ -35,6 +35,48 @@ This architecture allows the SAMS70 to treat all USB devices uniformly—HID joy
 
 ---
 
+## SPI command set overview
+
+The RT1064 runs as an SPI **slave** and expects every host transaction to begin with a single **command byte**. The upper two bits hold the **operation code** and the lower six bits select a **logical endpoint (EN)**. Three opcodes are defined: `READ_HEADER` (0), `READ_BLOCK` (1), and `WRITE_BLOCK` (2).
+
+Logical endpoints span the hub-status block (**EN 0**), up to four HID device slots (**EN 1–4**), and one CDC channel endpoint (`SPI_BRIDGE_CDC_ENDPOINT_INDEX`, **EN 5**).
+
+### Block layout (all endpoints)
+Each logical endpoint is mirrored as a block with a **1‑byte header**, up to **63 bytes of payload**, and a **2‑byte CRC**. On the wire, only `1 + LEN + 2` bytes are clocked based on the header’s LEN field.
+
+**Header fields:**
+
+- **DIRTY (bit 0):** Set when new data is available; cleared after a successful `READ_BLOCK` or explicit clear for OUT buffers.
+- **TYPE (bit 1):** Distinguishes payload meaning (e.g., HID descriptor vs. report, CDC descriptor/notification vs. data).
+- **LEN (bits 7:2):** Number of valid payload bytes (0–63).
+
+CRC is **CRC‑16/IBM** computed over the header and LEN payload bytes (`poly=0x1021`, `init=0xFFFF`).
+
+### Commands the SPI host can issue
+- **`READ_HEADER | EN` (op=0b00):** Host clocks one extra byte; the slave returns just the header for the selected endpoint. No state changes occur. Useful for polling DIRTY/TYPE/LEN without paying to read the full block.
+
+- **`READ_BLOCK | EN` (op=0b01):** Host must clock exactly `1 + LEN + 2` bytes; slave returns header, payload window (LEN bytes), and CRC. If the block existed and DIRTY was set, the bridge clears DIRTY after sending. Use on hub status (EN 0) to learn which HID slots/CDC are present, on HID IN slots to fetch mirrored HID report descriptors/data, and on CDC IN to receive UART/notification traffic.
+
+- **`WRITE_BLOCK | EN` (op=0b10):** Host sends header + payload + CRC (again `1 + LEN + 2` bytes). Slave validates LEN and CRC and, for writable endpoints, mirrors the payload into the corresponding OUT block and sets DIRTY so the USB side can consume it. Valid writable endpoints are HID OUT slots for active devices and the CDC OUT endpoint; hub status and unused slots are ignored.
+
+### Endpoint specifics (HID vs. CDC)
+- **Hub status (EN 0):** Payload is a bitmap of active HID devices plus a fixed “CDC present” flag; marked DIRTY whenever device allocation changes so the host knows which EN values are valid.
+
+- **HID device slots (EN 1–4):**
+  - **IN block (`READ_BLOCK`):** `TYPE=1` publishes HID report descriptors; `TYPE=0` publishes HID IN reports. DIRTY set whenever new descriptor/report is mirrored.
+  - **OUT block (`WRITE_BLOCK`):** Host provides HID OUT reports (`TYPE` can tag feature/out semantics as agreed by peers). After the USB host consumes it, firmware clears DIRTY via `SPI_BridgeClearOutReport`.
+
+- **CDC endpoint (EN 5):**
+  - **IN block (`READ_BLOCK`):** `TYPE=0` carries CDC data mirrored from the USB CDC bulk IN path; `TYPE=1` can carry descriptors/notifications. DIRTY indicates unread content.
+  - **OUT block (`WRITE_BLOCK`):** Host sends UART-style bytes or CDC control messages; firmware validates CRC/LEN, stores them, and later clears DIRTY when consumed.
+
+### Byte-level transaction expectations
+- Every command begins with the single command byte `(op << 6) | EN`; no chip-select toggles mid-command.
+- `READ_BLOCK`/`WRITE_BLOCK` transactions must clock exactly `1 + LEN + 2` bytes; extra clocks are ignored (read) or would corrupt subsequent commands (write).
+- CRC must match or the write is discarded; reads always include the computed CRC so the host can verify integrity.
+
+---
+
 ## Logical Endpoint Model (EN)
 
 The RT1064 exposes up to **6 logical endpoints**:
