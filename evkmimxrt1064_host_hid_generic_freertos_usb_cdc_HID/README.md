@@ -59,6 +59,13 @@ CRC is **CRC‑16/IBM** computed over the header and LEN payload bytes (`poly=0x
 
 - **`WRITE_BLOCK | EN` (op=0b10):** Host sends header + payload + CRC (again `1 + LEN + 2` bytes). Slave validates LEN and CRC and, for writable endpoints, mirrors the payload into the corresponding OUT block and sets DIRTY so the USB side can consume it. Valid writable endpoints are HID OUT slots for active devices and the CDC OUT endpoint; hub status and unused slots are ignored.
 
+### SPI transaction examples
+- **Poll a HID slot header (EN=2) to see if data is ready:** Send command byte `0b00_000010` (`0x02`) and clock one more byte. If the slave returns `0x8D`, then DIRTY=1, TYPE=0 (data), LEN=0x23 (35 bytes). The host can then issue `READ_BLOCK | 2` and clock exactly `1 + 35 + 2 = 38` bytes to fetch the HID report plus CRC.
+
+- **Read a CDC IN packet (EN=5):** Command byte is `0b01_000101` (`0x45`). Suppose the first returned header byte is `0x05` (DIRTY=1, TYPE=0, LEN=1). Clock two more payload bytes and two CRC bytes (total 4 more bytes) to receive the single CDC data byte and CRC. After this transaction DIRTY clears.
+
+- **Write a HID OUT report (EN=1) with 3-byte payload:** Build header `DIRTY=1`, `TYPE=0`, `LEN=3` → `0b0000_1101` (`0x0D`). Command byte is `0b10_000001` (`0x81`). Transmit in order: command byte, header (`0x0D`), three payload bytes (e.g., `0x01 0x02 0x03`), then the 2-byte CRC16/IBM computed over header+payload (little-endian). The bridge stores the 3-byte report and raises DIRTY for the USB host side.
+
 ### Endpoint specifics (HID vs. CDC)
 - **Hub status (EN 0):** Payload is a bitmap of active HID devices plus a fixed “CDC present” flag; marked DIRTY whenever device allocation changes so the host knows which EN values are valid.
 
