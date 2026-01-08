@@ -26,6 +26,8 @@
 #include "fsl_clock.h"
 #include "pin_mux.h"
 
+#include "semphr.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -87,6 +89,7 @@ static spi_bridge_block_t s_lastLoggedCdcOutBlock;
 
 static void SPI_BridgeLogState(bool force);
 static bool s_stateTraceEnabled = (SPI_BRIDGE_ENABLE_STATE_TRACE != 0U);
+static SemaphoreHandle_t s_spiBridgeSemaphore;
 
 #define SPI_BRIDGE_TRACE(reason)                                                                                \
     do                                                                                                          \
@@ -573,6 +576,30 @@ static status_t SPI_BridgeHandleReadHeader(uint8_t en)
     return SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, header, &sink);
 }
 
+static void SPI_BridgeEnableRxInterrupt(void)
+{
+    SPI_BRIDGE_SPI_BASE->IER |= LPSPI_IER_RDIE_MASK;
+}
+
+static void SPI_BridgeDisableRxInterrupt(void)
+{
+    SPI_BRIDGE_SPI_BASE->IER &= ~LPSPI_IER_RDIE_MASK;
+}
+
+void LPSPI1_IRQHandler(void)
+{
+    BaseType_t higherPriorityTaskWoken = pdFALSE;
+
+    SPI_BridgeDisableRxInterrupt();
+
+    if (s_spiBridgeSemaphore != NULL)
+    {
+        (void)xSemaphoreGiveFromISR(s_spiBridgeSemaphore, &higherPriorityTaskWoken);
+    }
+
+    portYIELD_FROM_ISR(higherPriorityTaskWoken);
+}
+
 static status_t SPI_BridgeHandleReadBlock(uint8_t en)
 {
     spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, false);
@@ -748,6 +775,15 @@ status_t SPI_BridgeInit(void)
                                LPSPI_TCR_CPOL(0U);
     SPI_BRIDGE_SPI_BASE->CR    = LPSPI_CR_MEN_MASK;
 
+    s_spiBridgeSemaphore = xSemaphoreCreateBinary();
+    if (s_spiBridgeSemaphore == NULL)
+    {
+        return kStatus_Fail;
+    }
+
+    NVIC_SetPriority(LPSPI1_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
+    NVIC_EnableIRQ(LPSPI1_IRQn);
+
     (void)memset(&s_hubStatus, 0, sizeof(s_hubStatus));
     (void)memset(s_inBlocks, 0, sizeof(s_inBlocks));
     (void)memset(s_outBlocks, 0, sizeof(s_outBlocks));
@@ -786,19 +822,15 @@ void SPI_BridgeTask(void *param)
 
     while (1)
     {
-        /*
-         * Only attempt a bridge transaction when the SPI master is actively
-         * polling us. This prevents repeated timeouts when the bus is idle.
-         */
-        if (SPI_BridgeMasterRequestPending())
+        SPI_BridgeEnableRxInterrupt();
+
+        (void)xSemaphoreTake(s_spiBridgeSemaphore, portMAX_DELAY);
+
+        while (SPI_BridgeMasterRequestPending())
         {
             bool activity = SPI_BridgeHandleCommand();
             SPI_BRIDGE_TASK_LOG(activity);
         }
-
-        /* Yield briefly; the bridge is host-driven so a tiny pause keeps CPU
-         * usage down while still reacting quickly when PCS is asserted. */
-        vTaskDelay(pdMS_TO_TICKS(1));
     }
 }
 
@@ -1006,4 +1038,3 @@ status_t SPI_BridgeClearCdcOut(void)
     SPI_BRIDGE_TRACE("host consumed CDC OUT payload");
     return kStatus_Success;
 }
-
