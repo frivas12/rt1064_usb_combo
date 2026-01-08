@@ -8,6 +8,7 @@
 #ifndef _USB_CDC_VCOM_H_
 #define _USB_CDC_VCOM_H_ 1
 
+#include "app.h"
 #include "FreeRTOS.h"
 #include "event_groups.h"
 #include "semphr.h"
@@ -23,14 +24,6 @@
  ******************************************************************************/
 
 #define CDC_DATA_BUFF_SIZE HS_CDC_VCOM_BULK_OUT_PACKET_SIZE
-/* @TEST_ANCHOR */
-/*
- * Select which USB OTG port is used for the CDC device.
- * 0 = USB_OTG1 (J9), 1 = USB_OTG2 (J10).
- */
-#ifndef USB_CDC_EHCI_INSTANCE
-#define USB_CDC_EHCI_INSTANCE 0U
-#endif
 #if (USB_CDC_EHCI_INSTANCE == 0U)
 #define CDC_CONTROLLER_ID kUSB_ControllerEhci0
 #else
