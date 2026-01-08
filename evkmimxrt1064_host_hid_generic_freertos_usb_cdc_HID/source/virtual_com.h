@@ -24,8 +24,18 @@
 
 #define CDC_DATA_BUFF_SIZE HS_CDC_VCOM_BULK_OUT_PACKET_SIZE
 /* @TEST_ANCHOR */
-/* Use USB_OTG1 (micro-B, J9) for the CDC device so the host stack can own USB_OTG2. */
+/*
+ * Select which USB OTG port is used for the CDC device.
+ * 0 = USB_OTG1 (J9), 1 = USB_OTG2 (J10).
+ */
+#ifndef USB_CDC_EHCI_INSTANCE
+#define USB_CDC_EHCI_INSTANCE 0U
+#endif
+#if (USB_CDC_EHCI_INSTANCE == 0U)
 #define CDC_CONTROLLER_ID kUSB_ControllerEhci0
+#else
+#define CDC_CONTROLLER_ID kUSB_ControllerEhci1
+#endif
 
 #if defined(__GIC_PRIO_BITS)
 #define USB_DEVICE_INTERRUPT_PRIORITY (25U)

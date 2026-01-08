@@ -23,9 +23,19 @@
 #endif
 #endif /* USB_HOST_CONFIG_KHCI */
 #if ((defined USB_HOST_CONFIG_EHCI) && (USB_HOST_CONFIG_EHCI))
+/*
+ * Select which USB OTG port is used for the HID USB host.
+ * 0 = USB_OTG1 (J9), 1 = USB_OTG2 (J10).
+ */
+#ifndef USB_HOST_EHCI_INSTANCE
+#define USB_HOST_EHCI_INSTANCE 1U
+#endif
 #ifndef CONTROLLER_ID
-/* Use USB_OTG2 (J10) by selecting the second EHCI instance. */
+#if (USB_HOST_EHCI_INSTANCE == 0U)
+#define CONTROLLER_ID kUSB_ControllerEhci0
+#else
 #define CONTROLLER_ID kUSB_ControllerEhci1
+#endif
 #endif
 #endif /* USB_HOST_CONFIG_EHCI */
 #if ((defined USB_HOST_CONFIG_OHCI) && (USB_HOST_CONFIG_OHCI))
