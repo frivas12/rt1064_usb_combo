@@ -7,6 +7,38 @@
  */
 #ifndef __APP_H__
 #define __APP_H__
+/*
+ * USB combo configuration:
+ * - APP_USB_ENABLE_CDC / APP_USB_ENABLE_HID enable each class independently.
+ * - APP_USB_CDC_EHCI_INSTANCE / APP_USB_HID_EHCI_INSTANCE select the connector:
+ *   0 = USB_OTG1 (J9), 1 = USB_OTG2 (J10).
+ */
+#ifndef APP_USB_ENABLE_CDC
+#define APP_USB_ENABLE_CDC 1U
+#endif
+#ifndef APP_USB_ENABLE_HID
+#define APP_USB_ENABLE_HID 1U
+#endif
+#ifndef APP_USB_CDC_EHCI_INSTANCE
+#define APP_USB_CDC_EHCI_INSTANCE 0U
+#endif
+#ifndef APP_USB_HID_EHCI_INSTANCE
+#define APP_USB_HID_EHCI_INSTANCE 1U
+#endif
+
+#ifndef USB_DEVICE_CONFIG_CDC_ACM
+#define USB_DEVICE_CONFIG_CDC_ACM APP_USB_ENABLE_CDC
+#endif
+#ifndef USB_HOST_CONFIG_HID
+#define USB_HOST_CONFIG_HID APP_USB_ENABLE_HID
+#endif
+#ifndef USB_CDC_EHCI_INSTANCE
+#define USB_CDC_EHCI_INSTANCE APP_USB_CDC_EHCI_INSTANCE
+#endif
+#ifndef USB_HOST_EHCI_INSTANCE
+#define USB_HOST_EHCI_INSTANCE APP_USB_HID_EHCI_INSTANCE
+#endif
+
 #include "usb_host_config.h"
 #include "usb_host.h"
 #include "fsl_device_registers.h"
@@ -23,13 +55,6 @@
 #endif
 #endif /* USB_HOST_CONFIG_KHCI */
 #if ((defined USB_HOST_CONFIG_EHCI) && (USB_HOST_CONFIG_EHCI))
-/*
- * Select which USB OTG port is used for the HID USB host.
- * 0 = USB_OTG1 (J9), 1 = USB_OTG2 (J10).
- */
-#ifndef USB_HOST_EHCI_INSTANCE
-#define USB_HOST_EHCI_INSTANCE 1U
-#endif
 #ifndef CONTROLLER_ID
 #if (USB_HOST_EHCI_INSTANCE == 0U)
 #define CONTROLLER_ID kUSB_ControllerEhci0
