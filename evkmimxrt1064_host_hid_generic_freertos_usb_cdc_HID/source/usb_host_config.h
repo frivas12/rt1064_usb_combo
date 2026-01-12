@@ -12,7 +12,7 @@
  * joystick activity to the console regardless of external build flags.
  */
 #undef SDK_DEBUGCONSOLE
-#define SDK_DEBUGCONSOLE 1U
+#define SDK_DEBUGCONSOLE 3U
 
 #define USB_HOST_CONFIG_KHCI 0
 #define USB_HOST_CONFIG_KHCI_DMA_ALIGN_BUFFER 64

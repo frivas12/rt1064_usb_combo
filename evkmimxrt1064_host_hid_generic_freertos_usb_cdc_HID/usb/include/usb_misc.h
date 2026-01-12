@@ -45,11 +45,14 @@ extern int DbgConsole_Printf(const char *fmt_s, ...);
 #define SDK_DEBUGCONSOLE 1U
 #endif
 
-/*! @brief 0U: DEBUGCONSOLE_REDIRECT_TO_TOOLCHAIN, 1U: DEBUGCONSOLE_REDIRECT_TO_SDK, 2U: DEBUGCONSOLE_DISABLE*/
+/*! @brief 0U: DEBUGCONSOLE_REDIRECT_TO_TOOLCHAIN, 1U: DEBUGCONSOLE_REDIRECT_TO_SDK, 2U: DEBUGCONSOLE_DISABLE, 3U: SEGGER_RTT */
 #if defined(SDK_DEBUGCONSOLE) && (SDK_DEBUGCONSOLE == 0U)
 #define usb_echo printf
 #elif defined(SDK_DEBUGCONSOLE) && (SDK_DEBUGCONSOLE == 1U)
 #define usb_echo DbgConsole_Printf
+#elif defined(SDK_DEBUGCONSOLE) && (SDK_DEBUGCONSOLE == 3U)
+#include "segger_rtt/SEGGER_RTT.h"
+#define usb_echo(...) SEGGER_RTT_printf(0U, __VA_ARGS__)
 #elif defined(SDK_DEBUGCONSOLE) && (SDK_DEBUGCONSOLE == 2U)
 static inline int USB_DbgConsole_Disabled(void)
 {
