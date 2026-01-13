@@ -183,14 +183,12 @@ void BOARD_BootClockRUN(void)
     XTALOSC24M->OSC_CONFIG2 |= XTALOSC24M_OSC_CONFIG2_ENABLE_1M_MASK;
     /* Use free 1MHz clock output. */
     XTALOSC24M->OSC_CONFIG2 &= ~XTALOSC24M_OSC_CONFIG2_MUX_1M_MASK;
-    /* Set XTAL 24MHz clock frequency. */
+    /* Set 24MHz clock frequency for internal RC. */
     CLOCK_SetXtalFreq(24000000U);
-    /* Enable XTAL 24MHz clock source. */
-    CLOCK_InitExternalClk(0);
     /* Enable internal RC. */
     CLOCK_InitRcOsc24M();
-    /* Switch clock source to external OSC. */
-    CLOCK_SwitchOsc(kCLOCK_XtalOsc);
+    /* Switch clock source to internal RC OSC. */
+    CLOCK_SwitchOsc(kCLOCK_RcOsc);
     /* Set Oscillator ready counter value. */
     CCM->CCR = (CCM->CCR & (~CCM_CCR_OSCNT_MASK)) | CCM_CCR_OSCNT(127);
     /* Setting PeriphClk2Mux and PeriphMux to provide stable clock before PLLs are initialed */
@@ -644,14 +642,12 @@ void BOARD_BootClockRUN_528M(void)
     XTALOSC24M->OSC_CONFIG2 |= XTALOSC24M_OSC_CONFIG2_ENABLE_1M_MASK;
     /* Use free 1MHz clock output. */
     XTALOSC24M->OSC_CONFIG2 &= ~XTALOSC24M_OSC_CONFIG2_MUX_1M_MASK;
-    /* Set XTAL 24MHz clock frequency. */
+    /* Set 24MHz clock frequency for internal RC. */
     CLOCK_SetXtalFreq(24000000U);
-    /* Enable XTAL 24MHz clock source. */
-    CLOCK_InitExternalClk(0);
     /* Enable internal RC. */
     CLOCK_InitRcOsc24M();
-    /* Switch clock source to external OSC. */
-    CLOCK_SwitchOsc(kCLOCK_XtalOsc);
+    /* Switch clock source to internal RC OSC. */
+    CLOCK_SwitchOsc(kCLOCK_RcOsc);
     /* Set Oscillator ready counter value. */
     CCM->CCR = (CCM->CCR & (~CCM_CCR_OSCNT_MASK)) | CCM_CCR_OSCNT(127);
     /* Setting PeriphClk2Mux and PeriphMux to provide stable clock before PLLs are initialed */
@@ -964,4 +960,3 @@ void BOARD_BootClockRUN_528M(void)
     /* Set SystemCoreClock variable. */
     SystemCoreClock = BOARD_BOOTCLOCKRUN_528M_CORE_CLOCK;
 }
-

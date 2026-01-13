@@ -15,6 +15,7 @@
 #include "board.h"
 #include "spi_bridge.h"
 #include "virtual_com.h"
+#include "segger_rtt/SEGGER_RTT.h"
 #if (defined(FSL_FEATURE_SOC_SYSMPU_COUNT) && (FSL_FEATURE_SOC_SYSMPU_COUNT > 0U))
 #include "fsl_sysmpu.h"
 #endif /* FSL_FEATURE_SOC_SYSMPU_COUNT */
@@ -165,6 +166,8 @@ static void USB_HostApplicationTask(void *param)
 int main(void)
 {
     BOARD_InitHardware();
+    SEGGER_RTT_Init();
+    usb_echo("Hello World from RT1064 (internal RC clocks + RTT)\r\n");
 
     USB_HostApplicationInit();
 
