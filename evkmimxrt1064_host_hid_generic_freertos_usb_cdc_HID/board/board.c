@@ -338,9 +338,13 @@ void BOARD_ConfigMPU(void)
     MPU->RBAR = ARM_MPU_RBAR(2, 0x60000000U);
     MPU->RASR = ARM_MPU_RASR(0, ARM_MPU_AP_FULL, 2, 0, 0, 0, 0, ARM_MPU_REGION_SIZE_512MB);
 
-#if defined(XIP_EXTERNAL_FLASH) && (XIP_EXTERNAL_FLASH == 1)
+#if defined(BOARD_USE_EXTERNAL_FLASH) && (BOARD_USE_EXTERNAL_FLASH == 1U)
     /* Region 3 setting: Memory with Normal type, not shareable, outer/inner write back. */
     MPU->RBAR = ARM_MPU_RBAR(3, 0x70000000U);
+    MPU->RASR = ARM_MPU_RASR(0, ARM_MPU_AP_RO, 0, 0, 1, 1, 0, ARM_MPU_REGION_SIZE_4MB);
+#elif defined(BOARD_USE_EXTERNAL_FLASH)
+    /* Region 3 setting: Memory with Normal type, not shareable, outer/inner write back. */
+    MPU->RBAR = ARM_MPU_RBAR(3, 0x60000000U);
     MPU->RASR = ARM_MPU_RASR(0, ARM_MPU_AP_RO, 0, 0, 1, 1, 0, ARM_MPU_REGION_SIZE_4MB);
 #endif
 

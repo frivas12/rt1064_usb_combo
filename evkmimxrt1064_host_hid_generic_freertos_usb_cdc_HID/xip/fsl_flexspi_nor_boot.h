@@ -102,7 +102,11 @@ typedef struct _boot_data_
     uint32_t placeholder; /* placehoder to make even 0x10 size */
 } BOOT_DATA_T;
 
+#if defined(BOARD_USE_EXTERNAL_FLASH) && (BOARD_USE_EXTERNAL_FLASH == 1U)
 #define FLASH_BASE FlexSPI2_AMBA_BASE
+#else
+#define FLASH_BASE FlexSPI_AMBA_BASE
+#endif
 #if defined(BOARD_FLASH_SIZE)
 #define FLASH_SIZE BOARD_FLASH_SIZE
 #else
