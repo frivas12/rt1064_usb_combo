@@ -120,5 +120,6 @@
 #include "PERI_XBARA.h"
 #include "PERI_XBARB.h"
 #include "PERI_XTALOSC24M.h"
+#include "MIMXRT1064_COMMON.h"
 
 #endif  /* #if !defined(MIMXRT1064_H_) */

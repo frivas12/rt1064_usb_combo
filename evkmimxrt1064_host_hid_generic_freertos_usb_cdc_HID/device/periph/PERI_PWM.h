@@ -53,7 +53,7 @@
 #define PERI_PWM_H_                              /**< Symbol preventing repeated inclusion */
 
 #if (defined(CPU_MIMXRT1064CVJ5A) || defined(CPU_MIMXRT1064CVJ5B) || defined(CPU_MIMXRT1064CVL5A) || defined(CPU_MIMXRT1064CVL5B) || defined(CPU_MIMXRT1064DVJ6A) || defined(CPU_MIMXRT1064DVJ6B) || defined(CPU_MIMXRT1064DVL6A) || defined(CPU_MIMXRT1064DVL6B))
-#include "MIMXRT1064_COMMON.h"
+#include "core_cm7.h"
 #else
   #error "No valid CPU defined!"
 #endif
