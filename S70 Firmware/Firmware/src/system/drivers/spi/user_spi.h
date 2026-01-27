@@ -36,6 +36,7 @@ extern "C"
 #define CS_ALL_HIGH				96
 #define CS_FLASH				125
 #define CS_MAX3421				126
+#define CS_RT_UPDATE			124
 
 typedef enum
 {
