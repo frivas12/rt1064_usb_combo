@@ -1,0 +1,8 @@
+#ifndef _SRC_TARGET_H_
+#define _SRC_TARGET_H_
+
+#define USB_DEVICE_PRODUCT_ID 0x201E
+#define USB_DEVICE_PRODUCT_NAME "MCM6101"
+#define MODEL_NUMBER "MCM6101\0"
+
+#endif

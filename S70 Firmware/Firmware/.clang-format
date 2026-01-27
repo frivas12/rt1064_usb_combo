@@ -1,0 +1,15 @@
+---
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+---
+Language: Cpp
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveBitFields: Consecutive
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+IndentCaseLabels: false
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReferenceAlignment: Left

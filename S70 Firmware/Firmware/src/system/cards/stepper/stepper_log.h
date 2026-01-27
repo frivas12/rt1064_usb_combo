@@ -1,0 +1,88 @@
+/*
+ * stepper_log.h
+ *
+ *  Created on: Jul 29, 2020
+ *      Author: frivas
+ */
+
+#ifndef SRC_SYSTEM_CARDS_STEPPER_STEPPER_LOG_H_
+#define SRC_SYSTEM_CARDS_STEPPER_STEPPER_LOG_H_
+
+/****************************************************************************
+ * Defines
+ ****************************************************************************/
+typedef enum
+{
+	STEPPER_NO_LOG 							= 0,
+	// Device detection  events
+	STEPPER_DEVICE_MISMATCH					= 1,
+
+	// USB parser  events
+	STEPPER_SET_ENCCOUNTER					= 2,
+	STEPPER_SET_POSCOUNTER					= 3,
+	STEPPER_SET_LIMSWITCHPARAMS				= 4,
+	STEPPER_SET_SOFT_LIMITS					= 5,
+	STEPPER_SET_ABS_LIMITS					= 6,
+	STEPPER_SET_HOMEPARAMS					= 7,
+	STEPPER_SET_STAGEPARAMS					= 8,
+	STEPPER_MOVE_ABSOLUTE					= 9,
+	STEPPER_MOVE_BY							= 10,
+	STEPPER_STOP							= 11,
+	STEPPER_HOME							= 12,
+	STEPPER_JOG								= 13,
+	STEPPER_SET_JOGPARAMS					= 14,
+	STEPPER_SET_DCPIDPARAMS					= 15,
+	STEPPER_SET_CHANENABLESTATE				= 16,
+	STEPPER_SET_STORE_POSITION_DEADBAND		= 17,
+	STEPPER_SET_STORE_POSITION				= 18,
+	STEPPER_SET_GOTO_STORE_POSITION			= 19,
+	STEPPER_SET_VELOCITY					= 20,
+	STEPPER_UNSUPPORTED_COMMAND				= 21,
+
+	// stepper controller events
+	STEPPER_CONTROLLER_STOP					= 22,
+	STEPPER_CONTROLLER_IDLE					= 23,
+	STEPPER_CONTROLLER_GOTO					= 24,
+	STEPPER_CONTROLLER_RUN					= 25,
+	STEPPER_CONTROLLER_JOG					= 26,
+	STEPPER_CONTROLLER_PID					= 27,
+	STEPPER_CONTROLLER_HOMING				= 28,
+
+	// stepper joystick events
+	STEPPER_JOYSTICK_AXIS_RUN_CW			= 29,
+	STEPPER_JOYSTICK_AXIS_RUN_CCW			= 30,
+	STEPPER_JOYSTICK_AXIS_RUN_STOP			= 31,
+	STEPPER_JOYSTICK_BTN_TOGGLE_DISABLE_DEST= 32,
+	STEPPER_JOYSTICK_BTN_DISABLE_DEST		= 33,
+	STEPPER_JOYSTICK_BTN_POS_1				= 34,
+	STEPPER_JOYSTICK_BTN_POS_2				= 35,
+	STEPPER_JOYSTICK_BTN_POS_3				= 36,
+	STEPPER_JOYSTICK_BTN_POS_4				= 37,
+	STEPPER_JOYSTICK_BTN_POS_5				= 38,
+	STEPPER_JOYSTICK_BTN_POS_6				= 39,
+	STEPPER_JOYSTICK_BTN_POS_7				= 40,
+	STEPPER_JOYSTICK_BTN_POS_8				= 41,
+	STEPPER_JOYSTICK_BTN_POS_9				= 42,
+	STEPPER_JOYSTICK_BTN_POS_10				= 43,
+	STEPPER_JOYSTICK_DIAL_RUN_CW			= 44,
+	STEPPER_JOYSTICK_DIAL_RUN_CCW			= 45,
+	STEPPER_JOYSTICK_DIAL_RUN_STOP			= 46,
+
+	// stepper emergency stop event
+	STEPPER_EMERGENCY_STOP					= 47,
+
+	// stepper collision stop event
+	STEPPER_COLLISION_STOP					= 48,
+
+	// stepper limit events
+	STEPPER_LIMIT_HIT						= 49,
+
+	// stepper synchronized motion events
+	// TODO PR
+
+	STEPPER_END_LOG_IDS			 			= 0xff	// make this enum 8bit
+} stepper_log_ids;
+
+
+
+#endif /* SRC_SYSTEM_CARDS_STEPPER_STEPPER_LOG_H_ */

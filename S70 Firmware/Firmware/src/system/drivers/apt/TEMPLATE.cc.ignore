@@ -1,0 +1,118 @@
+/**
+ * This is a template file to quickly create APT commands.
+ * 
+ * These steps should only be entered via the "TEMPLATE.hh.ignore" steps.
+ * Steps:
+ * 1.   Remove any methods that are not specified in the header.
+ * 2.   Remove unecessary template comments (including these steps).
+ * 3.   If defined, implement the "request_type::deserialize" method.
+ * 4.   If defined, implement the "payload_type::deserialize" method.
+ *      The fields "PARAM1_FIELD" and "PARAM2_FIELD" have been provided
+ *      to easily specify the field.
+ * 5.   If defined, implement the "payload_type::serialize" method.
+ * 6.   If defined, implement the specialized "seq" method.
+ * 7.   If defined, implement the specialized "req" method.
+ * 8.   If defined, implement the specialized "get" method.
+ */
+#include "./TEMPLATE.hh"
+
+#include "integer-serialization.hh"
+
+using namespace drivers::apt;
+
+/*****************************************************************************
+ * Constants
+ *****************************************************************************/
+
+/*****************************************************************************
+ * Macros
+ *****************************************************************************/
+
+/*****************************************************************************
+ * Data Types
+ *****************************************************************************/
+
+/*****************************************************************************
+ * Private Function Prototypes
+ *****************************************************************************/
+
+/*****************************************************************************
+ * Static Data
+ *****************************************************************************/
+
+/******************************************************************************
+ * Interrupt Handlers
+ *****************************************************************************/
+
+/*****************************************************************************
+ * Public Functions
+ *****************************************************************************/
+// Header-Only
+TEMPLATE::request_type
+TEMPLATE::request_type::deserialize(uint8_t param1, uint8_t param2) {
+    return request_type{
+        .? = param1,
+        .? = param2,
+    };
+}
+
+// Extended-Data
+TEMPLATE::request_type
+TEMPLATE::request_type::deserialize(std::span<const std::byte, APT_SIZE> src) {
+    auto stream = stream_deserializer(src, little_endian_serializer());
+
+    request_type rt;
+
+    // * The order matters.
+    rt.? = stream.read<CSTDINT>();
+
+    return rt;
+}
+
+// Header-Only
+TEMPLATE::payload_type
+TEMPLATE::payload_type::deserialize(uint8_t param1, uint8_t param2) {
+    return payload_type{
+        .PARAM1_FIELD = param1,
+        .PARAM2_FIELD = param2,
+    };
+}
+drivers::usb::apt_response
+TEMPLATE::payload_type::serialize() const {
+    return drivers::usb::apt_response::parameters {
+        .param1 = PARAM1_FIELD,
+        .param2 = PARAM2_FIELD,
+    };
+}
+
+// Extended-Data
+TEMPLATE::payload_type
+TEMPLATE::payload_type::deserialize(std::span<const std::byte, APT_SIZE> src) {
+    auto stream = stream_deserializer(src, little_endian_serializer());
+
+    payload_type rt;
+
+    // * The order matters.
+    rt.? = stream.read<CSTDINT>();
+
+    return rt;
+}
+void TEMPLATE::payload_type::serialize(std::span<std::byte, APT_SIZE> dest) const {
+    auto stream = stream_serializer(dest, little_endian_serializer());
+
+    stream.write(?)
+          .write(?)
+          ...
+          ;
+}
+
+// Optional Specializations
+// static payload_type TEMPLATE::set(const drivers::usb::apt_basic_command&,...);
+// static request_type TEMPLATE::req(const drivers::usb::apt_basic_command&,...);
+// static void TEMPLATE::get(drivers::usb::apt_response_builder& builder, const payload_type& payload);
+
+/*****************************************************************************
+ * Private Functions
+ *****************************************************************************/
+
+// EOF

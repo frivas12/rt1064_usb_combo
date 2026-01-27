@@ -1,0 +1,7 @@
+#ifndef _SRC_VERSION_BUILD_H_
+#define _SRC_VERSION_BUILD_H_
+
+// `date +%s`: Seconds since unit epoch.
+#define FW_VERSION_BUILD_STR "{{time}}"
+
+#endif
