@@ -36,7 +36,7 @@
 #include "log.h"
 #include "lut_manager.hh"
 #include "ptr-to-span.hh"
-#include "rt_update.h"
+#include "rt_program.h"
 #include "spi-transfer-handle.hh"
 #include "string.h"
 #include "supervisor.h"
@@ -203,7 +203,18 @@ static void parse(USB_Slave_Message* slave_message) {
         break;
 
     case MGMSG_RT1064_UPDATE:
+        // RT update handles SPI locking internally; reply via normal response
+        // path so we do not take extra semaphores here.
         rt_firmware_update_start(slave_message);
+        response_buffer[0] = static_cast<uint8_t>(MGMSG_RT1064_UPDATE);
+        response_buffer[1] =
+            static_cast<uint8_t>(MGMSG_RT1064_UPDATE >> 8);
+        response_buffer[2] = load_rt_hex ? CPLD_PROG_OK : CPLD_PROG_ERROR;
+        response_buffer[3] = 0x00;
+        response_buffer[4] = HOST_ID;
+        response_buffer[5] = MOTHERBOARD_ID;
+        length             = 6;
+        need_to_reply       = true;
         break;
 
     case MGMSG_CPLD_UPDATE:

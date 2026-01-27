@@ -1,5 +1,5 @@
-#ifndef SRC_SYSTEM_DRIVERS_RT_UPDATE_RT_UPDATE_H_
-#define SRC_SYSTEM_DRIVERS_RT_UPDATE_RT_UPDATE_H_
+#ifndef SRC_SYSTEM_DRIVERS_RT_UPDATE_RT_PROGRAM_H_
+#define SRC_SYSTEM_DRIVERS_RT_UPDATE_RT_PROGRAM_H_
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -38,4 +38,4 @@ void rt_firmware_update_abort(USB_Slave_Message *slave_message);
 }
 #endif
 
-#endif /* SRC_SYSTEM_DRIVERS_RT_UPDATE_RT_UPDATE_H_ */
+#endif /* SRC_SYSTEM_DRIVERS_RT_UPDATE_RT_PROGRAM_H_ */

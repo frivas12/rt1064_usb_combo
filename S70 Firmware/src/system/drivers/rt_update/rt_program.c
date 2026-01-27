@@ -1,4 +1,4 @@
-#include "rt_update.h"
+#include "rt_program.h"
 
 #include <asf.h>
 #include <string.h>
@@ -8,6 +8,7 @@
 #include "semphr.h"
 #include "spi_bridge_protocol.h"
 #include "user_spi.h"
+#include "sys_task.h"
 
 bool load_rt_hex = false;
 
@@ -347,6 +348,8 @@ static void rt_update_reset_state(void) {
 
 void rt_firmware_update_start(USB_Slave_Message* slave_message) {
     (void)slave_message;
+    suspend_all_task();
+    wdt_restart(WDT);
     rt_update_reset_state();
 
     if (!rt_update_enter_update_mode()) {
