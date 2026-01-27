@@ -183,24 +183,23 @@ static uint32_t CLOCK_GetPllUsb1SWFreq(void)
  * After this function, please call ref CLOCK_SetXtal0Freq to inform clock driver
  * the external clock frequency.
  *
- * param bypassXtalOsc Pass in true to bypass the external crystal oscillator.
- * note This device does not support bypass external crystal oscillator, so
- * the input parameter should always be false.
+ * param bypassXtalOsc Pass in true to bypass the external crystal oscillator
+ * and use an external 24MHz clock on XTALI.
  */
 void CLOCK_InitExternalClk(bool bypassXtalOsc)
 {
-    /* This device does not support bypass XTAL OSC. */
-    assert(!bypassXtalOsc);
-
     CCM_ANALOG->MISC0_CLR = CCM_ANALOG_MISC0_XTAL_24M_PWD_MASK; /* Power up */
     while ((XTALOSC24M->LOWPWR_CTRL & XTALOSC24M_LOWPWR_CTRL_XTALOSC_PWRUP_STAT_MASK) == 0U)
     {
     }
-    CCM_ANALOG->MISC0_SET = CCM_ANALOG_MISC0_OSC_XTALOK_EN_MASK; /* detect freq */
-    while ((CCM_ANALOG->MISC0 & CCM_ANALOG_MISC0_OSC_XTALOK_MASK) == 0UL)
+    if (!bypassXtalOsc)
     {
+        CCM_ANALOG->MISC0_SET = CCM_ANALOG_MISC0_OSC_XTALOK_EN_MASK; /* detect freq */
+        while ((CCM_ANALOG->MISC0 & CCM_ANALOG_MISC0_OSC_XTALOK_MASK) == 0UL)
+        {
+        }
+        CCM_ANALOG->MISC0_CLR = CCM_ANALOG_MISC0_OSC_XTALOK_EN_MASK;
     }
-    CCM_ANALOG->MISC0_CLR = CCM_ANALOG_MISC0_OSC_XTALOK_EN_MASK;
 }
 
 /*!

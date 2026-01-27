@@ -185,8 +185,8 @@ void BOARD_BootClockRUN(void)
     XTALOSC24M->OSC_CONFIG2 &= ~XTALOSC24M_OSC_CONFIG2_MUX_1M_MASK;
     /* Set XTAL 24MHz clock frequency. */
     CLOCK_SetXtalFreq(24000000U);
-    /* Enable XTAL 24MHz clock source. */
-    CLOCK_InitExternalClk(0);
+    /* Enable XTAL 24MHz clock source (bypass for external 24MHz on XTALI). */
+    CLOCK_InitExternalClk(1);
     /* Enable internal RC. */
     CLOCK_InitRcOsc24M();
     /* Switch clock source to external OSC. */
@@ -646,8 +646,8 @@ void BOARD_BootClockRUN_528M(void)
     XTALOSC24M->OSC_CONFIG2 &= ~XTALOSC24M_OSC_CONFIG2_MUX_1M_MASK;
     /* Set XTAL 24MHz clock frequency. */
     CLOCK_SetXtalFreq(24000000U);
-    /* Enable XTAL 24MHz clock source. */
-    CLOCK_InitExternalClk(0);
+    /* Enable XTAL 24MHz clock source (bypass for external 24MHz on XTALI). */
+    CLOCK_InitExternalClk(1);
     /* Enable internal RC. */
     CLOCK_InitRcOsc24M();
     /* Switch clock source to external OSC. */
@@ -964,4 +964,3 @@ void BOARD_BootClockRUN_528M(void)
     /* Set SystemCoreClock variable. */
     SystemCoreClock = BOARD_BOOTCLOCKRUN_528M_CORE_CLOCK;
 }
-

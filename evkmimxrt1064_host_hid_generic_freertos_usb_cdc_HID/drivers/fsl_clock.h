@@ -1621,9 +1621,8 @@ uint32_t CLOCK_GetClockRootFreq(clock_root_t clockRoot);
  * After this function, please call CLOCK_SetXtal0Freq to inform clock driver
  * the external clock frequency.
  *
- * @param bypassXtalOsc Pass in true to bypass the external crystal oscillator.
- * @note This device does not support bypass external crystal oscillator, so
- * the input parameter should always be false.
+ * @param bypassXtalOsc Pass in true to bypass the external crystal oscillator
+ * and use an external 24MHz clock on XTALI.
  */
 void CLOCK_InitExternalClk(bool bypassXtalOsc);
 
