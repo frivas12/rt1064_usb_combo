@@ -35,7 +35,7 @@
 #include "board.h"
 #include "compiler.h"
 #include "cpld_program.h"
-#include "rt_update.h"
+#include "rt_program.h"
 #include "hid.h"
 #include "pio.h"
 #include "portmacro.h"
