@@ -24,6 +24,7 @@
 #include "hid.h"
 #include "ftdi.h"
 #include "cpld_program.h"
+#include "rt_update.h"
 #include "apt.h"
 #include "Debugging.h"
 #include "sys_task.h"
@@ -194,6 +195,7 @@ static void parse(USB_Slave_Message *slave_message)
 
     case MGMSG_GET_UPDATE_FIRMWARE:
         set_firmware_load_count();
+        rt_firmware_update_start(slave_message);
         setup_and_send_log(slave_message, MOTHERBOARD_ID, LOG_REPEAT, SYSTEM_LOG_TYPE,
                 SYSTEM_UPDATE_CPLD_LOG, 0, 0, 0);
     break;

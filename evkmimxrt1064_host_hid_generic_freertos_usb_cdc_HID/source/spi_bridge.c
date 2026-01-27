@@ -25,6 +25,8 @@
 #include "board.h"
 #include "fsl_clock.h"
 #include "pin_mux.h"
+#include "rt_update_flash.h"
+#include "spi_bridge_protocol.h"
 
 #include "semphr.h"
 
@@ -46,6 +48,7 @@ typedef enum _spi_bridge_command
     kSPI_BridgeCommandReadHeader = 0U,
     kSPI_BridgeCommandReadBlock  = 1U,
     kSPI_BridgeCommandWriteBlock = 2U,
+    kSPI_BridgeCommandUpdate     = 3U,
 } spi_bridge_command_t;
 
 #define SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS (SPI_BRIDGE_MAX_DEVICES + 2U)
@@ -705,6 +708,109 @@ static status_t SPI_BridgeHandleWriteBlock(uint8_t en, bool *activityOut)
     return status;
 }
 
+static status_t SPI_BridgeHandleUpdateCommand(void)
+{
+    status_t status;
+    uint8_t command = 0U;
+    uint8_t payload_length = 0U;
+    uint8_t payload[260];
+    uint8_t sink = 0U;
+
+    status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &command);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &payload_length);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    if (payload_length > sizeof(payload))
+    {
+        payload_length = 0U;
+    }
+
+    for (uint8_t i = 0; i < payload_length; ++i)
+    {
+        status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &payload[i]);
+        if (status != kStatus_Success)
+        {
+            return status;
+        }
+    }
+
+    uint8_t reply_status = RT_UPDATE_STATUS_ERR_PROGRAM;
+    uint8_t read_length = 0U;
+    uint8_t read_buffer[256];
+    bool ok = false;
+
+    switch (command)
+    {
+        case RT_UPDATE_CMD_ENTER_UPDATE_MODE:
+            ok = RT_UpdateFlashEnter();
+            break;
+        case RT_UPDATE_CMD_ERASE_SECTOR:
+            if (payload_length == 4U)
+            {
+                uint32_t address;
+                memcpy(&address, payload, sizeof(address));
+                ok = RT_UpdateFlashEraseSector(address);
+            }
+            break;
+        case RT_UPDATE_CMD_PROGRAM_PAGE:
+            if (payload_length >= 4U)
+            {
+                uint32_t address;
+                memcpy(&address, payload, sizeof(address));
+                ok = RT_UpdateFlashProgramPage(address, payload + 4U, payload_length - 4U);
+            }
+            break;
+        case RT_UPDATE_CMD_READ_BACK:
+            if (payload_length == 6U)
+            {
+                uint32_t address;
+                uint16_t length;
+                memcpy(&address, payload, sizeof(address));
+                memcpy(&length, payload + 4U, sizeof(length));
+                read_length = (length > sizeof(read_buffer)) ? sizeof(read_buffer) : (uint8_t)length;
+                ok = RT_UpdateFlashRead(address, read_buffer, read_length);
+            }
+            break;
+        case RT_UPDATE_CMD_FINALIZE_AND_REBOOT:
+            ok = RT_UpdateFlashFinalize();
+            break;
+        default:
+            ok = false;
+            break;
+    }
+
+    reply_status = ok ? RT_UPDATE_STATUS_OK : RT_UPDATE_STATUS_ERR_PROGRAM;
+
+    status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, reply_status, &sink);
+    if (status != kStatus_Success)
+    {
+        return status;
+    }
+
+    if (command == RT_UPDATE_CMD_READ_BACK)
+    {
+        for (uint8_t i = 0; i < read_length; ++i)
+        {
+            uint8_t value = ok ? read_buffer[i] : 0x00U;
+            status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, value, &sink);
+            if (status != kStatus_Success)
+            {
+                return status;
+            }
+        }
+    }
+
+    return kStatus_Success;
+}
+
 static bool SPI_BridgeHandleCommand(void)
 {
     uint8_t command = 0U;
@@ -746,6 +852,10 @@ static bool SPI_BridgeHandleCommand(void)
             activity |= writeActivity;
             break;
         }
+        case kSPI_BridgeCommandUpdate:
+            status   = SPI_BridgeHandleUpdateCommand();
+            activity = true;
+            break;
         default:
             /* Reserved opcodes are ignored but we still consumed the command byte. */
             break;

@@ -35,6 +35,7 @@
 #include "board.h"
 #include "compiler.h"
 #include "cpld_program.h"
+#include "rt_update.h"
 #include "hid.h"
 #include "pio.h"
 #include "portmacro.h"
@@ -137,6 +138,7 @@ static void task_usb_slave_rx(void* pvParameters) {
 
     builder_context context;
     size_t lattice_buffer_length = 0;
+    size_t rt_buffer_length = 0;
     for (;;) {
         if (load_lattice_jed) {
             // (sbenish)  Since we're not using the builder buffer when loading
@@ -184,6 +186,37 @@ static void task_usb_slave_rx(void* pvParameters) {
                 // Reseting to initial conditions
                 lattice_buffer_length = 0;
             }
+        } else if (load_rt_hex) {
+            const bool data_read = wait_for_data(pdMS_TO_TICKS(1));
+            if (!data_read) {
+                wdt_restart(WDT);
+                continue;
+            }
+
+            size_t bytes_read = read_cdc_into_buffer(
+                builder_buffer + rt_buffer_length,
+                USB_SLAVE_BUFFER_SIZE - rt_buffer_length);
+            rt_buffer_length += bytes_read;
+
+            uint8_t *reader_head = builder_buffer;
+            uint8_t *reader_tail = builder_buffer + rt_buffer_length;
+
+            while (reader_head < reader_tail) {
+                const size_t bytes_available = reader_tail - reader_head;
+                size_t consumed = rt_firmware_update_consume(
+                    reader_head, bytes_available, &slave_message);
+                if (consumed == 0U) {
+                    break;
+                }
+                reader_head += consumed;
+            }
+
+            rt_buffer_length = reader_tail - reader_head;
+            memmove(builder_buffer, reader_head, rt_buffer_length);
+
+            if (!load_rt_hex) {
+                rt_buffer_length = 0;
+            }
         } else {
             context.got_error = false;
             const bool COMMAND_READY =
@@ -201,6 +234,11 @@ static void task_usb_slave_rx(void* pvParameters) {
             // data read to the lattice buffer before resetting the builder.
             if (load_lattice_jed) {
                 lattice_buffer_length = builder.buffer_length;
+
+                usb_slave_message_builder_reset(&builder);
+            }
+            if (load_rt_hex) {
+                rt_buffer_length = builder.buffer_length;
 
                 usb_slave_message_builder_reset(&builder);
             }
