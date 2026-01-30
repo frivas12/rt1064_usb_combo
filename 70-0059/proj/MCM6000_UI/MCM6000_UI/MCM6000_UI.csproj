@@ -144,7 +144,7 @@
     </Reference>
     <Reference Include="ThemeControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\frivas\Documents\Panchy\git\70-0059\MCM6000_UI\MCM6000_UI\bin\Debug\ThemeControl.dll</HintPath>
+      <HintPath>deps\ThemeControl.dll</HintPath>
     </Reference>
     <Reference Include="ThorDeviceSchemaGraph, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Thorlabs.ThorDeviceSchemaGraph.1.0.0\lib\netstandard2.0\ThorDeviceSchemaGraph.dll</HintPath>
