@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": ["--slot-type=19", "--device-id=0", "-tow-ordering/stepper.xml", 
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_Config.xml",
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_Device.xml",
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_Drive.xml",
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_Encoder.xml",
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_Flags.xml",
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_Homing.xml",
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_Jog.xml",
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_Limit.xml",
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_PID.xml",
+                "NEMA_17_Mesoscope_R/NEMA_17_Mesoscope_R_Store.xml",
+            ],
+            "justMyCode": true
+        }
+    ]
+}

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<FlipperShutterParameters>
+    <Card version='0'>
+        <InterlockCableEnabled value="false" />
+    </Card>
+
+    <!--Uniblitz-->
+    <Shutter channel="0" version='0'>
+        <PowerUpPosition value="CLOSED" />
+        <TriggerMode value="ENABLED" />
+        <Type value="PULSED" />
+        <OnTimeSeconds value="40E-3" />
+        <PulseVoltage value="8.84" />
+        <HoldVoltage value="0" />
+        <OpenUsesNegativeVoltage value="true" />
+        <HoldoffTimeSeconds value="125E-5" />
+    </Shutter>
+
+    <!--SH1-->
+    <Shutter channel="1" version='0'>
+        <PowerUpPosition value="CLOSED" />
+        <TriggerMode value="DISABLED" />
+        <Type value="NO RETURN" />
+        <OnTimeSeconds value="1E-2" />
+        <PulseVoltage value="24" />
+        <HoldVoltage value="10" />
+        <OpenUsesNegativeVoltage value="false" />
+        <HoldoffTimeSeconds value="40E-3" />
+    </Shutter>
+
+    <!--SH05-->
+    <Shutter channel="2" version='0'>
+        <PowerUpPosition value="CLOSED" />
+        <TriggerMode value="DISABLED" />
+        <Type value="NO RETURN" />
+        <OnTimeSeconds value="5E-3" />
+        <PulseVoltage value="24" />
+        <HoldVoltage value="10" />
+        <OpenUsesNegativeVoltage value="false" />
+        <HoldoffTimeSeconds value="10E-3" />
+    </Shutter>
+
+    <!--Shutter channel="4" is disabled-->
+
+    <Mirror channel="5" version='0'>
+        <PowerUpPosition value="IN" />
+        <InIsSignalHigh value="true" />
+    </Mirror>
+    <Mirror channel="6" version='0'>
+        <PowerUpPosition value="IN" />
+        <InIsSignalHigh value="true" />
+    </Mirror>
+    <Mirror channel="7" version='0'>
+        <PowerUpPosition value="IN" />
+        <InIsSignalHigh value="true" />
+    </Mirror>
+</FlipperShutterParameters>

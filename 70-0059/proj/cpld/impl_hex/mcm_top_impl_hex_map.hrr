@@ -1,0 +1,354 @@
+---------------------------------------------------
+Report for cell mcm_top
+   Instance path: mcm_top
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	    1479.00        100.0
+                                  LUT4	    2137.00        100.0
+                                 IOBUF	         96        100.0
+                                PFUREG	       2636        100.0
+                                RIPPLE	        344        100.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+         shutter(UART_ADDRESS_WIDTH=4)	          1         3.3
+uart_controller(DEV_ID=10,UART_ADDRESS_WIDTH=4)	          1         0.3
+                  status_led(DEV_ID=9)	          1         2.3
+stepper(DEV_ID=5,UART_ADDRESS_WIDTH=4)	          1         4.7
+         stepper(UART_ADDRESS_WIDTH=4)	          1         5.0
+stepper(DEV_ID=6,UART_ADDRESS_WIDTH=4)	          1        11.3
+stepper(DEV_ID=3,UART_ADDRESS_WIDTH=4)	          1         4.2
+stepper(DEV_ID=4,UART_ADDRESS_WIDTH=4)	          1         4.5
+stepper(DEV_ID=2,UART_ADDRESS_WIDTH=4)	          1         4.4
+stepper(DEV_ID=1,UART_ADDRESS_WIDTH=4)	          1         4.3
+                         spi_slave_top	          1        17.8
+           servo(UART_ADDRESS_WIDTH=4)	          1         0.2
+  rs232(DEV_ID=4,UART_ADDRESS_WIDTH=4)	          1         0.5
+                quad_decoder(DEV_ID=1)	          1         4.2
+                quad_decoder(DEV_ID=6)	          1         4.4
+                quad_decoder(DEV_ID=4)	          1         4.5
+                quad_decoder(DEV_ID=5)	          1         4.6
+                quad_decoder(DEV_ID=3)	          1         4.2
+                quad_decoder(DEV_ID=2)	          1         4.7
+                          quad_decoder	          1         3.8
+                        pwm_controller	          1         1.7
+                                   pll	          1         0.0
+peizo_elliptec(DEV_ID=7,UART_ADDRESS_WIDTH=4)	          1         0.8
+                     otm_dac(DEV_ID=3)	          1         0.1
+                            cs_decoder	          1         0.6
+              io(UART_ADDRESS_WIDTH=4)	          1         1.3
+                 intrpt_ctrl(DEV_ID=1)	          1         0.3
+                 intrpt_ctrl(DEV_ID=5)	          1         0.3
+                 intrpt_ctrl(DEV_ID=6)	          1         0.3
+                 intrpt_ctrl(DEV_ID=3)	          1         0.3
+                 intrpt_ctrl(DEV_ID=4)	          1         0.3
+                 intrpt_ctrl(DEV_ID=2)	          1         0.3
+                           intrpt_ctrl	          1         0.3
+---------------------------------------------------
+Report for cell shutter(UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/shutter_ins_0..u_shutter
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      49.17         3.3
+                                  LUT4	      42.00         2.0
+                                PFUREG	         69         2.6
+                                RIPPLE	         55        16.0
+---------------------------------------------------
+Report for cell intrpt_ctrl(DEV_ID=1)
+   Instance path: mcm_top/intrpt_ins_1..u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.00         0.3
+                                  LUT4	       3.00         0.1
+                                PFUREG	         12         0.5
+---------------------------------------------------
+Report for cell intrpt_ctrl(DEV_ID=2)
+   Instance path: mcm_top/intrpt_ins_2..u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.50         0.3
+                                  LUT4	       3.00         0.1
+                                PFUREG	         12         0.5
+---------------------------------------------------
+Report for cell intrpt_ctrl
+   Instance path: mcm_top/intrpt_ins_0..u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.92         0.3
+                                  LUT4	       4.00         0.2
+                                PFUREG	         12         0.5
+---------------------------------------------------
+Report for cell intrpt_ctrl(DEV_ID=5)
+   Instance path: mcm_top/intrpt_ins_5..u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.50         0.3
+                                  LUT4	       3.00         0.1
+                                PFUREG	         12         0.5
+---------------------------------------------------
+Report for cell intrpt_ctrl(DEV_ID=3)
+   Instance path: mcm_top/intrpt_ins_3..u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.50         0.3
+                                  LUT4	       3.00         0.1
+                                PFUREG	         12         0.5
+---------------------------------------------------
+Report for cell cs_decoder
+   Instance path: mcm_top/u_cs_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       8.75         0.6
+                                  LUT4	      20.00         0.9
+                                PFUREG	          9         0.3
+---------------------------------------------------
+Report for cell quad_decoder(DEV_ID=1)
+   Instance path: mcm_top/quad_ins_1..u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      62.50         4.2
+                                  LUT4	      68.00         3.2
+                                PFUREG	        138         5.2
+                                RIPPLE	         17         4.9
+---------------------------------------------------
+Report for cell quad_decoder(DEV_ID=6)
+   Instance path: mcm_top/quad_ins_6..u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      64.42         4.4
+                                  LUT4	      36.00         1.7
+                                PFUREG	        138         5.2
+                                RIPPLE	         17         4.9
+---------------------------------------------------
+Report for cell peizo_elliptec(DEV_ID=7,UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/u_peizo_elliptec
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      11.58         0.8
+                                  LUT4	      35.00         1.6
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell intrpt_ctrl(DEV_ID=4)
+   Instance path: mcm_top/intrpt_ins_4..u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.50         0.3
+                                  LUT4	       3.00         0.1
+                                PFUREG	         12         0.5
+---------------------------------------------------
+Report for cell intrpt_ctrl(DEV_ID=6)
+   Instance path: mcm_top/intrpt_ins_6..u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.50         0.3
+                                  LUT4	       3.00         0.1
+                                PFUREG	         12         0.5
+---------------------------------------------------
+Report for cell status_led(DEV_ID=9)
+   Instance path: mcm_top/u_status_led
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      33.67         2.3
+                                  LUT4	      39.00         1.8
+                                PFUREG	         43         1.6
+                                RIPPLE	         26         7.6
+---------------------------------------------------
+Report for cell pll
+   Instance path: mcm_top/__
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+---------------------------------------------------
+Report for cell pwm_controller
+   Instance path: mcm_top/pwm_ins_0..pwm_controller_ins
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      24.92         1.7
+                                  LUT4	       5.00         0.2
+                                PFUREG	         37         1.4
+                                RIPPLE	         31         9.0
+---------------------------------------------------
+Report for cell quad_decoder(DEV_ID=4)
+   Instance path: mcm_top/quad_ins_4..u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      67.00         4.5
+                                  LUT4	      36.00         1.7
+                                PFUREG	        138         5.2
+                                RIPPLE	         17         4.9
+---------------------------------------------------
+Report for cell rs232(DEV_ID=4,UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/u_rs232
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.25         0.5
+                                  LUT4	      27.00         1.3
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell stepper(DEV_ID=2,UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/stepper_ins_2..u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      64.58         4.4
+                                  LUT4	      70.00         3.3
+                                PFUREG	        162         6.1
+                                RIPPLE	         12         3.5
+---------------------------------------------------
+Report for cell quad_decoder(DEV_ID=5)
+   Instance path: mcm_top/quad_ins_5..u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      67.58         4.6
+                                  LUT4	      36.00         1.7
+                                PFUREG	        138         5.2
+                                RIPPLE	         17         4.9
+---------------------------------------------------
+Report for cell servo(UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/servo_ins_0..u_servo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       2.50         0.2
+                                  LUT4	       7.00         0.3
+                                PFUREG	          2         0.1
+---------------------------------------------------
+Report for cell otm_dac(DEV_ID=3)
+   Instance path: mcm_top/u_otm_dac
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.92         0.1
+                                  LUT4	       1.00         0.0
+                                PFUREG	          2         0.1
+---------------------------------------------------
+Report for cell stepper(DEV_ID=5,UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/stepper_ins_5..u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      69.08         4.7
+                                  LUT4	      72.00         3.4
+                                PFUREG	        162         6.1
+                                RIPPLE	         12         3.5
+---------------------------------------------------
+Report for cell io(UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/io_ins_0..u_io
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      19.33         1.3
+                                  LUT4	      10.00         0.5
+                                PFUREG	         26         1.0
+                                RIPPLE	         19         5.5
+---------------------------------------------------
+Report for cell stepper(UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/stepper_ins_0..u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      73.75         5.0
+                                  LUT4	      94.00         4.4
+                                PFUREG	        162         6.1
+                                RIPPLE	         12         3.5
+---------------------------------------------------
+Report for cell quad_decoder(DEV_ID=3)
+   Instance path: mcm_top/quad_ins_3..u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      61.67         4.2
+                                  LUT4	      68.00         3.2
+                                PFUREG	        138         5.2
+                                RIPPLE	         17         4.9
+---------------------------------------------------
+Report for cell stepper(DEV_ID=3,UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/stepper_ins_3..u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      61.50         4.2
+                                  LUT4	      57.67         2.7
+                                PFUREG	        162         6.1
+                                RIPPLE	         12         3.5
+---------------------------------------------------
+Report for cell stepper(DEV_ID=4,UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/stepper_ins_4..u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      66.17         4.5
+                                  LUT4	      75.67         3.5
+                                PFUREG	        162         6.1
+                                RIPPLE	         12         3.5
+---------------------------------------------------
+Report for cell spi_slave_top
+   Instance path: mcm_top/spi_slave_top_inst
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     263.08        17.8
+                                  LUT4	     683.00        32.0
+                                PFUREG	        258         9.8
+                                RIPPLE	         10         2.9
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                               wb_ctrl	          1         0.4
+                         spi_slave_efb	          1         0.0
+                              spi_ctrl	          1        12.2
+---------------------------------------------------
+Report for cell wb_ctrl
+   Instance path: mcm_top/spi_slave_top_inst/wb_ctrl_inst
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.75         0.4
+                                  LUT4	       5.00         0.2
+                                PFUREG	         14         0.5
+---------------------------------------------------
+Report for cell spi_slave_efb
+   Instance path: mcm_top/spi_slave_top_inst/spi_slave_efb_inst
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.33         0.0
+                                  LUT4	       1.00         0.0
+---------------------------------------------------
+Report for cell spi_ctrl
+   Instance path: mcm_top/spi_slave_top_inst/spi_ctrl_inst
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     180.92        12.2
+                                  LUT4	     521.00        24.4
+                                PFUREG	        104         3.9
+                                RIPPLE	         10         2.9
+---------------------------------------------------
+Report for cell stepper(DEV_ID=1,UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/stepper_ins_1..u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      63.08         4.3
+                                  LUT4	      55.67         2.6
+                                PFUREG	        162         6.1
+                                RIPPLE	         12         3.5
+---------------------------------------------------
+Report for cell quad_decoder(DEV_ID=2)
+   Instance path: mcm_top/quad_ins_2..u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      70.08         4.7
+                                  LUT4	      36.00         1.7
+                                PFUREG	        138         5.2
+                                RIPPLE	         17         4.9
+---------------------------------------------------
+Report for cell quad_decoder
+   Instance path: mcm_top/quad_ins_0..u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      56.00         3.8
+                                  LUT4	      41.00         1.9
+                                PFUREG	        138         5.2
+                                RIPPLE	         17         4.9
+---------------------------------------------------
+Report for cell stepper(DEV_ID=6,UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/stepper_ins_6..u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     167.58        11.3
+                                  LUT4	     459.00        21.5
+                                PFUREG	        162         6.1
+                                RIPPLE	         12         3.5
+---------------------------------------------------
+Report for cell uart_controller(DEV_ID=10,UART_ADDRESS_WIDTH=4)
+   Instance path: mcm_top/u_uart_controller
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       3.83         0.3
+                                  LUT4	      11.00         0.5
+                                PFUREG	          4         0.2

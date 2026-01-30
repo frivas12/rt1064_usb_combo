@@ -1,0 +1,30 @@
+﻿<Page x:Class="MCM6000_UI.controls.shutter"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MCM6000_UI.controls"
+      mc:Ignorable="d" 
+      d:DesignHeight="168" d:DesignWidth="590"
+      Title="shutter">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ThemeControl;component/ThorStyleDark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!--Used for populating combobox in system tabs for device id's-->
+            <XmlDataProvider x:Key="Device_id_XmlData"/>
+        </ResourceDictionary>
+    </Page.Resources>
+    
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Slot N" />
+            <Label Content="Shutter" Width="90" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Shutter Closed" Width="150" Margin="5,5,5,5" />
+        </StackPanel>
+    </StackPanel>
+</Page>

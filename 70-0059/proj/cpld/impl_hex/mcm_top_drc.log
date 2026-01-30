@@ -1,0 +1,30 @@
+Results of NGD DRC are available in mcm_top_drc.log.
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/xo2c00a/data/xo2alib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/xo2c00/data/xo2clib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/mg5g00/data/mg5glib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/or5g00/data/orc5glib.ngl'...
+WARNING - synthesis: Port 'CLKOS2' has no signal connected to it. Property 'FREQUENCY_PIN_CLKOS2' is ignored for instance 'PLLInst_0'.
+WARNING - synthesis: Port 'CLKOP' has no signal connected to it. Property 'FREQUENCY_PIN_CLKOP' is ignored for instance 'PLLInst_0'.
+
+
+Running DRC...
+
+WARNING - synthesis: logical net 'C_1' has no load.
+WARNING - synthesis: input pad net 'C_1' has no legal load.
+WARNING - synthesis: logical net 'C_2' has no load.
+WARNING - synthesis: input pad net 'C_2' has no legal load.
+WARNING - synthesis: logical net 'C_3' has no load.
+WARNING - synthesis: input pad net 'C_3' has no legal load.
+WARNING - synthesis: logical net 'C_4' has no load.
+WARNING - synthesis: input pad net 'C_4' has no legal load.
+WARNING - synthesis: logical net 'C_5' has no load.
+WARNING - synthesis: input pad net 'C_5' has no legal load.
+WARNING - synthesis: logical net 'C_6' has no load.
+WARNING - synthesis: input pad net 'C_6' has no legal load.
+WARNING - synthesis: DRC complete with 12 warnings.
+
+Design Results:
+   5238 blocks expanded
+completed the first expansion
+All blocks are expanded and NGD expansion is successful.
+Writing NGD file mcm_top_impl_hex.ngd.

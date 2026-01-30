@@ -1,0 +1,74 @@
+<StageParameters>
+  <Config>
+    <StageID value="0" />
+    <AxisID value="0" />
+    <AxisSerial value="0" />
+    <CountsPerUnit value="64.0425" />
+    <Position min="-50800" max="50800" />
+    <CollisionThreshold value="0" />
+  </Config>
+  <Drive>
+    <KVal>
+      <Hold value="23" />
+      <Run value="64" />
+      <Accel value="64" />
+      <Decel value="64" />
+    </KVal>
+    <Slope>
+      <Start value="29" />
+      <FinalAccel value="68" />
+      <FinalDecel value="68" />
+    </Slope>
+    <Acceleration max="800" min="800" />
+    <Speed max="52" min="0" />
+    <FullStepSpeed value="1023" />
+    <IntersectSpeed value="6930" />
+    <StallThreshold value="31" />
+    <OCDThreshold value="7" />
+    <StepMode value="7" />
+    <ICConfig value="3720" />
+    <GateDriverConfig value="2016" />
+    <ApproachVelocity value="500" />
+    <Deadband value="1" />
+    <Backlash value="0" />
+    <KickoutTime value="50" />
+  </Drive>
+  <Flags>
+    <Flags value="53" />
+  </Flags>
+  <Limit>
+    <HardLimit cw="1" ccw="1" />
+    <SoftLimit cw="2147483647" ccw="-2147483648" />
+    <AbsLimit high="2147483647" low="-2147483648" />
+    <Mode value="1" />
+  </Limit>
+  <Homing>
+    <Mode value="0" />
+    <Direction value="2" />
+    <LimitSwitch value="0" />
+    <Velocity value="80" />
+    <OffsetDistance value="0" />
+  </Homing>
+  <Jog />
+  <Encoder>
+    <NmPerCount value="500" />
+    <EncoderType value="1" />
+    <IndexDelta min="0" step="0" />
+  </Encoder>
+  <PID>
+    <Kp value="1000" />
+    <Ki value="0" />
+    <Kd value="0" />
+    <IMax value="0" />
+    <FilterControl value="0" />
+  </PID>
+  <Store ignore="1">
+    <Position index="1" value="2147483647" />
+    <Position index="2" value="2147483647" />
+    <Position index="3" value="2147483647" />
+    <Position index="4" value="2147483647" />
+    <Position index="5" value="2147483647" />
+    <Position index="6" value="2147483647" />
+    <Deadband value="0" />
+  </Store>
+</StageParameters>

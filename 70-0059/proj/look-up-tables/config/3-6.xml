@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<Struct binary="$PATH:bin/3-0.bin" >
+    <Signature>
+        <StructID value="3"/>
+        <ConfigID value="6"/>
+    </Signature>
+    <Data>
+        <KVal>
+          <Hold value="16" />
+          <Run value="46" />
+          <Accel value="46" />
+          <Decel value="46" />
+        </KVal>
+        <Slope>
+          <Start value="38" />
+          <FinalAccel value="95" />
+          <FinalDecel value="95" />
+        </Slope>
+        <Acceleration max="200" min="200" />
+        <Speed max="36" min="0" />
+        <FullStepSpeed value="1023" />
+        <IntersectSpeed value="3000" />
+        <StallThreshold value="31" />
+        <OCDThreshold value="31" />
+        <StepMode value="7" />
+        <ICConfig value="3720" />
+        <GateDriverConfig value="2016" />
+        <ApproachVelocity value="800" />
+        <Deadband value="0" />
+        <Backlash value="0" />
+        <KickoutTime value="50" />
+    </Data>
+</Struct>

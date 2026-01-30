@@ -1,0 +1,14 @@
+[Version]
+Version=10.2
+[Designs]
+tb_mcm_top=tb_mcm_top.adf
+[Settings]
+Active=tb_mcm_top
+[Expand]
+tb_mcm_top=1
+[Browser]
+sort=order
+mode=none
+[Order]
+order=1
+macro=

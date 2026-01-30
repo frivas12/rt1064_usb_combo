@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<JoystickParameters>
+<!-- In Mappings (used on  mesoscope)-->
+	<!-- Wheel (outter control) set to stage type to slot 1 -->
+	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="0" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="4" /> 
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="0" />
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="1" />
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="240" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="2" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="0" />
+	</InMapParameters>
+	
+	<!-- Dial (inner control) set to stage type to slot 1 -->
+	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="1" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="4" /> 
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="0" />
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="1" />
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="240" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="2" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="0" />
+	</InMapParameters>
+	
+
+	<!-- Button 1 (X) change wheel to control slot 1 -->
+	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="2" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="4" /> <!-- Need to create seperate XML for each port if we have a hub -->
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="3" /> <!--Both controls 1(wheel) and 2(dial) -->
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="1" />
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="240" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="2" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="1" />
+	</InMapParameters>
+	
+	<!-- Button 2 (Y) change wheel to control slot 2 -->
+	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="3" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="4" />
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="3" />
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="2" />
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="240" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="2" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="1" />
+	</InMapParameters>
+	
+	<!-- Button 3 (Z) change wheel to control slot 3 -->
+	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="4" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="4" />
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="3" />
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="4" />
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="240" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="2" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="1" />
+	</InMapParameters>
+	
+	<!-- Button 4 (R) change wheel to control slot 4 -->
+	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="5" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="4" />
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="3" />
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="8" />
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="240" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="2" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="1" />
+	</InMapParameters>
+	
+	
+	<!-- Button 5 toggle mirror position -->
+	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="6" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="0" />
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="0" />
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="32" /> <!-- slot 6 -->
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="240" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="0" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="9" />
+	</InMapParameters>
+	
+
+<!-- Out Mappings (no outs)-->
+ 
+</JoystickParameters>
+
+
+<!-- <Parameter name="" type="" length="" offset="" value="" /> -->

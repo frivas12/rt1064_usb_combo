@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<!-- 
+** Future cards to add **
+* Piezo for focus
+* XY brushless drive for MLS stage
+-->
+
+<System>
+
+
+<SystemSettings>
+
+<!-- set the card types 
+
+            NO_CARD_IN_SLOT = 0,
+            CARD_IN_SLOT_NOT_PROGRAMMED = 1,
+            ST_Stepper_type,                // 2  (obsolete)
+            High_Current_Stepper_Card,      // 3  (41-0093-004)
+            Servo_type,                     // 4  (41-0098-001)
+            Shutter_type,                   // 5  (obsolete, but used on Mesoscope)
+            OTM_Dac_type,                   // 6  (on OTM board)
+            OTM_RS232_type,                 // 7  (on OTM board)
+            High_Current_Stepper_Card_HD,   // 8  (41-0107)
+            Slider_IO_type,                 // 9  (41-0104)
+            Shutter_4_type,                 // 10 (41-0108)
+            Piezo_Elliptec_type,            // 11 (connected to slot 8)
+            ST_Invert_Stepper_BISS_type,    // 12 (41-0113)
+            ST_Invert_Stepper_SSI_type      // 13 (41-0113)
+			
+-->
+<!-- Set the card types for each slot -->
+
+<!-- Slot 1
+Slot 1 X axis stepper stage (stepper card 41-0093)
+ -->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="0"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="3"/>
+</CardType>
+
+<!-- Slot 2 
+Slot 2 Y axis stepper stage (stepper card 41-0093)
+-->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="1"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="3"/>
+</CardType>
+
+<!-- Slot 3 
+Slot 3 Z axis stepper stage (stepper card 41-0093)
+-->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="2"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="3"/>
+</CardType>
+
+<!-- Slot 4 
+Slot 4 R axis stepper stage (stepper card 41-0093)
+-->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="3"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="3"/>
+</CardType>
+
+<!-- Slot 5 
+Slot 5 EMPTY
+-->
+
+<!-- Slot 6 
+Slot 6 Shutter stage (shutter card 41-0098)
+-->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="5"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="5"/>
+</CardType>
+
+<!-- Slot 7 
+Slot 7 Servo stage (servo card 41-0098)
+-->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="6"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="4"/>
+</CardType>
+
+</SystemSettings>
+<Slots>
+
+<Slot type="Stage" name="SLOT_1" slot_num="0">
+<Stage name="NEMA_17_Mesoscope_X"/>
+</Slot>
+
+<Slot type="Stage" name="SLOT_1" slot_num="1">
+<Stage name="NEMA_17_Mesoscope_Y"/>
+</Slot>
+
+<Slot type="Stage" name="SLOT_3" slot_num="2">
+<Stage name="NEMA_17_Mesoscope_Z"/>
+</Slot>
+
+<Slot type="Stage" name="SLOT_4" slot_num="3">
+<Stage name="NEMA_17_Mesoscope_R"/>
+</Slot>
+
+<Slot type="Servo" name="SLOT_6" slot_num="5">
+<Servo name="Mesoscope_shutter"/>
+</Slot>
+
+<Slot type="Servo" name="SLOT_7" slot_num="6">
+<Servo name="Mesoscope_mirror"/>
+</Slot>
+
+</Slots>
+
+
+<Joysticks>
+
+<Joystick type="Port" name="PORT_0" port_num="0">
+<Joystick_type name="4_knob_XYZR_port_0_speed_toggle" />
+</Joystick>
+</Joysticks>
+
+</System>

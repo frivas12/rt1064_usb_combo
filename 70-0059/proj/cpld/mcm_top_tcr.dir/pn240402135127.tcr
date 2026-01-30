@@ -1,0 +1,5 @@
+#Start recording tcl command: 4/2/2024 13:44:56
+#Project Location: C:/Users/sbenish/repositories/70-0059/proj/cpld; Project name: mcm_top
+prj_project open "C:/Users/sbenish/repositories/70-0059/proj/cpld/mcm_top.ldf"
+prj_run Export -impl impl_mcm -task Jedecgen
+#Stop recording: 4/2/2024 13:51:27

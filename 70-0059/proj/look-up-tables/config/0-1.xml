@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<Struct binary="$PATH:bin/0-1.bin" >
+    <Signature>
+        <StructID value="0"/>
+        <ConfigID value="1"/>
+    </Signature>
+    <Data>
+        <NmPerCount value="211.53"/>
+        <EncoderType value="1"/>
+        <IndexDelta min="0" step="0"/>
+    </Data>
+</Struct>

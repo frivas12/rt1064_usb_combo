@@ -1,0 +1,67 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=3
+Current Config=compile
+[Configurations]
+compile=work
+[Library]
+tb_mcm_top=.\tb_mcm_top\tb_mcm_top.lib
+[Settings]
+AccessRead=1
+AccessReadWrite=0
+AccessACCB=0
+AccessACCR=0
+AccessReadWriteSLP=0
+AccessReadTopLevel=0
+DisableC=1
+ENABLE_ADV_DATAFLOW=0
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+[LocalVerilogSets]
+EnableSLP=1
+EnableDebug=0
+PriorityLibNames=pmi_work
+LibNames=ovi_machxo2
+[LocalVhdlSets]
+CompileWithDebug=0
+[$LibMap$]
+tb_mcm_top=.
+work=.
+[LocalVerilogDirs]
+Count=0
+[DefineMacro]
+Global=
+[Files]
+/..\..\..\sources\intrpt_ctrl.v=-1
+/..\..\..\sources\quad_decoder.v=-1
+/..\..\..\sources\pwm_controller.v=-1
+/..\..\..\sources\cs_decoder.v=-1
+/..\..\..\sources\set_pins.v=-1
+/..\..\..\sources\spi_ctrl.v=-1
+/..\..\..\sources\wb_ctrl.v=-1
+/..\..\..\sources\ip\spi_slave_efb.v=-1
+/..\..\..\sources\spi_slave_top.v=-1
+/..\..\..\sources\mcm_top.v=-1
+/..\..\tb_mcm_top.v=-1
+/..\..\..\sources\commands.v=-1
+[Files.Data]
+.\..\..\sources\intrpt_ctrl.v=Verilog Source Code
+.\..\..\sources\quad_decoder.v=Verilog Source Code
+.\..\..\sources\pwm_controller.v=Verilog Source Code
+.\..\..\sources\cs_decoder.v=Verilog Source Code
+.\..\..\sources\set_pins.v=Verilog Source Code
+.\..\..\sources\spi_ctrl.v=Verilog Source Code
+.\..\..\sources\wb_ctrl.v=Verilog Source Code
+.\..\..\sources\ip\spi_slave_efb.v=Verilog Source Code
+.\..\..\sources\spi_slave_top.v=Verilog Source Code
+.\..\..\sources\mcm_top.v=Verilog Source Code
+.\..\tb_mcm_top.v=Verilog Source Code
+.\..\..\sources\commands.v=Verilog Source Code
+[SpecTracer]
+WindowVisible=0
+[HierarchyViewer]
+HierarchyInformation=
+ShowHide=ShowTopLevel
+Selected=

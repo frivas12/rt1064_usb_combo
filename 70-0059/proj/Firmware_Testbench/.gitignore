@@ -1,0 +1,13 @@
+*.exe
+*.o
+old/
+!.vscode
+thirdparty/Catch2/*
+!thirdparty/Catch2/build/src/*.a
+!thirdparty/Catch2/build/generated-includes/catch2
+!thirdparty/Catch2/src/**.h
+!thirdparty/Catch2/.git/
+!thirdparty/Catch2/.github/
+!thirdparty/Catch2/src/
+__pycache__
+TemplateMakefile

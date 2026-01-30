@@ -1,0 +1,43 @@
+Running in Lattice mode
+
+Starting:    C:\lscc\diamond\3.12\synpbase\bin64\mbin\synplify.exe
+Install:     C:\lscc\diamond\3.12\synpbase
+Hostname:    STL-SBENISH-NB
+Date:        Wed Feb 16 10:57:41 2022
+Version:     Q-2020.03L-SP1
+
+Arguments:   -product synplify_pro -tcl C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm/launch_synplify.tcl
+ProductType: synplify_pro
+
+
+
+
+
+No project opened.
+TCL script complete: "C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm/launch_synplify.tcl"
+log file: "C:\Users\sbenish\repositories\70-0059\cpld\impl_mcm\impl_mcm.srr"
+Running: impl_mcm in foreground
+
+Running impl_mcm_syn|impl_mcm
+
+Running Flow: compile (Compile) on impl_mcm_syn|impl_mcm
+# Wed Feb 16 10:57:57 2022
+
+Running Flow: compile_flow (Compile Process) on impl_mcm_syn|impl_mcm
+# Wed Feb 16 10:57:57 2022
+
+Running: compiler (Compile Input) on impl_mcm_syn|impl_mcm
+# Wed Feb 16 10:57:57 2022
+compiler exited with errors
+Job failed on: impl_mcm_syn|impl_mcm
+
+Job: "compiler" terminated with error status: 2
+See log file: "C:\Users\sbenish\repositories\70-0059\cpld\impl_mcm\synlog\impl_mcm_compiler.srr"
+# Wed Feb 16 10:57:58 2022
+
+Return Code: 2
+Run Time:00h:00m:01s
+Complete: Compile Process on impl_mcm_syn|impl_mcm
+Complete: Compile on impl_mcm_syn|impl_mcm
+Complete: Logic Synthesis on impl_mcm_syn|impl_mcm
+2exit status=2

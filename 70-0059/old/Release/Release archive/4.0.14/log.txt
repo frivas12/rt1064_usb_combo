@@ -1,0 +1,22 @@
+Log:  Source: System  [SYSTEM_HW_START_LOG] ->Logging started  [2:52:05 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+Log:  Source: System  [SYSTEM_HW_START_LOG] ->Logging started  [2:52:42 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+Log:  Source: System  [SYSTEM_HW_START_LOG] ->Logging started  [2:52:50 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+ERROR: Stepper Card Source: Slot 1 [STEPPER_DEVICE_MISMATCH] ->Device mismatch, please check cable. [2:52:50 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+Log:  Source: System  [SYSTEM_HW_START_LOG] ->Logging started  [4:14:54 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+Log:  Source: System  [SYSTEM_HW_START_LOG] ->Logging started  [4:21:54 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+Log:  Source: System  [SYSTEM_HW_START_LOG] ->Logging started  [4:25:51 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+Log:  Source: System  [SYSTEM_HW_START_LOG] ->Logging started  [4:26:08 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+Log:  Source: System  [SYSTEM_HW_START_LOG] ->Logging started  [4:26:17 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+Log:  Source: System  [SYSTEM_HW_START_LOG] ->Logging started  [4:26:49 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------
+ERROR: Stepper Card Source: Slot 1 [STEPPER_DEVICE_MISMATCH] ->Device mismatch, please check cable. [4:26:49 PM Thursday, July 30, 2020]
+-------------------------------------------------------------------------------------------

@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!-- Motor LIN 5718L-01P-RO  2.8A
+B-Scope Base Stage	Lin 5718L-01P
+2.8 amps, 1.1 ohms, 3.8 mH
+2.08 N-m holding torque
+measured Ke 0.0574
+Encoder TI0020
+-->
+<StageParameters>
+	<LimitParameters command="0x4047" data_length="30">
+		<Parameter name="cw_hardlimit" type="UInt16" length="2" offset="8" value="1" />
+		<Parameter name="ccw_hardlimit" type="UInt16" length="2" offset="10" value="1" />
+		<Parameter name="cw_softlimit" type="Int32" length="4" offset="12" value="2147483647" />
+		<Parameter name="ccw_softlimit" type="Int32" length="4" offset="16" value="-2147483648" />
+		<Parameter name="abs_hi_limit" type="Int32" length="4" offset="20" value="2147483647" />
+		<Parameter name="abs_low_limit" type="Int32" length="4" offset="24" value="-2147483648" />
+		<Parameter name="limit_mode" type="UInt16" length="2" offset="28" value="1" />
+	</LimitParameters>
+	<HomingParameters command="0x403E" data_length="20">
+		<Parameter name="home_mode" type="Byte" length="1" offset="8" value="0" />
+		<Parameter name="home_direction" type="Byte" length="1" offset="9" value="2" />
+		<Parameter name="limit_switch" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="home_velocity" type="UInt32" length="4" offset="12" value="80" />
+		<Parameter name="offset_distance" type="Int32" length="4" offset="16" value="0" />
+	</HomingParameters>
+
+	<MotorParameters command="0x4041" data_length="102">
+		<Parameter name="stage_id" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="axis_id" type="UInt16" length="2" offset="10" value="0" />
+		<!--Byte[] part_no_axis; --> 
+		<Parameter name="part_no_axis" type="xs.string" length="16" offset="12" value="E Axis" />
+		<Parameter name="axis_serial_no" type="UInt32" length="4" offset="28" value="0" />
+		<Parameter name="counts_per_unit" type="Int32" length="4" offset="32" value="2020000" />
+		<Parameter name="min_pos" type="Int32" length="4" offset="36" value="0" />
+		<Parameter name="max_pos" type="Int32" length="4" offset="40" value=" 0" />
+		<Parameter name="max_acc" type="Int32" length="4" offset="44" value="800" />
+		<Parameter name="max_dec" type="Int32" length="4" offset="48" value="800" />
+		<Parameter name="max_speed" type="Int32" length="4" offset="52" value="36" />
+		<Parameter name="min_speed" type="Int16" length="2" offset="56" value="0" />
+		<Parameter name="fs_spd" type="Int16" length="2" offset="58" value="1023" />
+		<Parameter name="kval_hold" type="Byte" length="1" offset="60" value="16" />
+		<Parameter name="kval_run" type="Byte" length="1" offset="61" value="46" />
+		<Parameter name="kval_run" type="Byte" length="1" offset="62" value="46" />
+		<Parameter name="kval_run" type="Byte" length="1" offset="63" value="46" />
+		<Parameter name="int_speed" type="Int16" length="2" offset="64" value="3000" />
+		<Parameter name="stall_th" type="Byte" length="1" offset="66" value="31" />
+		<Parameter name="st_slp" type="Byte" length="1" offset="67" value="68" />
+		<Parameter name="fn_slp_acc" type="Byte" length="1" offset="68" value="95" />
+		<Parameter name="fn_slp_dec" type="Byte" length="1" offset="69" value="95" />
+		<Parameter name="ocd_th" type="Byte" length="1" offset="70" value="31" />
+		<Parameter name="step_mode" type="Byte" length="1" offset="71" value="7" />
+		<Parameter name="config" type="Int16" length="2" offset="72" value="7712" />
+		<Parameter name="nm_per_count" type="float" length="4" offset="74" value="1000" />
+		<Parameter name="gate_config" type="Int32" length="3" offset="78" value="2016" />
+		<Parameter name="stepper_approach_vel" type="Int16" length="2" offset="81" value="800" />
+		<Parameter name="stepper_deadband" type="Int16" length="2" offset="83" value="0" />
+		<Parameter name="stepper_backlash" type="Int16" length="2" offset="85" value="0" />
+		<Parameter name="flags" type="Byte" length="1" offset="87" value="53" />
+		<Parameter name="collision_threshold" type="Int16" length="2" offset="88" value="0" />
+		<Parameter name="encoder_type" type="Byte" length="1" offset="90" value="1" />
+		<Parameter name="index_delta_min" type="UInt16" length="2" offset="91" value="0" />
+		<Parameter name="index_delta_incr" type="UInt16" length="2" offset="93" value="0" />
+	</MotorParameters>
+	<PIDParameters command="0x04A0" data_length="26">
+		<Parameter name="kp" type="Int32" length="4" offset="8" value="2000" />
+		<Parameter name="ki" type="Int32" length="4" offset="12" value="0" />
+		<Parameter name="kd" type="Int32" length="4" offset="16" value="0" />
+		<Parameter name="iMax" type="Int32" length="4" offset="20" value="0" />
+		<Parameter name="FilterControl" type="Int16" length="2" offset="24" value="0" />
+	</PIDParameters>
+	<CalibratedPositions command="0x4021" data_length="48">
+		<Parameter name="position_1" type="Int32" length="4" offset="8" value="2147483647" />
+		<Parameter name="position_2" type="Int32" length="4" offset="12" value="2147483647" />
+		<Parameter name="position_3" type="Int32" length="4" offset="16" value="2147483647" />
+		<Parameter name="position_4" type="Int32" length="4" offset="20" value="2147483647" />
+		<Parameter name="position_5" type="Int32" length="4" offset="24" value="2147483647" />
+		<Parameter name="position_6" type="Int32" length="4" offset="28" value="2147483647" />
+	</CalibratedPositions>
+</StageParameters>
+
+
+<!-- <Parameter name="" type="" length="" offset="" value="" /> -->

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<Device>
+    <Signature>
+        <SlotCard value="0x0000"/>
+        <DeviceID value="0x0000"/>
+    </Signature>
+    <Configs>
+        <Signature>
+            <StructID value="0x0002"/>
+            <ConfigID value="0x0000"/>
+        </Signature>
+        <Signature>
+            <StructID value="0x0003"/>
+            <ConfigID value="0x0000"/>
+        </Signature>
+        <Signature>
+            <StructID value="0x0004"/>
+            <ConfigID value="0x0000"/>
+        </Signature>
+        <Signature>
+            <StructID value="0x0001"/>
+            <ConfigID value="0x0000"/>
+        </Signature>
+        <Signature>
+            <StructID value="0x0005"/>
+            <ConfigID value="0x0000"/>
+        </Signature>
+        <Signature>
+            <StructID value="0x0006"/>
+            <ConfigID value="0x0000"/>
+        </Signature>
+        <Signature>
+            <StructID value="0x0000"/>
+            <ConfigID value="0x0000"/>
+        </Signature>
+        <Signature>
+            <StructID value="0x0007"/>
+            <ConfigID value="0x0000"/>
+        </Signature>
+        <Signature>
+            <StructID value="0x0008"/>
+            <ConfigID value="0x0000"/>
+        </Signature>
+    </Configs>
+</Struct>

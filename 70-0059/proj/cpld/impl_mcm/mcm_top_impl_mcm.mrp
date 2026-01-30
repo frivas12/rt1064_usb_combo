@@ -1,0 +1,2778 @@
+
+           Lattice Mapping Report File for Design Module 'mcm_top'
+
+
+Design Information
+------------------
+
+Command line:   map -a MachXO2 -p LCMXO2-7000HC -t TQFP144 -s 4 -oc Commercial
+     mcm_top_impl_mcm.ngd -o mcm_top_impl_mcm_map.ncd -pr mcm_top_impl_mcm.prf
+     -mp mcm_top_impl_mcm.mrp -lpf
+     C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm/mcm_top_impl_mcm.lpf
+     -lpf C:/Users/sbenish/repositories/70-0059/cpld/mcm_top.lpf -c 0 -gui
+     -msgset C:/Users/sbenish/repositories/70-0059/cpld/promote.xml 
+Target Vendor:  LATTICE
+Target Device:  LCMXO2-7000HCTQFP144
+Target Performance:   4
+Mapper:  xo2c00,  version:  Diamond (64-bit) 3.12.0.240.2
+Mapped on:  04/21/22  17:03:31
+
+Design Summary
+--------------
+
+   Number of registers:   3178 out of  7209 (44%)
+      PFU registers:         3178 out of  6864 (46%)
+      PIO registers:            0 out of   345 (0%)
+   Number of SLICEs:      1883 out of  3432 (55%)
+      SLICEs as Logic/ROM:   1883 out of  3432 (55%)
+      SLICEs as RAM:            0 out of  2574 (0%)
+      SLICEs as Carry:        298 out of  3432 (9%)
+   Number of LUT4s:        3511 out of  6864 (51%)
+      Number used as logic LUTs:        2915
+      Number used as distributed RAM:     0
+      Number used as ripple logic:      596
+      Number used as shift registers:     0
+   Number of PIO sites used: 102 + 4(JTAG) out of 115 (92%)
+   Number of block RAMs:  23 out of 26 (88%)
+   Number of GSRs:        1 out of 1 (100%)
+   EFB used :        Yes
+   JTAG used :       Yes
+   Readback used :   No
+   Oscillator used : Yes
+   Startup used :    No
+   POR :             On
+   Bandgap :         On
+   Number of Power Controller:  0 out of 1 (0%)
+   Number of Dynamic Bank Controller (BCINRD):  0 out of 6 (0%)
+   Number of Dynamic Bank Controller (BCLVDSO):  0 out of 1 (0%)
+   Number of DCCA:  0 out of 8 (0%)
+   Number of DCMA:  0 out of 2 (0%)
+   Number of PLLs:  1 out of 2 (50%)
+   Number of DQSDLLs:  0 out of 2 (0%)
+   Number of CLKDIVC:  0 out of 4 (0%)
+   Number of ECLKSYNCA:  0 out of 4 (0%)
+   Number of ECLKBRIDGECS:  0 out of 2 (0%)
+   Notes:-
+      1. Total number of LUT4s = (Number of logic LUT4s) + 2*(Number of
+     distributed RAMs) + 2*(Number of ripple logic)
+      2. Number of logic LUT4s does not include count of distributed RAM and
+     ripple logic.
+   Number of clocks:  27
+     Net clk: 662 loads, 662 rising, 0 falling (Driver: OSCH_inst )
+     Net pin_intrpt[5]: 16 loads, 16 rising, 0 falling (Driver:
+
+                                    Page 1
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Design Summary (cont)
+---------------------
+     shutter_ins_1__u_shutter/i5146_2_lut_3_lut )
+     Net reveal_ist_177_N: 47 loads, 47 rising, 0 falling (Driver:
+     stepper_ins_1__u_stepper/i28520_2_lut_2_lut )
+     Net spi_clk_i: 1 loads, 1 rising, 0 falling (Driver: PIO spi_clk )
+     Net CS_READY_c: 16 loads, 16 rising, 0 falling (Driver: PIO CS_READY )
+     Net clk_in_N: 168 loads, 168 rising, 0 falling (Driver: PIO clk_in )
+     Net pin_intrpt[8]: 16 loads, 16 rising, 0 falling (Driver:
+     shutter_ins_2__u_shutter/i5147_2_lut_3_lut )
+     Net stepper_ins[4].u_stepper/mode[2]_derived_32: 16 loads, 16 rising, 0
+     falling (Driver: shutter_ins_4__u_shutter/i5149_2_lut_rep_759_3_lut )
+     Net pin_intrpt[20]: 16 loads, 16 rising, 0 falling (Driver:
+     shutter_ins_6__u_shutter/i5151_2_lut_3_lut )
+     Net pin_intrpt[17]: 16 loads, 16 rising, 0 falling (Driver:
+     shutter_ins_5__u_shutter/i5150_2_lut_3_lut )
+     Net stepper_ins[3].u_stepper/mode[2]_derived_32: 16 loads, 16 rising, 0
+     falling (Driver: shutter_ins_3__u_shutter/i5148_2_lut_rep_703_3_lut )
+     Net stepper_ins[0].u_stepper/mode[2]_derived_32: 16 loads, 16 rising, 0
+     falling (Driver: shutter_ins_0__u_shutter/i5145_2_lut_rep_729_3_lut )
+     Net clk_1MHz: 331 loads, 331 rising, 0 falling (Driver: __/PLLInst_0 )
+     Net jtaghub16_jtck: 233 loads, 0 rising, 233 falling (Driver:
+     xo2chub/genblk7.jtagf_u )
+     Net reveal_ist_179_N: 23 loads, 0 rising, 23 falling (Driver:
+     stepper_ins_1__u_stepper/MA_Temp_474 )
+     Net clk_1MHz_keep_derived_96: 23 loads, 23 rising, 0 falling (Driver:
+     stepper_ins_5__u_stepper/i28549_2_lut_rep_723 )
+     Net stepper_ins_5__u_stepper/MA_Temp: 23 loads, 0 rising, 23 falling
+     (Driver: stepper_ins_5__u_stepper/MA_Temp_474 )
+     Net stepper_ins_4__u_stepper/MA_Temp: 23 loads, 0 rising, 23 falling
+     (Driver: stepper_ins_4__u_stepper/MA_Temp_474 )
+     Net clk_1MHz_keep_derived_141: 23 loads, 23 rising, 0 falling (Driver:
+     stepper_ins_4__u_stepper/i28543_2_lut_rep_726 )
+     Net clk_1MHz_keep_derived_47: 23 loads, 23 rising, 0 falling (Driver:
+     stepper_ins_2__u_stepper/i28528_2_lut_rep_750 )
+     Net stepper_ins_2__u_stepper/MA_Temp: 23 loads, 0 rising, 23 falling
+     (Driver: stepper_ins_2__u_stepper/MA_Temp_474 )
+     Net clk_1MHz_keep_derived_186: 23 loads, 23 rising, 0 falling (Driver:
+     stepper_ins_3__u_stepper/i28534_2_lut_rep_728 )
+     Net stepper_ins_3__u_stepper/MA_Temp: 23 loads, 0 rising, 23 falling
+     (Driver: stepper_ins_3__u_stepper/MA_Temp_474 )
+     Net clk_1MHz_keep_derived_276: 23 loads, 23 rising, 0 falling (Driver:
+     stepper_ins_6__u_stepper/i28555_2_lut_rep_709 )
+     Net stepper_ins_6__u_stepper/MA_Temp: 23 loads, 0 rising, 23 falling
+     (Driver: stepper_ins_6__u_stepper/MA_Temp_474 )
+     Net clk_1MHz_keep_derived_231: 23 loads, 23 rising, 0 falling (Driver:
+     stepper_ins_0__u_stepper/i28511_2_lut_rep_741 )
+     Net stepper_ins_0__u_stepper/MA_Temp: 23 loads, 0 rising, 23 falling
+     (Driver: stepper_ins_0__u_stepper/MA_Temp_474 )
+   Number of Clock Enables:  224
+     Net clk_enable_111: 1 loads, 1 LSLICEs
+     Net resetn_c: 7 loads, 7 LSLICEs
+     Net clk_enable_509: 17 loads, 17 LSLICEs
+     Net clk_enable_37: 1 loads, 1 LSLICEs
+     Net clk_1MHz_keep_enable_34: 7 loads, 7 LSLICEs
+     Net clk_1MHz_keep_enable_343: 4 loads, 4 LSLICEs
+     Net clk_enable_137: 1 loads, 1 LSLICEs
+     Net clk_enable_131: 1 loads, 1 LSLICEs
+
+                                    Page 2
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Design Summary (cont)
+---------------------
+     Net clk_enable_126: 1 loads, 1 LSLICEs
+     Net clk_enable_149: 1 loads, 1 LSLICEs
+     Net clk_enable_139: 1 loads, 1 LSLICEs
+     Net clk_enable_140: 1 loads, 1 LSLICEs
+     Net clk_enable_134: 1 loads, 1 LSLICEs
+     Net clk_enable_117: 1 loads, 1 LSLICEs
+     Net clk_enable_145: 1 loads, 1 LSLICEs
+     Net clk_enable_120: 1 loads, 1 LSLICEs
+     Net clk_enable_123: 1 loads, 1 LSLICEs
+     Net clk_enable_141: 1 loads, 1 LSLICEs
+     Net clk_enable_119: 1 loads, 1 LSLICEs
+     Net clk_enable_121: 1 loads, 1 LSLICEs
+     Net clk_1MHz_keep_enable_33: 7 loads, 7 LSLICEs
+     Net intrpt_ins_4__u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net clk_enable_146: 1 loads, 1 LSLICEs
+     Net clk_enable_150: 1 loads, 1 LSLICEs
+     Net clk_enable_44: 1 loads, 1 LSLICEs
+     Net intrpt_ins_3__u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net intrpt_ins_2__u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net intrpt_ins_1__u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net intrpt_ins_0__u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net spi_sdo_valid_N_296: 20 loads, 20 LSLICEs
+     Net clk_enable_118: 1 loads, 1 LSLICEs
+     Net clk_enable_136: 1 loads, 1 LSLICEs
+     Net clk_1MHz_keep_enable_94: 7 loads, 7 LSLICEs
+     Net clk_enable_132: 1 loads, 1 LSLICEs
+     Net clk_enable_129: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_1: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_2: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_6: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_3: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_4: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_5: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_7: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_8: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_9: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_10: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_11: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_12: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_13: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_14: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_15: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_16: 1 loads, 1 LSLICEs
+     Net clk_enable_113: 1 loads, 1 LSLICEs
+     Net clk_enable_127: 1 loads, 1 LSLICEs
+     Net clk_enable_124: 1 loads, 1 LSLICEs
+     Net clk_enable_130: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/jtck_N_6554_enable_33: 1 loads, 1
+     LSLICEs
+     Net mcm_top_reveal_coretop_instance/jtck_N_6554_enable_48: 9 loads, 9
+     LSLICEs
+     Net jtaghub16_jupdate: 8 loads, 8 LSLICEs
+     Net jtaghub16_ip_enable0: 11 loads, 11 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/tu_0/op_code_
+     2__N_7072: 2 loads, 2 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/tu_0/clk[0]_N
+
+                                    Page 3
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Design Summary (cont)
+---------------------
+     _keep_enable_115: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/tu_0/clk[0]_N
+     _keep_enable_116: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/clk[0]_N
+     _keep_enable_95: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/jtck_N_6
+     554_enable_31: 8 loads, 8 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/next_then_reg
+     _wen: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/cnt_cont
+     ig_reg_wen: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/num_then_wen: 1
+     loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/clk[0]_N_keep
+     _enable_114: 9 loads, 9 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/clk[0]_N_keep_enable
+     _118: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/clk[0]_N_keep_enable
+     _26: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/clk[0]_N_keep_enable
+     _94: 2 loads, 2 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/clk[0]_N_keep_enable
+     _96: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/reg0_read_N_7377: 1
+     loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/clk[0]_N_keep_enable
+     _117: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_25: 6 loads, 6 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/sample_en_d: 4
+     loads, 4 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_98: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_97: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_3: 1 loads, 1 LSLICEs
+     Net
+     mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtck_N_6554_enable_187:
+     25 loads, 25 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_42: 7 loads, 7 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_52: 6 loads, 6 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/trace_dout_int_
+     90__N_7586: 6 loads, 6 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_62: 6 loads, 6 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_72: 6 loads, 6 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_82: 6 loads, 6 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_92: 6 loads, 6 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_13: 2 loads, 2 LSLICEs
+
+                                    Page 4
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Design Summary (cont)
+---------------------
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_99: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_28: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_27: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/clk[0]_N_keep_e
+     nable_29: 1 loads, 1 LSLICEs
+     Net
+     mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtck_N_6554_enable_228:
+     21 loads, 21 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_32: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_270: 4 loads, 4 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_95: 26 loads, 26 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_6: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_262: 24 loads, 24 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_13: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_263: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_8: 2 loads, 2 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_9: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_12: 1 loads, 1 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_285: 9 loads, 9 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/jtck_N_65
+     54_enable_138: 22 loads, 22 LSLICEs
+     Net clk_1MHz_keep_enable_71: 7 loads, 7 LSLICEs
+     Net clk_1MHz_keep_enable_60: 7 loads, 7 LSLICEs
+     Net clk_enable_144: 1 loads, 1 LSLICEs
+     Net u_status_led/clk_enable_487: 8 loads, 8 LSLICEs
+     Net clk_enable_324: 6 loads, 6 LSLICEs
+     Net clk_enable_147: 1 loads, 1 LSLICEs
+     Net u_status_led/clk_enable_488: 1 loads, 1 LSLICEs
+     Net clk_enable_313: 16 loads, 16 LSLICEs
+     Net quad_ins_5__u_quad_decoder/clk_1MHz_keep_enable_156: 32 loads, 32
+     LSLICEs
+     Net clk_enable_408: 1 loads, 1 LSLICEs
+     Net clk_enable_517: 1 loads, 1 LSLICEs
+     Net clk_enable_138: 1 loads, 1 LSLICEs
+     Net clk_1MHz_keep_enable_49: 7 loads, 7 LSLICEs
+     Net intrpt_ins_6__u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net clk_enable_133: 1 loads, 1 LSLICEs
+     Net quad_ins_6__u_quad_decoder/clk_1MHz_keep_enable_125: 32 loads, 32
+     LSLICEs
+     Net clk_enable_185: 16 loads, 16 LSLICEs
+     Net clk_enable_407: 1 loads, 1 LSLICEs
+     Net clk_enable_508: 1 loads, 1 LSLICEs
+
+                                    Page 5
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Design Summary (cont)
+---------------------
+     Net clk_1MHz_keep_enable_333: 7 loads, 7 LSLICEs
+     Net quad_ins_4__u_quad_decoder/clk_1MHz_keep_enable_187: 32 loads, 32
+     LSLICEs
+     Net clk_enable_279: 16 loads, 16 LSLICEs
+     Net clk_enable_99: 1 loads, 1 LSLICEs
+     Net clk_enable_516: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/clk_enable_108: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/clk_enable_423: 8 loads, 8 LSLICEs
+     Net spi_slave_top_inst/clk_enable_510: 20 loads, 20 LSLICEs
+     Net spi_slave_top_inst/clk_enable_125: 1 loads, 1 LSLICEs
+     Net clk_enable_143: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/clk_enable_486: 1 loads, 1 LSLICEs
+     Net clk_enable_46: 1 loads, 1 LSLICEs
+     Net clk_enable_135: 1 loads, 1 LSLICEs
+     Net clk_enable_38: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/clk_enable_518: 2 loads, 2 LSLICEs
+     Net spi_slave_top_inst/wb_ctrl_inst/clk_enable_425: 2 loads, 2 LSLICEs
+     Net spi_slave_top_inst/clk_enable_71: 2 loads, 2 LSLICEs
+     Net spi_slave_top_inst/wb_we_i_N_344: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_528: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_72: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_524: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_353: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_374: 6 loads, 6 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_366: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_519: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_115: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_116: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_499: 4 loads, 4 LSLICEs
+     Net clk_enable_142: 1 loads, 1 LSLICEs
+     Net clk_enable_477: 16 loads, 16 LSLICEs
+     Net clk_enable_489: 1 loads, 1 LSLICEs
+     Net clk_enable_512: 1 loads, 1 LSLICEs
+     Net clk_enable_216: 16 loads, 16 LSLICEs
+     Net clk_enable_358: 2 loads, 2 LSLICEs
+     Net clk_1MHz_keep_enable_218: 32 loads, 32 LSLICEs
+     Net clk_enable_483: 2 loads, 2 LSLICEs
+     Net clk_enable_8: 1 loads, 1 LSLICEs
+     Net clk_enable_98: 16 loads, 16 LSLICEs
+     Net clk_enable_485: 1 loads, 1 LSLICEs
+     Net clk_enable_527: 1 loads, 1 LSLICEs
+     Net clk_1MHz_keep_enable_318: 16 loads, 16 LSLICEs
+     Net clk_enable_525: 1 loads, 1 LSLICEs
+     Net clk_enable_325: 1 loads, 1 LSLICEs
+     Net clk_enable_526: 1 loads, 1 LSLICEs
+     Net clk_enable_428: 2 loads, 2 LSLICEs
+     Net clk_enable_444: 2 loads, 2 LSLICEs
+     Net clk_enable_3: 1 loads, 1 LSLICEs
+     Net clk_enable_479: 2 loads, 2 LSLICEs
+     Net clk_enable_446: 2 loads, 2 LSLICEs
+     Net clk_enable_128: 1 loads, 1 LSLICEs
+     Net clk_enable_492: 2 loads, 2 LSLICEs
+     Net clk_enable_406: 1 loads, 1 LSLICEs
+     Net clk_enable_405: 16 loads, 16 LSLICEs
+     Net clk_enable_514: 1 loads, 1 LSLICEs
+     Net clk_enable_359: 1 loads, 1 LSLICEs
+
+                                    Page 6
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Design Summary (cont)
+---------------------
+     Net clk_enable_481: 2 loads, 2 LSLICEs
+     Net clk_enable_513: 1 loads, 1 LSLICEs
+     Net clk_enable_367: 1 loads, 1 LSLICEs
+     Net clk_enable_281: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_327: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_507: 4 loads, 4 LSLICEs
+     Net intrpt_ins_5__u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net stepper_ins_5__u_stepper/clk_1MHz_keep_derived_96_enable_27: 13 loads,
+     13 LSLICEs
+     Net stepper_ins_5__u_stepper/clk_1MHz_keep_derived_96_enable_46: 10 loads,
+     10 LSLICEs
+     Net stepper_ins_5__u_stepper/clk_1MHz_keep_enable_364: 4 loads, 4 LSLICEs
+     Net stepper_ins_5__u_stepper/clk_1MHz_keep_enable_374: 1 loads, 1 LSLICEs
+     Net stepper_ins_5__u_stepper/clk_1MHz_keep_enable_336: 1 loads, 1 LSLICEs
+     Net clk_enable_100: 1 loads, 1 LSLICEs
+     Net stepper_ins_1__u_stepper/clk_1MHz_keep_enable_320: 1 loads, 1 LSLICEs
+     Net stepper_ins_4__u_stepper/clk_1MHz_keep_derived_141_enable_46: 10 loads,
+     10 LSLICEs
+     Net stepper_ins_4__u_stepper/clk_1MHz_keep_derived_141_enable_27: 13 loads,
+     13 LSLICEs
+     Net stepper_ins_4__u_stepper/clk_1MHz_keep_enable_357: 4 loads, 4 LSLICEs
+     Net stepper_ins_4__u_stepper/clk_enable_114: 1 loads, 1 LSLICEs
+     Net stepper_ins_4__u_stepper/clk_1MHz_keep_enable_319: 1 loads, 1 LSLICEs
+     Net stepper_ins_4__u_stepper/clk_1MHz_keep_enable_334: 1 loads, 1 LSLICEs
+     Net stepper_ins_2__u_stepper/clk_1MHz_keep_derived_47_enable_26: 13 loads,
+     13 LSLICEs
+     Net stepper_ins_2__u_stepper/clk_1MHz_keep_derived_47_enable_46: 10 loads,
+     10 LSLICEs
+     Net stepper_ins_2__u_stepper/clk_1MHz_keep_enable_350: 4 loads, 4 LSLICEs
+     Net stepper_ins_2__u_stepper/clk_1MHz_keep_enable_372: 1 loads, 1 LSLICEs
+     Net stepper_ins_2__u_stepper/clk_1MHz_keep_enable_321: 1 loads, 1 LSLICEs
+     Net quad_ins_2__u_quad_decoder/clk_1MHz_keep_enable_249: 32 loads, 32
+     LSLICEs
+     Net stepper_ins_3__u_stepper/clk_1MHz_keep_enable_287: 4 loads, 4 LSLICEs
+     Net stepper_ins_3__u_stepper/clk_1MHz_keep_derived_186_enable_46: 10 loads,
+     10 LSLICEs
+     Net stepper_ins_3__u_stepper/clk_1MHz_keep_derived_186_enable_27: 13 loads,
+     13 LSLICEs
+     Net stepper_ins_3__u_stepper/clk_1MHz_keep_enable_375: 1 loads, 1 LSLICEs
+     Net clk_enable_122: 1 loads, 1 LSLICEs
+     Net stepper_ins_3__u_stepper/clk_1MHz_keep_enable_322: 1 loads, 1 LSLICEs
+     Net quad_ins_1__u_quad_decoder/clk_1MHz_keep_enable_280: 32 loads, 32
+     LSLICEs
+     Net stepper_ins_6__u_stepper/clk_1MHz_keep_derived_276_enable_46: 13 loads,
+     13 LSLICEs
+     Net stepper_ins_6__u_stepper/clk_1MHz_keep_derived_276_enable_20: 10 loads,
+     10 LSLICEs
+     Net stepper_ins_6__u_stepper/clk_1MHz_keep_enable_371: 4 loads, 4 LSLICEs
+     Net stepper_ins_6__u_stepper/clk_1MHz_keep_enable_376: 1 loads, 1 LSLICEs
+     Net stepper_ins_6__u_stepper/clk_1MHz_keep_enable_337: 1 loads, 1 LSLICEs
+     Net stepper_ins_0__u_stepper/clk_1MHz_keep_derived_231_enable_46: 10 loads,
+     10 LSLICEs
+     Net stepper_ins_0__u_stepper/clk_1MHz_keep_enable_83: 4 loads, 4 LSLICEs
+     Net stepper_ins_0__u_stepper/clk_1MHz_keep_enable_373: 1 loads, 1 LSLICEs
+     Net stepper_ins_0__u_stepper/clk_1MHz_keep_derived_231_enable_27: 13 loads,
+     13 LSLICEs
+
+                                    Page 7
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Design Summary (cont)
+---------------------
+     Net stepper_ins_0__u_stepper/clk_1MHz_keep_enable_377: 1 loads, 1 LSLICEs
+     Net xo2chub/id_enable_0_sqmuxa: 1 loads, 1 LSLICEs
+     Net xo2chub/er1_shift_reg8: 10 loads, 10 LSLICEs
+   Number of local set/reset loads for net resetn_c merged into GSR:  133
+   Number of LSRs:  31
+     Net resetn_c: 352 loads, 351 LSLICEs
+     Net n36315: 31 loads, 31 LSLICEs
+     Net n36358: 13 loads, 13 LSLICEs
+     Net intrpt_out_N_2919: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2848: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2777: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2706: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2635: 1 loads, 1 LSLICEs
+     Net jtaghub16_jrstn: 208 loads, 208 LSLICEs
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/n36220: 178 loads,
+     134 LSLICEs
+     Net u_status_led/n16957: 7 loads, 7 LSLICEs
+     Net u_status_led/n18520: 5 loads, 5 LSLICEs
+     Net n36244: 3 loads, 3 LSLICEs
+     Net n15918: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_3061: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/n13025: 20 loads, 20 LSLICEs
+     Net spi_slave_top_inst/wr_en: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2990: 1 loads, 1 LSLICEs
+     Net n36135: 10 loads, 10 LSLICEs
+     Net n36141: 10 loads, 10 LSLICEs
+     Net n36143: 10 loads, 10 LSLICEs
+     Net n36137: 10 loads, 10 LSLICEs
+     Net n36139: 10 loads, 10 LSLICEs
+     Net n36145: 10 loads, 10 LSLICEs
+     Net n36146: 10 loads, 10 LSLICEs
+     Net stepper_ins_5__u_stepper/n36235: 13 loads, 13 LSLICEs
+     Net stepper_ins_1__u_stepper/CS_N_4341: 27 loads, 27 LSLICEs
+     Net stepper_ins_4__u_stepper/n36260: 13 loads, 13 LSLICEs
+     Net stepper_ins_2__u_stepper/n36256: 13 loads, 13 LSLICEs
+     Net stepper_ins_6__u_stepper/MA_Temp_N_5969: 13 loads, 13 LSLICEs
+     Net stepper_ins_0__u_stepper/MA_Temp_N_3949: 13 loads, 13 LSLICEs
+   Number of nets driven by tri-state buffers:  0
+   Top 10 highest fanout non-clock nets:
+     Net resetn_c: 745 loads
+     Net jtaghub16_jrstn: 212 loads
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/n36220: 178 loads
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/n36224: 132 loads
+     Net spi_slave_top_inst/spi_ctrl_inst/n36157: 128 loads
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/n36237:
+     110 loads
+     Net spi_slave_top_inst/spi_ctrl_inst/n25071: 106 loads
+     Net spi_slave_top_inst/spi_ctrl_inst/n33741: 106 loads
+     Net mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/n15: 100 loads
+     Net spi_slave_top_inst/spi_ctrl_inst/n36155: 96 loads
+
+
+
+
+   Number of warnings:  5
+   Number of errors:    0
+
+                                    Page 8
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+ (cont)
+-------
+     
+
+Design Errors/Warnings
+----------------------
+
+WARNING - map: Using local reset signal 'resetn_c' to infer global GSR net.
+WARNING - map: The reset of EBR 'mcm_top_reveal_coretop_instance/mcm_top_la0_ins
+     t_0/trig_u/te_0/pmi_ram_dpXO2binarynonespeedasyncdisablereg112112/pmi_ram_d
+     pXbnonesadr11211211401afe_0_0_0' cannot be controlled. The local reset is
+     not connected to any control signal and set to GND. The global reset is
+     disabled via GSR property. To control the EBR reset, either connect the
+     local reset to a control signal or force the GSR property to be enabled.
+WARNING - map: In "LOCATE COMP "spi_mosi" SITE "71" ;": Current SYS_CONFIG
+     setting prohibits pin "71" to be used as user IO. This preference has been
+     disabled.
+WARNING - map: In "LOCATE COMP "spi_miso" SITE "45" ;": Current SYS_CONFIG
+     setting prohibits pin "45" to be used as user IO. This preference has been
+     disabled.
+WARNING - map: In "LOCATE COMP "spi_clk" SITE "44" ;": Current SYS_CONFIG
+     setting prohibits pin "44" to be used as user IO. This preference has been
+     disabled.
+
+IO (PIO) Attributes
+-------------------
+
++---------------------+-----------+-----------+------------+
+| IO Name             | Direction | Levelmode | IO         |
+|                     |           |  IO_TYPE  | Register   |
++---------------------+-----------+-----------+------------+
+| spi_mosi            | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| spi_miso            | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| spi_clk             | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| C_8                 | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| UC_TXD0             | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| spi_scsn            | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| CS_READY            | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| cs[0]               | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| cs[1]               | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| cs[2]               | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| cs[3]               | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| cs[4]               | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| resetn              | INPUT     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| clk_in              | INPUT     | LVCMOS33  |            |
+
+                                    Page 9
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+IO (PIO) Attributes (cont)
+--------------------------
++---------------------+-----------+-----------+------------+
+| C_7                 | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| C_5                 | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| C_4                 | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| C_3                 | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| C_2                 | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| C_1                 | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[0]           | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[1]           | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[7]           | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[10]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[11]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[17]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[20]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[21]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[27]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[30]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[31]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[37]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[41]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[47]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[50]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[51]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[57]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[60]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[61]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[67]          | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| UC_RXD0             | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| MAX3421_CS          | OUTPUT    | LVCMOS33  |            |
+
+                                   Page 10
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+IO (PIO) Attributes (cont)
+--------------------------
++---------------------+-----------+-----------+------------+
+| FLASH_CS            | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| intrpt_out[0]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| intrpt_out[1]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| intrpt_out[2]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| intrpt_out[3]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| intrpt_out[4]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| intrpt_out[5]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| intrpt_out[6]       | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| led_sw              | OUTPUT    | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| C_6                 | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[2]           | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[3]           | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[4]           | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[5]           | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[6]           | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[8]           | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[9]           | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[12]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[13]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[14]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[15]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[16]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[18]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[19]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[22]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[23]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[24]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[25]          | BIDIR     | LVCMOS33  |            |
+
+                                   Page 11
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+IO (PIO) Attributes (cont)
+--------------------------
++---------------------+-----------+-----------+------------+
+| pin_io[26]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[28]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[29]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[32]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[33]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[34]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[35]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[36]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[38]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[39]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[40]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[42]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[43]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[44]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[45]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[46]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[48]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[49]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[52]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[53]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[54]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[55]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[56]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[58]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[59]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[62]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[63]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[64]          | BIDIR     | LVCMOS33  |            |
+
+                                   Page 12
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+IO (PIO) Attributes (cont)
+--------------------------
++---------------------+-----------+-----------+------------+
+| pin_io[65]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[66]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[68]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+| pin_io[69]          | BIDIR     | LVCMOS33  |            |
++---------------------+-----------+-----------+------------+
+
+Removed logic
+-------------
+
+Block xo2chub/VCC_0 undriven or does not drive anything - clipped.
+Block xo2chub/ip_enable[15] undriven or does not drive anything - clipped.
+Block xo2chub/cdn undriven or does not drive anything - clipped.
+Block stepper_ins_1__u_stepper/mux_117_i48_3_lut undriven or does not drive
+     anything - clipped.
+Block stepper_ins_1__u_stepper/mux_117_i49_3_lut undriven or does not drive
+     anything - clipped.
+Block stepper_ins_1__u_stepper/mux_117_i50_3_lut undriven or does not drive
+     anything - clipped.
+Block stepper_ins_1__u_stepper/mux_117_i51_3_lut undriven or does not drive
+     anything - clipped.
+Block stepper_ins_1__u_stepper/mux_117_i52_3_lut undriven or does not drive
+     anything - clipped.
+Block stepper_ins_1__u_stepper/SLO_buf_i46 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_buf_i47 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_buf_i48 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_buf_i49 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_buf_i50 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_buf_i51 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_i47 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_i48 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_i49 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_i50 undriven or does not drive anything -
+     clipped.
+Block stepper_ins_1__u_stepper/SLO_i51 undriven or does not drive anything -
+     clipped.
+Block mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/pmi_ram_dpX
+     O2binarynonespeedasyncdisablereg112112/scuba_vhi_inst undriven or does not
+     drive anything - clipped.
+Block mcm_top_reveal_coretop_instance/jtagconn16_inst_0_lut_buf_5 undriven or
+     does not drive anything - clipped.
+Signal xo2chub/jrstn_i was merged into signal jtaghub16_jrstn
+Signal xo2chub/cdn.CN was merged into signal jtaghub16_jtck
+Signal stepper_ins_0__u_stepper/MA_Temp_N_3935 was merged into signal
+
+                                   Page 13
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Removed logic (cont)
+--------------------
+     stepper_ins_0__u_stepper/MA_Temp
+Signal stepper_ins_6__u_stepper/MA_Temp_N_5955 was merged into signal
+     stepper_ins_6__u_stepper/MA_Temp
+Signal n3 was merged into signal mode[2]_adj_10239
+Signal stepper_ins_3__u_stepper/MA_Temp_N_4938 was merged into signal
+     stepper_ins_3__u_stepper/MA_Temp
+Signal stepper_ins_2__u_stepper/MA_Temp_N_4599 was merged into signal
+     stepper_ins_2__u_stepper/MA_Temp
+Signal stepper_ins_4__u_stepper/MA_Temp_N_5277 was merged into signal
+     stepper_ins_4__u_stepper/MA_Temp
+Signal stepper_ins_1__u_stepper/MA_Temp_N_4244 was merged into signal
+     reveal_ist_179_N
+Signal stepper_ins_5__u_stepper/MA_Temp_N_5616 was merged into signal
+     stepper_ins_5__u_stepper/MA_Temp
+Signal n3_adj_9858 was merged into signal mode[2]_adj_10204
+Signal n36432 was merged into signal resetn_c
+Signal spi_slave_top_inst/wr_en_N_355 was merged into signal
+     spi_slave_top_inst/wr_en
+Signal n10479 was merged into signal mode_adj_10302
+Signal mcm_top_reveal_coretop_instance/jtck_N_6554 was merged into signal
+     jtaghub16_jtck
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jrstn_N_6552 was
+     merged into signal jtaghub16_jrstn
+Signal mcm_top_reveal_coretop_instance/ip_enable[0] was merged into signal
+     jtaghub16_ip_enable0
+Signal mcm_top_reveal_coretop_instance/jce2[0] was merged into signal
+     jtaghub16_jce2
+Signal mcm_top_reveal_coretop_instance/jrstn[0] was merged into signal
+     jtaghub16_jrstn
+Signal mcm_top_reveal_coretop_instance/jshift[0] was merged into signal
+     jtaghub16_jshift
+Signal mcm_top_reveal_coretop_instance/jtdi[0] was merged into signal
+     jtaghub16_jtdi
+Signal mcm_top_reveal_coretop_instance/jtck[0] was merged into signal
+     jtaghub16_jtck
+Signal jtaghub16_er2_tdo0 was merged into signal
+     mcm_top_reveal_coretop_instance/er2_tdo[0]
+Signal n10493 was merged into signal mode_adj_10301
+Signal n3_adj_9926 was merged into signal mode[2]_adj_10168
+Signal n10507 was merged into signal mode_adj_10300
+Signal n10513 was merged into signal mode[2]_adj_10132
+Signal n10523 was merged into signal mode_adj_10299
+Signal n10527 was merged into signal mode[2]_adj_10095
+Signal n10537 was merged into signal mode_adj_10298
+Signal n10541 was merged into signal mode[2]_adj_10087
+Signal n10551 was merged into signal piezo_ins_1__u_piezo/mode
+Signal n3_adj_10084 was merged into signal mode[2]
+Signal n10565 was merged into signal mode_adj_10297
+Signal xo2chub/GND undriven or does not drive anything - clipped.
+Signal VCC_N undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_dpXO2bina
+     rynonespeedasyncdisablereg9111204891112048/scuba_vlo undriven or does not
+     drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_dpXO2bina
+     rynonespeedasyncdisablereg9111204891112048/scuba_vhi undriven or does not
+     drive anything - clipped.
+
+                                   Page 14
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Removed logic (cont)
+--------------------
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/pmi_ram_dp
+     XO2binarynonespeedasyncdisablereg112112/scuba_vlo undriven or does not
+     drive anything - clipped.
+Signal xo2chub/VCC undriven or does not drive anything - clipped.
+Signal xo2chub/bit_count_cry_0_COUT[3] undriven or does not drive anything -
+     clipped.
+Signal xo2chub/rom_rd_addr_cry_0_S0[0] undriven or does not drive anything -
+     clipped.
+Signal xo2chub/N_2 undriven or does not drive anything - clipped.
+Signal xo2chub/rom_rd_addr_s_0_S1[7] undriven or does not drive anything -
+     clipped.
+Signal xo2chub/rom_rd_addr_s_0_COUT[7] undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_16_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_16_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/N_3 undriven or does not drive anything - clipped.
+Signal xo2chub/er2_tdo[14] undriven or does not drive anything - clipped.
+Signal xo2chub/er2_tdo[15] undriven or does not drive anything - clipped.
+Signal xo2chub/jtdo2_int_prm_15_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_15_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/er2_tdo[12] undriven or does not drive anything - clipped.
+Signal xo2chub/er2_tdo[13] undriven or does not drive anything - clipped.
+Signal xo2chub/jtdo2_int_prm_13_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_13_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/er2_tdo[10] undriven or does not drive anything - clipped.
+Signal xo2chub/er2_tdo[11] undriven or does not drive anything - clipped.
+Signal xo2chub/jtdo2_int_prm_11_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_11_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/er2_tdo[8] undriven or does not drive anything - clipped.
+Signal xo2chub/er2_tdo[9] undriven or does not drive anything - clipped.
+Signal xo2chub/jtdo2_int_prm_9_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_9_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/er2_tdo[6] undriven or does not drive anything - clipped.
+Signal xo2chub/er2_tdo[7] undriven or does not drive anything - clipped.
+Signal xo2chub/jtdo2_int_prm_7_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_7_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/er2_tdo[4] undriven or does not drive anything - clipped.
+Signal xo2chub/er2_tdo[5] undriven or does not drive anything - clipped.
+Signal xo2chub/jtdo2_int_prm_5_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_5_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/er2_tdo[2] undriven or does not drive anything - clipped.
+Signal xo2chub/er2_tdo[3] undriven or does not drive anything - clipped.
+
+                                   Page 15
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Removed logic (cont)
+--------------------
+Signal xo2chub/jtdo2_int_prm_3_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_3_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/er2_tdo[1] undriven or does not drive anything - clipped.
+Signal xo2chub/jtdo2_int_prm_1_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/jtdo2_int_prm_1_0_0_COUT undriven or does not drive anything -
+     clipped.
+Signal xo2chub/ip_enable[15] undriven or does not drive anything - clipped.
+Signal xo2chub/genblk7.un1_jtagf_u_1 undriven or does not drive anything -
+     clipped.
+Signal xo2chub/genblk7.un1_jtagf_u undriven or does not drive anything -
+     clipped.
+Signal xo2chub/tdoa undriven or does not drive anything - clipped.
+Signal xo2chub/tdia undriven or does not drive anything - clipped.
+Signal xo2chub/tmsa undriven or does not drive anything - clipped.
+Signal xo2chub/tcka undriven or does not drive anything - clipped.
+Signal xo2chub/cdn undriven or does not drive anything - clipped.
+Signal xo2chub/bit_count_cry_0_S0[0] undriven or does not drive anything -
+     clipped.
+Signal xo2chub/N_1 undriven or does not drive anything - clipped.
+Signal quad_ins_3__u_quad_decoder/add_2335_1/S1 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_3__u_quad_decoder/add_2335_1/S0 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_3__u_quad_decoder/add_2335_1/CI undriven or does not drive
+     anything - clipped.
+Signal quad_ins_3__u_quad_decoder/add_2335_33/CO undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_0__u_stepper/add_552_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_0__u_stepper/add_552_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_0__u_stepper/add_552_9/S1 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_0__u_stepper/add_552_9/CO undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_0__u_stepper/add_551_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_0__u_stepper/add_551_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_0__u_stepper/add_551_13/S1 undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_0__u_stepper/add_551_13/CO undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_6__u_stepper/add_552_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_6__u_stepper/add_552_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_6__u_stepper/add_552_9/S1 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_6__u_stepper/add_552_9/CO undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_6__u_stepper/add_551_1/S0 undriven or does not drive anything
+     - clipped.
+
+                                   Page 16
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Removed logic (cont)
+--------------------
+Signal stepper_ins_6__u_stepper/add_551_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_6__u_stepper/add_551_13/S1 undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_6__u_stepper/add_551_13/CO undriven or does not drive
+     anything - clipped.
+Signal quad_ins_1__u_quad_decoder/add_2368_1/S1 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_1__u_quad_decoder/add_2368_1/S0 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_1__u_quad_decoder/add_2368_1/CI undriven or does not drive
+     anything - clipped.
+Signal quad_ins_1__u_quad_decoder/add_2368_33/CO undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_3__u_stepper/add_552_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_3__u_stepper/add_552_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_3__u_stepper/add_552_9/S1 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_3__u_stepper/add_552_9/CO undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_3__u_stepper/add_551_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_3__u_stepper/add_551_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_3__u_stepper/add_551_13/S1 undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_3__u_stepper/add_551_13/CO undriven or does not drive
+     anything - clipped.
+Signal quad_ins_2__u_quad_decoder/add_2302_1/S1 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_2__u_quad_decoder/add_2302_1/S0 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_2__u_quad_decoder/add_2302_1/CI undriven or does not drive
+     anything - clipped.
+Signal quad_ins_2__u_quad_decoder/add_2302_33/CO undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_2__u_stepper/add_552_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_2__u_stepper/add_552_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_2__u_stepper/add_552_9/S1 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_2__u_stepper/add_552_9/CO undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_2__u_stepper/add_551_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_2__u_stepper/add_551_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_2__u_stepper/add_551_13/S1 undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_2__u_stepper/add_551_13/CO undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_4__u_stepper/add_552_1/S0 undriven or does not drive anything
+     - clipped.
+
+                                   Page 17
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Removed logic (cont)
+--------------------
+Signal stepper_ins_4__u_stepper/add_552_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_4__u_stepper/add_552_9/S1 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_4__u_stepper/add_552_9/CO undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_4__u_stepper/add_551_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_4__u_stepper/add_551_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_4__u_stepper/add_551_13/S1 undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_4__u_stepper/add_551_13/CO undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_1__u_stepper/add_555_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/add_555_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/add_555_9/S1 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/add_555_9/CO undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/add_554_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/add_554_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/SLO_buf[46] undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/SLO_buf[47] undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/SLO_buf[48] undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/SLO_buf[49] undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/SLO_buf[50] undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/SLO_buf[51] undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_1__u_stepper/add_554_13/S1 undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_1__u_stepper/add_554_13/CO undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_1__u_stepper/SLO[47] undriven or does not drive anything -
+     clipped.
+Signal stepper_ins_1__u_stepper/n400 undriven or does not drive anything -
+     clipped.
+Signal stepper_ins_1__u_stepper/SLO[48] undriven or does not drive anything -
+     clipped.
+Signal stepper_ins_1__u_stepper/n399 undriven or does not drive anything -
+     clipped.
+Signal stepper_ins_1__u_stepper/SLO[49] undriven or does not drive anything -
+     clipped.
+Signal stepper_ins_1__u_stepper/n398 undriven or does not drive anything -
+     clipped.
+Signal stepper_ins_1__u_stepper/SLO[50] undriven or does not drive anything -
+     clipped.
+
+                                   Page 18
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Removed logic (cont)
+--------------------
+Signal stepper_ins_1__u_stepper/n397 undriven or does not drive anything -
+     clipped.
+Signal stepper_ins_1__u_stepper/SLO[51] undriven or does not drive anything -
+     clipped.
+Signal stepper_ins_1__u_stepper/n396 undriven or does not drive anything -
+     clipped.
+Signal quad_ins_0__u_quad_decoder/add_2467_1/S1 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_0__u_quad_decoder/add_2467_1/S0 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_0__u_quad_decoder/add_2467_1/CI undriven or does not drive
+     anything - clipped.
+Signal quad_ins_0__u_quad_decoder/add_2467_33/CO undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_5__u_stepper/add_552_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_5__u_stepper/add_552_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_5__u_stepper/add_552_9/S1 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_5__u_stepper/add_552_9/CO undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_5__u_stepper/add_551_1/S0 undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_5__u_stepper/add_551_1/CI undriven or does not drive anything
+     - clipped.
+Signal stepper_ins_5__u_stepper/add_551_13/S1 undriven or does not drive
+     anything - clipped.
+Signal stepper_ins_5__u_stepper/add_551_13/CO undriven or does not drive
+     anything - clipped.
+Signal spi_slave_top_inst/spi_ctrl_inst/mem_burst_cnt_3090_add_4_9/S1 undriven
+     or does not drive anything - clipped.
+Signal spi_slave_top_inst/spi_ctrl_inst/mem_burst_cnt_3090_add_4_9/CO undriven
+     or does not drive anything - clipped.
+Signal spi_slave_top_inst/spi_ctrl_inst/mem_addr_3092_add_4_1/S0 undriven or
+     does not drive anything - clipped.
+Signal spi_slave_top_inst/spi_ctrl_inst/mem_addr_3092_add_4_1/CI undriven or
+     does not drive anything - clipped.
+Signal spi_slave_top_inst/spi_ctrl_inst/mem_addr_3092_add_4_9/S1 undriven or
+     does not drive anything - clipped.
+Signal spi_slave_top_inst/spi_ctrl_inst/mem_addr_3092_add_4_9/CO undriven or
+     does not drive anything - clipped.
+Signal spi_slave_top_inst/spi_ctrl_inst/mem_burst_cnt_3090_add_4_1/S0 undriven
+     or does not drive anything - clipped.
+Signal spi_slave_top_inst/spi_ctrl_inst/mem_burst_cnt_3090_add_4_1/CI undriven
+     or does not drive anything - clipped.
+Signal quad_ins_4__u_quad_decoder/add_2434_1/S1 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_4__u_quad_decoder/add_2434_1/S0 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_4__u_quad_decoder/add_2434_1/CI undriven or does not drive
+     anything - clipped.
+Signal quad_ins_4__u_quad_decoder/add_2434_33/CO undriven or does not drive
+     anything - clipped.
+Signal quad_ins_6__u_quad_decoder/add_2401_1/S1 undriven or does not drive
+     anything - clipped.
+
+                                   Page 19
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Removed logic (cont)
+--------------------
+Signal quad_ins_6__u_quad_decoder/add_2401_1/S0 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_6__u_quad_decoder/add_2401_1/CI undriven or does not drive
+     anything - clipped.
+Signal quad_ins_6__u_quad_decoder/add_2401_33/CO undriven or does not drive
+     anything - clipped.
+Signal quad_ins_5__u_quad_decoder/add_2269_1/S1 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_5__u_quad_decoder/add_2269_1/S0 undriven or does not drive
+     anything - clipped.
+Signal quad_ins_5__u_quad_decoder/add_2269_1/CI undriven or does not drive
+     anything - clipped.
+Signal quad_ins_5__u_quad_decoder/add_2269_33/CO undriven or does not drive
+     anything - clipped.
+Signal u_status_led/equal_11_0/S1 undriven or does not drive anything - clipped.
+     
+Signal u_status_led/equal_11_0/S0 undriven or does not drive anything - clipped.
+     
+Signal u_status_led/equal_11_0/CI undriven or does not drive anything - clipped.
+     
+Signal u_status_led/add_395_1/S0 undriven or does not drive anything - clipped.
+Signal u_status_led/add_395_1/CI undriven or does not drive anything - clipped.
+Signal u_status_led/equal_11_11/S1 undriven or does not drive anything -
+     clipped.
+Signal u_status_led/equal_11_11/S0 undriven or does not drive anything -
+     clipped.
+Signal u_status_led/sub_14_add_2_1/S0 undriven or does not drive anything -
+     clipped.
+Signal u_status_led/sub_14_add_2_1/CI undriven or does not drive anything -
+     clipped.
+Signal u_status_led/sub_14_add_2_13/CO undriven or does not drive anything -
+     clipped.
+Signal u_status_led/equal_11_13_25331/S1 undriven or does not drive anything -
+     clipped.
+Signal u_status_led/equal_11_13_25331/S0 undriven or does not drive anything -
+     clipped.
+Signal u_status_led/equal_11_9/S1 undriven or does not drive anything - clipped.
+     
+Signal u_status_led/equal_11_9/S0 undriven or does not drive anything - clipped.
+     
+Signal u_status_led/equal_11_13/S1 undriven or does not drive anything -
+     clipped.
+Signal u_status_led/equal_11_13/CO undriven or does not drive anything -
+     clipped.
+Signal u_status_led/pwm_freq_cntr_3086_add_4_1/S0 undriven or does not drive
+     anything - clipped.
+Signal u_status_led/pwm_freq_cntr_3086_add_4_1/CI undriven or does not drive
+     anything - clipped.
+Signal u_status_led/pwm_freq_cntr_3086_add_4_13/S1 undriven or does not drive
+     anything - clipped.
+Signal u_status_led/pwm_freq_cntr_3086_add_4_13/CO undriven or does not drive
+     anything - clipped.
+Signal u_status_led/add_395_13/CO undriven or does not drive anything - clipped.
+     
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/bit_cnt_309
+     3_add_4_7/S1 undriven or does not drive anything - clipped.
+
+                                   Page 20
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Removed logic (cont)
+--------------------
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/bit_cnt_309
+     3_add_4_7/CO undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/bit_cnt_309
+     3_add_4_1/S0 undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/bit_cnt_309
+     3_add_4_1/CI undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/sub_305_add
+     _2_1/S0 undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/sub_305_add
+     _2_1/CI undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/sub_305_add
+     _2_9/S1 undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u/sub_305_add
+     _2_9/CO undriven or does not drive anything - clipped.
+Signal
+     mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/sub_309_add_2_1/S0
+     undriven or does not drive anything - clipped.
+Signal
+     mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/sub_309_add_2_1/CI
+     undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/sub_309_add_2_11/
+     CO undriven or does not drive anything - clipped.
+Signal
+     mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/sub_307_add_2_1/S0
+     undriven or does not drive anything - clipped.
+Signal
+     mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/sub_307_add_2_1/CI
+     undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/sub_307_add_2_11/
+     CO undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/tm_wr_addr_cntr_3
+     096_add_4_1/S0 undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/tm_wr_addr_cntr_3
+     096_add_4_1/CI undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/tm_wr_addr_cntr_3
+     096_add_4_11/CO undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/tm_rd_addr_cntr_3
+     095_add_4_11/CO undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/tm_rd_addr_cntr_3
+     095_add_4_1/S0 undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/tm_rd_addr_cntr_3
+     095_add_4_1/CI undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/te_precnt_
+     3097_add_4_17/S1 undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/te_precnt_
+     3097_add_4_17/CO undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/pmi_ram_dp
+     XO2binarynonespeedasyncdisablereg112112/scuba_vhi undriven or does not
+     drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/te_precnt_
+     3097_add_4_1/S0 undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/te_precnt_
+     3097_add_4_1/CI undriven or does not drive anything - clipped.
+Signal mcm_top_reveal_coretop_instance/jupdate[0] undriven or does not drive
+     anything - clipped.
+Block xo2chub/genblk7.jtagf_u_RNIO314 was optimized away.
+
+                                   Page 21
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Removed logic (cont)
+--------------------
+Block xo2chub/ip_enable_0_.CN was optimized away.
+Block stepper_ins_0__u_stepper/i29509 was optimized away.
+Block stepper_ins_6__u_stepper/i29503 was optimized away.
+Block stepper_ins_6__u_stepper/i4463_1_lut was optimized away.
+Block stepper_ins_3__u_stepper/i29507 was optimized away.
+Block stepper_ins_2__u_stepper/i29502 was optimized away.
+Block stepper_ins_4__u_stepper/i29506 was optimized away.
+Block stepper_ins_1__u_stepper/i29508 was optimized away.
+Block stepper_ins_5__u_stepper/i29505 was optimized away.
+Block stepper_ins_5__u_stepper/i4472_1_lut was optimized away.
+Block spi_slave_top_inst/spi_ctrl_inst/resetn_I_0_1_lut_rep_871 was optimized
+     away.
+Block spi_slave_top_inst/wb_ctrl_inst/wr_en_I_0_1_lut was optimized away.
+Block piezo_ins_6__u_piezo/i5077_1_lut was optimized away.
+Block mcm_top_reveal_coretop_instance/i29504 was optimized away.
+Block mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/jrstn_I_0_1
+     _lut was optimized away.
+Block mcm_top_reveal_coretop_instance/jtagconn16_inst_0_lut_buf_8 was optimized
+     away.
+Block mcm_top_reveal_coretop_instance/jtagconn16_inst_0_lut_buf_7 was optimized
+     away.
+Block mcm_top_reveal_coretop_instance/jtagconn16_inst_0_lut_buf_6 was optimized
+     away.
+Block mcm_top_reveal_coretop_instance/jtagconn16_inst_0_lut_buf_4 was optimized
+     away.
+Block mcm_top_reveal_coretop_instance/jtagconn16_inst_0_lut_buf_3 was optimized
+     away.
+Block mcm_top_reveal_coretop_instance/jtagconn16_inst_0_lut_buf_2 was optimized
+     away.
+Block mcm_top_reveal_coretop_instance/er2_tdo[0]_keep_buf_lut_buf_1 was
+     optimized away.
+Block piezo_ins_5__u_piezo/i5084_1_lut was optimized away.
+Block piezo_ins_4__u_piezo/i1_1_lut was optimized away.
+Block piezo_ins_4__u_piezo/i5091_1_lut was optimized away.
+Block piezo_ins_3__u_piezo/i1_1_lut was optimized away.
+Block piezo_ins_3__u_piezo/i5099_1_lut was optimized away.
+Block piezo_ins_2__u_piezo/i1_1_lut was optimized away.
+Block piezo_ins_2__u_piezo/i5106_1_lut was optimized away.
+Block piezo_ins_1__u_piezo/i1_1_lut was optimized away.
+Block piezo_ins_1__u_piezo/i5113_1_lut was optimized away.
+Block piezo_ins_0__u_piezo/i1_1_lut was optimized away.
+Block piezo_ins_0__u_piezo/i5120_1_lut was optimized away.
+Block xo2chub/GND_0 was optimized away.
+Block VHI_reset_u was optimized away.
+Block mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_dpXO2binar
+     ynonespeedasyncdisablereg9111204891112048/scuba_vlo_inst was optimized
+     away.
+Block mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_dpXO2binar
+     ynonespeedasyncdisablereg9111204891112048/scuba_vhi_inst was optimized
+     away.
+Block mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/pmi_ram_dpX
+     O2binarynonespeedasyncdisablereg112112/scuba_vlo_inst was optimized away.
+
+
+
+
+
+                                   Page 22
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Memory Usage
+------------
+
+/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_dpXO2binarynone
+     speedasyncdisablereg9111204891112048:
+    EBRs: 22
+    RAM SLICEs: 0
+    Logic SLICEs: 0
+    PFU Registers: 0
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_10_0:  TYPE=
+         DP8KC,  Width_B= 1,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_0_21:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_1_20:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_2_19:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_3_18:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_4_17:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_5_16:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_6_15:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_7_14:  TYPE=
+
+                                   Page 23
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Memory Usage (cont)
+-------------------
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_8_13:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_9_12:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_0_10_11:  TYPE=
+         DP8KC,  Width_B= 1,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_0_10:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_1_9:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_2_8:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_3_7:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_4_6:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_5_5:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+
+                                   Page 24
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Memory Usage (cont)
+-------------------
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_6_4:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_7_3:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_8_2:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+    -Contains EBR pmi_ram_dpXbnonesadr911120489111204811f45a5e_1_9_1:  TYPE=
+         DP8KC,  Width_B= 9,  Depth_A= 1024,  Depth_B= 1024,  REGMODE_A= OUTREG,
+         REGMODE_B= OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,
+         WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,
+         MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr911120489111204811f45a5e__PMIP__2048__91__91B
+/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/pmi_ram_dpXO2bin
+     arynonespeedasyncdisablereg112112:
+    EBRs: 1
+    RAM SLICEs: 0
+    Logic SLICEs: 0
+    PFU Registers: 0
+    -Contains EBR pmi_ram_dpXbnonesadr11211211401afe_0_0_0:  TYPE= DP8KC,
+         Width_B= 1,  Depth_A= 2,  Depth_B= 2,  REGMODE_A= OUTREG,  REGMODE_B=
+         OUTREG,  RESETMODE= ASYNC,  ASYNC_RESET_RELEASE= ASYNC,  WRITEMODE_A=
+         NORMAL,  WRITEMODE_B= NORMAL,  GSR= DISABLED,  MEM_LPC_FILE=
+         pmi_ram_dpXbnonesadr11211211401afe__PMIP__2__1__1B
+
+     
+
+PLL/DLL Summary
+---------------
+
+PLL 1:                                     Pin/Node Value
+  PLL Instance Name:                                __/PLLInst_0
+  PLL Type:                                         EHXPLLJ
+  Input Clock:                             PIN      clk_in_N
+  Output Clock(P):                                  NONE
+  Output Clock(S):                                  NONE
+  Output Clock(S2):                                 NONE
+  Output Clock(S3):                        NODE     clk_1MHz
+  Feedback Signal:                         NODE     __/CLKFB_t
+  Reset Signal:                                     NONE
+  M Divider Reset Signal:                           NONE
+  C Divider Reset Signal:                           NONE
+
+                                   Page 25
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+PLL/DLL Summary (cont)
+----------------------
+  D Divider Reset Signal:                           NONE
+  Standby Signal:                                   NONE
+  PLL LOCK signal:                                  NONE
+  PLL Data bus CLK Signal:                          NONE
+  PLL Data bus Strobe Signal:                       NONE
+  PLL Data bus Reset Signal:                        NONE
+  PLL Data bus Write Enable Signal:                 NONE
+  PLL Data bus Address0:                            NONE
+  PLL Data bus Address1:                            NONE
+  PLL Data bus Address2:                            NONE
+  PLL Data bus Address3:                            NONE
+  PLL Data bus Address4:                            NONE
+  PLL Data In bus Data0:                            NONE
+  PLL Data In bus Data1:                            NONE
+  PLL Data In bus Data2:                            NONE
+  PLL Data In bus Data3:                            NONE
+  PLL Data In bus Data4:                            NONE
+  PLL Data In bus Data5:                            NONE
+  PLL Data In bus Data6:                            NONE
+  PLL Data In bus Data7:                            NONE
+  PLL Data bus Acknowledge:                         NONE
+  PLL Data Out bus Data0:                           NONE
+  PLL Data Out bus Data1:                           NONE
+  PLL Data Out bus Data2:                           NONE
+  PLL Data Out bus Data3:                           NONE
+  PLL Data Out bus Data4:                           NONE
+  PLL Data Out bus Data5:                           NONE
+  PLL Data Out bus Data6:                           NONE
+  PLL Data Out bus Data7:                           NONE
+  Input Clock Frequency (MHz):                      12.0000
+  Output Clock(P) Frequency (MHz):                  NA
+  Output Clock(S) Frequency (MHz):                  NA
+  Output Clock(S2) Frequency (MHz):                 NA
+  Output Clock(S3) Frequency (MHz):                  1.0000
+  CLKOP Post Divider A Input:                       DIVA
+  CLKOS Post Divider B Input:                       DIVB
+  CLKOS2 Post Divider C Input:                      DIVC
+  CLKOS3 Post Divider D Input:                      DIVD
+  Pre Divider A Input:                              VCO_PHASE
+  Pre Divider B Input:                              VCO_PHASE
+  Pre Divider C Input:                              DIVD
+  Pre Divider D Input:                              VCO_PHASE
+  VCO Bypass A Input:                               VCO_PHASE
+  VCO Bypass B Input:                               REFCLK
+  VCO Bypass C Input:                               VCO_PHASE
+  VCO Bypass D Input:                               REFCLK
+  FB_MODE:                                          INT_OP
+  CLKI Divider:                                     1
+  CLKFB Divider:                                    8
+  CLKOP Divider:                                    3
+  CLKOS Divider:                                    120
+  CLKOS2 Divider:                                   120
+  CLKOS3 Divider:                                   12
+  Fractional N Divider:                             0
+  CLKOP Desired Phase Shift(degree):                0
+  CLKOP Trim Option Rising/Falling:                 RISING
+
+                                   Page 26
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+PLL/DLL Summary (cont)
+----------------------
+  CLKOP Trim Option Delay:                          0
+  CLKOS Desired Phase Shift(degree):                0
+  CLKOS Trim Option Rising/Falling:                 FALLING
+  CLKOS Trim Option Delay:                          0
+  CLKOS2 Desired Phase Shift(degree):               0
+  CLKOS3 Desired Phase Shift(degree):               0
+
+OSC Summary
+-----------
+
+OSC 1:                                     Pin/Node Value
+  OSC Instance Name:                                OSCH_inst
+  OSC Type:                                         OSCH
+  STDBY Input:                                      NONE
+  OSC Output:                              NODE     clk
+  OSC Nominal Frequency (MHz):                      38.00
+
+Embedded Functional Block Connection Summary
+--------------------------------------------
+
+   Desired WISHBONE clock frequency: 100.0 MHz
+   Clock source:                     clk
+   Reset source:                     resetn_c
+   Functions mode:
+      I2C #1 (Primary) Function:     DISABLED
+      I2C #2 (Secondary) Function:   DISABLED
+      SPI Function:                  ENABLED
+      Timer/Counter Function:        DISABLED
+      Timer/Counter Mode:            WB
+      UFM Connection:                DISABLED
+      PLL0 Connection:               DISABLED
+      PLL1 Connection:               DISABLED
+   I2C Function Summary:
+   --------------------
+      None
+   SPI Function Summary:
+   --------------------
+      SPI Mode:               SLAVE
+      SPI Data Order:         MSB to LSB
+      SPI Clock Inversion:    DISABLED
+      SPI Phase Adjust:       DISABLED
+      SPI Wakeup:             DISABLED
+   Timer/Counter Function Summary:
+   ------------------------------
+      None
+   UFM Function Summary:
+   --------------------
+      UFM Utilization:        General Purpose Flash Memory
+      Available General
+      Purpose Flash Memory:   2046 Pages (2046*128 Bits)
+
+           EBR Blocks with Unique
+      Initialization Data:    0
+
+           WID		EBR Instance
+      ---		------------
+
+                                   Page 27
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Embedded Functional Block Connection Summary (cont)
+---------------------------------------------------
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_
+     0/pmi_ram_dpXO2binarynonespeedasyncdisablereg112112/pmi_ram_dpXbnonesadr112
+     11211401afe_0_0_0
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_10_0
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_0_21
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_1_20
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_2_19
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_3_18
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_4_17
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_5_16
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_6_15
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_7_14
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_8_13
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_9_12
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_0_10_11
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_0_10
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_1_9
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_2_8
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_3_7
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_4_6
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+
+                                   Page 28
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+Embedded Functional Block Connection Summary (cont)
+---------------------------------------------------
+     911120489111204811f45a5e_1_5_5
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_6_4
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_7_3
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_8_2
+      0b0000000001	mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_r
+     am_dpXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr
+     911120489111204811f45a5e_1_9_1
+
+
+ASIC Components
+---------------
+
+Instance Name: OSCH_inst
+         Type: OSCH
+Instance Name: __/PLLInst_0
+         Type: EHXPLLJ
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/pm
+     i_ram_dpXO2binarynonespeedasyncdisablereg112112/pmi_ram_dpXbnonesadr1121121
+     1401afe_0_0_0
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_10_0
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_0_21
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_1_20
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_2_19
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_3_18
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_4_17
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_5_16
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+
+                                   Page 29
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+ASIC Components (cont)
+----------------------
+     20489111204811f45a5e_0_6_15
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_7_14
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_8_13
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_9_12
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_0_10_11
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_0_10
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_1_9
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_2_8
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_3_7
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_4_6
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_5_5
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_6_4
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_7_3
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+     20489111204811f45a5e_1_8_2
+         Type: DP8KC
+Instance Name: mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_d
+     pXO2binarynonespeedasyncdisablereg9111204891112048/pmi_ram_dpXbnonesadr9111
+
+                                   Page 30
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+ASIC Components (cont)
+----------------------
+     20489111204811f45a5e_1_9_1
+         Type: DP8KC
+Instance Name: spi_slave_top_inst/spi_slave_efb_inst/EFBInst_0
+         Type: EFB
+Instance Name: xo2chub/genblk7.jtagf_u
+         Type: JTAGF
+
+GSR Usage
+---------
+
+GSR Component:
+   The local reset signal 'resetn_c' of the design has been inferred as Global
+        Set Reset (GSR). The reset signal used for GSR control is 'resetn_c'.
+        
+
+     GSR Property:
+   The design components with GSR property set to ENABLED will respond to global
+        set reset while the components with GSR property set to DISABLED will
+        not.
+        
+
+     Components on inferred reset domain with GSR Property disabled
+--------------------------------------------------------------
+
+     These components have the GSR property set to DISABLED and are on the
+     inferred reset domain. The components will respond to the reset signal
+     'resetn_c' via the local reset on the component and not the GSR component.
+
+     Type and number of components of the type: 
+   Register = 629 
+   EFB = 1
+
+     Type and instance name of component: 
+   Register : shutter_ins_1__u_shutter/mode_160
+   Register : shutter_ins_2__u_shutter/mode_160
+   Register : io_ins_3__u_io/mode_90
+   Register : io_ins_5__u_io/mode_90
+   Register : io_ins_4__u_io/mode_90
+   Register : io_ins_2__u_io/mode_90
+   Register : u_otm_dac/mode_30
+   Register : u_otm_dac/LASER_CNTRL_r_31
+   Register : servo_ins_3__u_servo/mode_60
+   Register : io_ins_0__u_io/mode_90
+   Register : io_ins_1__u_io/mode_90
+   Register : servo_ins_0__u_servo/mode_60
+   Register : servo_ins_4__u_servo/mode_60
+   Register : servo_ins_2__u_servo/mode_60
+   Register : servo_ins_1__u_servo/mode_60
+   Register : servo_ins_5__u_servo/mode_60
+   Register : intrpt_ins_4__u_intrpt_ctrl/intrpt_in_dly__i0
+   Register : intrpt_ins_4__u_intrpt_ctrl/intrpt_in_reg__i0
+   Register : intrpt_ins_4__u_intrpt_ctrl/clear_intrpt_317
+   Register : intrpt_ins_4__u_intrpt_ctrl/assert_intrpt_316
+   Register : intrpt_ins_4__u_intrpt_ctrl/intrpt_in_dly__i2
+   Register : intrpt_ins_4__u_intrpt_ctrl/intrpt_in_dly__i1
+   Register : intrpt_ins_4__u_intrpt_ctrl/intrpt_in_reg__i1
+
+                                   Page 31
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : intrpt_ins_4__u_intrpt_ctrl/intrpt_in_reg__i2
+   Register : shutter_ins_6__u_shutter/mode_160
+   Register : shutter_ins_5__u_shutter/mode_160
+   Register : shutter_ins_4__u_shutter/mode_160
+   Register : intrpt_ins_3__u_intrpt_ctrl/intrpt_in_dly__i0
+   Register : intrpt_ins_3__u_intrpt_ctrl/intrpt_in_reg__i0
+   Register : intrpt_ins_3__u_intrpt_ctrl/clear_intrpt_317
+   Register : intrpt_ins_3__u_intrpt_ctrl/assert_intrpt_316
+   Register : intrpt_ins_3__u_intrpt_ctrl/intrpt_in_dly__i2
+   Register : intrpt_ins_3__u_intrpt_ctrl/intrpt_in_dly__i1
+   Register : intrpt_ins_3__u_intrpt_ctrl/intrpt_in_reg__i1
+   Register : intrpt_ins_3__u_intrpt_ctrl/intrpt_in_reg__i2
+   Register : intrpt_ins_2__u_intrpt_ctrl/intrpt_in_dly__i0
+   Register : intrpt_ins_2__u_intrpt_ctrl/intrpt_in_reg__i0
+   Register : intrpt_ins_2__u_intrpt_ctrl/clear_intrpt_317
+   Register : intrpt_ins_2__u_intrpt_ctrl/assert_intrpt_316
+   Register : intrpt_ins_2__u_intrpt_ctrl/intrpt_in_dly__i2
+   Register : intrpt_ins_2__u_intrpt_ctrl/intrpt_in_dly__i1
+   Register : intrpt_ins_2__u_intrpt_ctrl/intrpt_in_reg__i1
+   Register : intrpt_ins_2__u_intrpt_ctrl/intrpt_in_reg__i2
+   Register : intrpt_ins_1__u_intrpt_ctrl/intrpt_in_reg__i0
+   Register : intrpt_ins_1__u_intrpt_ctrl/intrpt_in_dly__i0
+   Register : intrpt_ins_1__u_intrpt_ctrl/clear_intrpt_317
+   Register : intrpt_ins_1__u_intrpt_ctrl/assert_intrpt_316
+   Register : intrpt_ins_1__u_intrpt_ctrl/intrpt_in_reg__i1
+   Register : intrpt_ins_1__u_intrpt_ctrl/intrpt_in_reg__i2
+   Register : intrpt_ins_1__u_intrpt_ctrl/intrpt_in_dly__i1
+   Register : intrpt_ins_1__u_intrpt_ctrl/intrpt_in_dly__i2
+   Register : intrpt_ins_0__u_intrpt_ctrl/intrpt_in_reg__i0
+   Register : intrpt_ins_0__u_intrpt_ctrl/intrpt_in_dly__i0
+   Register : intrpt_ins_0__u_intrpt_ctrl/clear_intrpt_317
+   Register : intrpt_ins_0__u_intrpt_ctrl/assert_intrpt_316
+   Register : intrpt_ins_0__u_intrpt_ctrl/intrpt_in_reg__i1
+   Register : intrpt_ins_0__u_intrpt_ctrl/intrpt_in_reg__i2
+   Register : intrpt_ins_0__u_intrpt_ctrl/intrpt_in_dly__i1
+   Register : intrpt_ins_0__u_intrpt_ctrl/intrpt_in_dly__i2
+   Register : shutter_ins_0__u_shutter/mode_160
+   Register : piezo_ins_0__u_piezo/mode_38
+   Register : piezo_ins_1__u_piezo/mode_38
+   Register : piezo_ins_2__u_piezo/mode_38
+   Register : shutter_ins_3__u_shutter/mode_160
+   Register : piezo_ins_3__u_piezo/mode_38
+   Register : piezo_ins_4__u_piezo/mode_38
+   Register : piezo_ins_5__u_piezo/mode_38
+   Register : servo_ins_6__u_servo/mode_60
+   Register : u_status_led/pwm_duty__i0
+   Register : u_status_led/EM_STOP_338
+   Register : u_status_led/pwm_duty__i11
+   Register : u_status_led/pwm_duty__i10
+   Register : u_status_led/pwm_duty__i9
+   Register : u_status_led/pwm_duty__i8
+   Register : u_status_led/pwm_duty__i7
+   Register : u_status_led/pwm_duty__i6
+   Register : u_status_led/pwm_duty__i5
+   Register : u_status_led/pwm_duty__i4
+   Register : u_status_led/pwm_duty__i3
+
+                                   Page 32
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : u_status_led/pwm_duty__i2
+   Register : u_status_led/pwm_duty__i1
+   Register : quad_ins_5__u_quad_decoder/quad_set__i0
+   Register : quad_ins_5__u_quad_decoder/state_FSM_i0
+   Register : quad_ins_5__u_quad_decoder/quad_homing__i0
+   Register : quad_ins_5__u_quad_decoder/i41_407
+   Register : quad_ins_5__u_quad_decoder/quad_set_complete_451
+   Register : quad_ins_5__u_quad_decoder/quad_set__i31
+   Register : quad_ins_5__u_quad_decoder/quad_set__i30
+   Register : quad_ins_5__u_quad_decoder/quad_set__i29
+   Register : quad_ins_5__u_quad_decoder/quad_set__i28
+   Register : quad_ins_5__u_quad_decoder/quad_set__i27
+   Register : quad_ins_5__u_quad_decoder/quad_set__i26
+   Register : quad_ins_5__u_quad_decoder/quad_set__i25
+   Register : quad_ins_5__u_quad_decoder/quad_set__i24
+   Register : quad_ins_5__u_quad_decoder/quad_set__i23
+   Register : quad_ins_5__u_quad_decoder/quad_set__i22
+   Register : quad_ins_5__u_quad_decoder/quad_set__i21
+   Register : quad_ins_5__u_quad_decoder/quad_set__i20
+   Register : quad_ins_5__u_quad_decoder/quad_set__i19
+   Register : quad_ins_5__u_quad_decoder/quad_set__i18
+   Register : quad_ins_5__u_quad_decoder/quad_set__i17
+   Register : quad_ins_5__u_quad_decoder/quad_set__i16
+   Register : quad_ins_5__u_quad_decoder/quad_set__i15
+   Register : quad_ins_5__u_quad_decoder/quad_set__i14
+   Register : quad_ins_5__u_quad_decoder/quad_set__i13
+   Register : quad_ins_5__u_quad_decoder/quad_set__i12
+   Register : quad_ins_5__u_quad_decoder/quad_set__i11
+   Register : quad_ins_5__u_quad_decoder/quad_set__i10
+   Register : quad_ins_5__u_quad_decoder/quad_set__i9
+   Register : quad_ins_5__u_quad_decoder/quad_set__i8
+   Register : quad_ins_5__u_quad_decoder/quad_set__i7
+   Register : quad_ins_5__u_quad_decoder/quad_set__i6
+   Register : quad_ins_5__u_quad_decoder/quad_set__i5
+   Register : quad_ins_5__u_quad_decoder/quad_set__i4
+   Register : quad_ins_5__u_quad_decoder/quad_set__i3
+   Register : quad_ins_5__u_quad_decoder/quad_set__i2
+   Register : quad_ins_5__u_quad_decoder/quad_set__i1
+   Register : quad_ins_5__u_quad_decoder/state_FSM_i1
+   Register : quad_ins_5__u_quad_decoder/state_FSM_i2
+   Register : quad_ins_5__u_quad_decoder/state_FSM_i3
+   Register : quad_ins_5__u_quad_decoder/quad_homing__i1
+   Register : quad_ins_5__u_quad_decoder/quad_set_valid_404
+   Register : u_peizo_elliptec/mode_26
+   Register : intrpt_ins_6__u_intrpt_ctrl/intrpt_in_dly__i0
+   Register : intrpt_ins_6__u_intrpt_ctrl/intrpt_in_reg__i0
+   Register : intrpt_ins_6__u_intrpt_ctrl/intrpt_in_reg__i2
+   Register : intrpt_ins_6__u_intrpt_ctrl/intrpt_in_reg__i1
+   Register : intrpt_ins_6__u_intrpt_ctrl/clear_intrpt_317
+   Register : intrpt_ins_6__u_intrpt_ctrl/assert_intrpt_316
+   Register : intrpt_ins_6__u_intrpt_ctrl/intrpt_in_dly__i2
+   Register : intrpt_ins_6__u_intrpt_ctrl/intrpt_in_dly__i1
+   Register : piezo_ins_6__u_piezo/mode_38
+   Register : quad_ins_6__u_quad_decoder/quad_set__i0
+   Register : quad_ins_6__u_quad_decoder/state_FSM_i0
+   Register : quad_ins_6__u_quad_decoder/quad_homing__i0
+
+                                   Page 33
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : quad_ins_6__u_quad_decoder/state_FSM_i3
+   Register : quad_ins_6__u_quad_decoder/state_FSM_i2
+   Register : quad_ins_6__u_quad_decoder/state_FSM_i1
+   Register : quad_ins_6__u_quad_decoder/i41_407
+   Register : quad_ins_6__u_quad_decoder/quad_set_complete_451
+   Register : quad_ins_6__u_quad_decoder/quad_set__i31
+   Register : quad_ins_6__u_quad_decoder/quad_set__i30
+   Register : quad_ins_6__u_quad_decoder/quad_set__i29
+   Register : quad_ins_6__u_quad_decoder/quad_set__i28
+   Register : quad_ins_6__u_quad_decoder/quad_set__i27
+   Register : quad_ins_6__u_quad_decoder/quad_set__i26
+   Register : quad_ins_6__u_quad_decoder/quad_set__i25
+   Register : quad_ins_6__u_quad_decoder/quad_set__i24
+   Register : quad_ins_6__u_quad_decoder/quad_set__i23
+   Register : quad_ins_6__u_quad_decoder/quad_set__i22
+   Register : quad_ins_6__u_quad_decoder/quad_set__i21
+   Register : quad_ins_6__u_quad_decoder/quad_set__i20
+   Register : quad_ins_6__u_quad_decoder/quad_set__i19
+   Register : quad_ins_6__u_quad_decoder/quad_set__i18
+   Register : quad_ins_6__u_quad_decoder/quad_set__i17
+   Register : quad_ins_6__u_quad_decoder/quad_set__i16
+   Register : quad_ins_6__u_quad_decoder/quad_set__i15
+   Register : quad_ins_6__u_quad_decoder/quad_set__i14
+   Register : quad_ins_6__u_quad_decoder/quad_set__i13
+   Register : quad_ins_6__u_quad_decoder/quad_set__i12
+   Register : quad_ins_6__u_quad_decoder/quad_set__i11
+   Register : quad_ins_6__u_quad_decoder/quad_set__i10
+   Register : quad_ins_6__u_quad_decoder/quad_set__i9
+   Register : quad_ins_6__u_quad_decoder/quad_set__i8
+   Register : quad_ins_6__u_quad_decoder/quad_set__i7
+   Register : quad_ins_6__u_quad_decoder/quad_set__i6
+   Register : quad_ins_6__u_quad_decoder/quad_set__i5
+   Register : quad_ins_6__u_quad_decoder/quad_set__i4
+   Register : quad_ins_6__u_quad_decoder/quad_set__i3
+   Register : quad_ins_6__u_quad_decoder/quad_set__i2
+   Register : quad_ins_6__u_quad_decoder/quad_set__i1
+   Register : quad_ins_6__u_quad_decoder/quad_homing__i1
+   Register : quad_ins_6__u_quad_decoder/quad_set_valid_404
+   Register : quad_ins_4__u_quad_decoder/quad_set__i0
+   Register : quad_ins_4__u_quad_decoder/quad_homing__i0
+   Register : quad_ins_4__u_quad_decoder/state_FSM_i0
+   Register : quad_ins_4__u_quad_decoder/state_FSM_i3
+   Register : quad_ins_4__u_quad_decoder/state_FSM_i2
+   Register : quad_ins_4__u_quad_decoder/state_FSM_i1
+   Register : quad_ins_4__u_quad_decoder/quad_homing__i1
+   Register : quad_ins_4__u_quad_decoder/i41_407
+   Register : quad_ins_4__u_quad_decoder/quad_set_complete_451
+   Register : quad_ins_4__u_quad_decoder/quad_set__i31
+   Register : quad_ins_4__u_quad_decoder/quad_set__i30
+   Register : quad_ins_4__u_quad_decoder/quad_set__i29
+   Register : quad_ins_4__u_quad_decoder/quad_set__i28
+   Register : quad_ins_4__u_quad_decoder/quad_set__i27
+   Register : quad_ins_4__u_quad_decoder/quad_set__i26
+   Register : quad_ins_4__u_quad_decoder/quad_set__i25
+   Register : quad_ins_4__u_quad_decoder/quad_set__i24
+   Register : quad_ins_4__u_quad_decoder/quad_set__i23
+
+                                   Page 34
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : quad_ins_4__u_quad_decoder/quad_set__i22
+   Register : quad_ins_4__u_quad_decoder/quad_set__i21
+   Register : quad_ins_4__u_quad_decoder/quad_set__i20
+   Register : quad_ins_4__u_quad_decoder/quad_set__i19
+   Register : quad_ins_4__u_quad_decoder/quad_set__i18
+   Register : quad_ins_4__u_quad_decoder/quad_set__i17
+   Register : quad_ins_4__u_quad_decoder/quad_set__i16
+   Register : quad_ins_4__u_quad_decoder/quad_set__i15
+   Register : quad_ins_4__u_quad_decoder/quad_set__i14
+   Register : quad_ins_4__u_quad_decoder/quad_set__i13
+   Register : quad_ins_4__u_quad_decoder/quad_set__i12
+   Register : quad_ins_4__u_quad_decoder/quad_set__i11
+   Register : quad_ins_4__u_quad_decoder/quad_set__i10
+   Register : quad_ins_4__u_quad_decoder/quad_set__i9
+   Register : quad_ins_4__u_quad_decoder/quad_set__i8
+   Register : quad_ins_4__u_quad_decoder/quad_set__i7
+   Register : quad_ins_4__u_quad_decoder/quad_set__i6
+   Register : quad_ins_4__u_quad_decoder/quad_set__i5
+   Register : quad_ins_4__u_quad_decoder/quad_set__i4
+   Register : quad_ins_4__u_quad_decoder/quad_set__i3
+   Register : quad_ins_4__u_quad_decoder/quad_set__i2
+   Register : quad_ins_4__u_quad_decoder/quad_set__i1
+   Register : quad_ins_4__u_quad_decoder/quad_set_valid_404
+   Register : spi_slave_top_inst/spi_sdo_r__i39
+   Register : spi_slave_top_inst/spi_sdo_r__i38
+   Register : spi_slave_top_inst/spi_sdo_r__i37
+   Register : spi_slave_top_inst/spi_sdo_valid_52
+   Register : spi_slave_top_inst/spi_scsn_dly_59
+   Register : spi_slave_top_inst/spi_sdo_r__i36
+   Register : spi_slave_top_inst/spi_sdo_r__i35
+   Register : spi_slave_top_inst/spi_sdo_r__i34
+   Register : spi_slave_top_inst/spi_sdo_r__i33
+   Register : spi_slave_top_inst/spi_sdo_r__i32
+   Register : spi_slave_top_inst/spi_sdo_r__i31
+   Register : spi_slave_top_inst/spi_sdo_r__i30
+   Register : spi_slave_top_inst/spi_sdo_r__i29
+   Register : spi_slave_top_inst/spi_sdo_r__i28
+   Register : spi_slave_top_inst/spi_sdo_r__i27
+   Register : spi_slave_top_inst/spi_sdo_r__i26
+   Register : spi_slave_top_inst/spi_sdo_r__i25
+   Register : spi_slave_top_inst/spi_sdo_r__i24
+   Register : spi_slave_top_inst/spi_sdo_r__i23
+   Register : spi_slave_top_inst/spi_sdo_r__i22
+   Register : spi_slave_top_inst/spi_sdo_r__i21
+   Register : spi_slave_top_inst/spi_sdo_r__i20
+   Register : spi_slave_top_inst/spi_sdo_r__i19
+   Register : spi_slave_top_inst/spi_sdo_r__i18
+   Register : spi_slave_top_inst/spi_sdo_r__i17
+   Register : spi_slave_top_inst/spi_sdo_r__i16
+   Register : spi_slave_top_inst/spi_sdo_r__i15
+   Register : spi_slave_top_inst/spi_sdo_r__i14
+   Register : spi_slave_top_inst/spi_sdo_r__i13
+   Register : spi_slave_top_inst/spi_sdo_r__i12
+   Register : spi_slave_top_inst/spi_sdo_r__i11
+   Register : spi_slave_top_inst/spi_sdo_r__i10
+   Register : spi_slave_top_inst/spi_sdo_r__i9
+
+                                   Page 35
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : spi_slave_top_inst/spi_sdo_r__i8
+   Register : spi_slave_top_inst/spi_sdo__i2
+   Register : spi_slave_top_inst/spi_sdo__i0
+   Register : intrpt_ins_5__u_intrpt_ctrl/intrpt_in_dly__i0
+   Register : intrpt_ins_5__u_intrpt_ctrl/intrpt_in_reg__i0
+   Register : intrpt_ins_5__u_intrpt_ctrl/intrpt_in_reg__i2
+   Register : intrpt_ins_5__u_intrpt_ctrl/intrpt_in_reg__i1
+   Register : intrpt_ins_5__u_intrpt_ctrl/clear_intrpt_317
+   Register : intrpt_ins_5__u_intrpt_ctrl/assert_intrpt_316
+   Register : intrpt_ins_5__u_intrpt_ctrl/intrpt_in_dly__i2
+   Register : intrpt_ins_5__u_intrpt_ctrl/intrpt_in_dly__i1
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i0
+   Register : stepper_ins_5__u_stepper/digital_output_r_481
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i11
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i10
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i9
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i8
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i7
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i6
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i5
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i4
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i3
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i2
+   Register : stepper_ins_5__u_stepper/Cnt_NSL__i1
+   Register : stepper_ins_5__u_stepper/mode__i0
+   Register : stepper_ins_5__u_stepper/Cnt__i0
+   Register : stepper_ins_5__u_stepper/i159_483
+   Register : stepper_ins_5__u_stepper/mode__i1
+   Register : stepper_ins_5__u_stepper/mode__i2
+   Register : stepper_ins_5__u_stepper/Cnt__i1
+   Register : stepper_ins_5__u_stepper/Cnt__i2
+   Register : stepper_ins_5__u_stepper/Cnt__i3
+   Register : stepper_ins_5__u_stepper/Cnt__i4
+   Register : stepper_ins_5__u_stepper/Cnt__i5
+   Register : stepper_ins_5__u_stepper/Cnt__i6
+   Register : stepper_ins_5__u_stepper/Cnt__i7
+   Register : stepper_ins_5__u_stepper/MA_Temp_474
+   Register : stepper_ins_5__u_stepper/reset_r_480
+   Register : quad_ins_0__u_quad_decoder/state_FSM_i0
+   Register : quad_ins_0__u_quad_decoder/quad_homing__i0
+   Register : quad_ins_0__u_quad_decoder/quad_set__i0
+   Register : quad_ins_0__u_quad_decoder/i41_407
+   Register : quad_ins_0__u_quad_decoder/quad_set_complete_451
+   Register : quad_ins_0__u_quad_decoder/state_FSM_i3
+   Register : quad_ins_0__u_quad_decoder/state_FSM_i2
+   Register : quad_ins_0__u_quad_decoder/state_FSM_i1
+   Register : quad_ins_0__u_quad_decoder/quad_homing__i1
+   Register : quad_ins_0__u_quad_decoder/quad_set__i1
+   Register : quad_ins_0__u_quad_decoder/quad_set__i2
+   Register : quad_ins_0__u_quad_decoder/quad_set__i3
+   Register : quad_ins_0__u_quad_decoder/quad_set__i4
+   Register : quad_ins_0__u_quad_decoder/quad_set__i5
+   Register : quad_ins_0__u_quad_decoder/quad_set__i6
+   Register : quad_ins_0__u_quad_decoder/quad_set__i7
+   Register : quad_ins_0__u_quad_decoder/quad_set__i8
+   Register : quad_ins_0__u_quad_decoder/quad_set__i9
+
+                                   Page 36
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : quad_ins_0__u_quad_decoder/quad_set__i10
+   Register : quad_ins_0__u_quad_decoder/quad_set__i11
+   Register : quad_ins_0__u_quad_decoder/quad_set__i12
+   Register : quad_ins_0__u_quad_decoder/quad_set__i13
+   Register : quad_ins_0__u_quad_decoder/quad_set__i14
+   Register : quad_ins_0__u_quad_decoder/quad_set__i15
+   Register : quad_ins_0__u_quad_decoder/quad_set__i16
+   Register : quad_ins_0__u_quad_decoder/quad_set__i17
+   Register : quad_ins_0__u_quad_decoder/quad_set__i18
+   Register : quad_ins_0__u_quad_decoder/quad_set__i19
+   Register : quad_ins_0__u_quad_decoder/quad_set__i20
+   Register : quad_ins_0__u_quad_decoder/quad_set__i21
+   Register : quad_ins_0__u_quad_decoder/quad_set__i22
+   Register : quad_ins_0__u_quad_decoder/quad_set__i23
+   Register : quad_ins_0__u_quad_decoder/quad_set__i24
+   Register : quad_ins_0__u_quad_decoder/quad_set__i25
+   Register : quad_ins_0__u_quad_decoder/quad_set__i26
+   Register : quad_ins_0__u_quad_decoder/quad_set__i27
+   Register : quad_ins_0__u_quad_decoder/quad_set__i28
+   Register : quad_ins_0__u_quad_decoder/quad_set__i29
+   Register : quad_ins_0__u_quad_decoder/quad_set__i30
+   Register : quad_ins_0__u_quad_decoder/quad_set__i31
+   Register : quad_ins_0__u_quad_decoder/quad_set_valid_404
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i0
+   Register : stepper_ins_1__u_stepper/mode__i0
+   Register : stepper_ins_1__u_stepper/Cnt__i0
+   Register : stepper_ins_1__u_stepper/digital_output_r_481
+   Register : stepper_ins_1__u_stepper/MA_Temp_474
+   Register : stepper_ins_1__u_stepper/i159_483
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i11
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i10
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i9
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i8
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i7
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i6
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i5
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i4
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i3
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i2
+   Register : stepper_ins_1__u_stepper/Cnt_NSL__i1
+   Register : stepper_ins_1__u_stepper/mode__i1
+   Register : stepper_ins_1__u_stepper/mode__i2
+   Register : stepper_ins_1__u_stepper/Cnt__i1
+   Register : stepper_ins_1__u_stepper/Cnt__i2
+   Register : stepper_ins_1__u_stepper/Cnt__i3
+   Register : stepper_ins_1__u_stepper/Cnt__i4
+   Register : stepper_ins_1__u_stepper/Cnt__i5
+   Register : stepper_ins_1__u_stepper/Cnt__i6
+   Register : stepper_ins_1__u_stepper/Cnt__i7
+   Register : stepper_ins_1__u_stepper/reset_r_480
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i0
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i11
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i10
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i9
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i8
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i7
+
+                                   Page 37
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i6
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i5
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i4
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i3
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i2
+   Register : stepper_ins_4__u_stepper/Cnt_NSL__i1
+   Register : stepper_ins_4__u_stepper/mode__i0
+   Register : stepper_ins_4__u_stepper/Cnt__i0
+   Register : stepper_ins_4__u_stepper/digital_output_r_481
+   Register : stepper_ins_4__u_stepper/i159_483
+   Register : stepper_ins_4__u_stepper/MA_Temp_474
+   Register : stepper_ins_4__u_stepper/mode__i1
+   Register : stepper_ins_4__u_stepper/mode__i2
+   Register : stepper_ins_4__u_stepper/Cnt__i1
+   Register : stepper_ins_4__u_stepper/Cnt__i2
+   Register : stepper_ins_4__u_stepper/Cnt__i3
+   Register : stepper_ins_4__u_stepper/Cnt__i4
+   Register : stepper_ins_4__u_stepper/Cnt__i5
+   Register : stepper_ins_4__u_stepper/Cnt__i6
+   Register : stepper_ins_4__u_stepper/Cnt__i7
+   Register : stepper_ins_4__u_stepper/reset_r_480
+   Register : stepper_ins_2__u_stepper/reset_r_480
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i11
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i10
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i9
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i8
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i7
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i6
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i5
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i4
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i3
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i2
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i1
+   Register : stepper_ins_2__u_stepper/Cnt_NSL__i0
+   Register : stepper_ins_2__u_stepper/mode__i0
+   Register : stepper_ins_2__u_stepper/Cnt__i0
+   Register : stepper_ins_2__u_stepper/i159_483
+   Register : stepper_ins_2__u_stepper/digital_output_r_481
+   Register : stepper_ins_2__u_stepper/mode__i1
+   Register : stepper_ins_2__u_stepper/mode__i2
+   Register : stepper_ins_2__u_stepper/Cnt__i1
+   Register : stepper_ins_2__u_stepper/Cnt__i2
+   Register : stepper_ins_2__u_stepper/Cnt__i3
+   Register : stepper_ins_2__u_stepper/Cnt__i4
+   Register : stepper_ins_2__u_stepper/Cnt__i5
+   Register : stepper_ins_2__u_stepper/Cnt__i6
+   Register : stepper_ins_2__u_stepper/Cnt__i7
+   Register : stepper_ins_2__u_stepper/MA_Temp_474
+   Register : quad_ins_2__u_quad_decoder/quad_set__i0
+   Register : quad_ins_2__u_quad_decoder/state_FSM_i0
+   Register : quad_ins_2__u_quad_decoder/quad_homing__i0
+   Register : quad_ins_2__u_quad_decoder/quad_set_complete_451
+   Register : quad_ins_2__u_quad_decoder/i41_407
+   Register : quad_ins_2__u_quad_decoder/state_FSM_i3
+   Register : quad_ins_2__u_quad_decoder/state_FSM_i2
+   Register : quad_ins_2__u_quad_decoder/state_FSM_i1
+
+                                   Page 38
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : quad_ins_2__u_quad_decoder/quad_set__i31
+   Register : quad_ins_2__u_quad_decoder/quad_set__i30
+   Register : quad_ins_2__u_quad_decoder/quad_set__i29
+   Register : quad_ins_2__u_quad_decoder/quad_set__i28
+   Register : quad_ins_2__u_quad_decoder/quad_set__i27
+   Register : quad_ins_2__u_quad_decoder/quad_set__i26
+   Register : quad_ins_2__u_quad_decoder/quad_set__i25
+   Register : quad_ins_2__u_quad_decoder/quad_set__i24
+   Register : quad_ins_2__u_quad_decoder/quad_set__i23
+   Register : quad_ins_2__u_quad_decoder/quad_set__i22
+   Register : quad_ins_2__u_quad_decoder/quad_set__i21
+   Register : quad_ins_2__u_quad_decoder/quad_set__i20
+   Register : quad_ins_2__u_quad_decoder/quad_set__i19
+   Register : quad_ins_2__u_quad_decoder/quad_set__i18
+   Register : quad_ins_2__u_quad_decoder/quad_set__i17
+   Register : quad_ins_2__u_quad_decoder/quad_set__i16
+   Register : quad_ins_2__u_quad_decoder/quad_set__i15
+   Register : quad_ins_2__u_quad_decoder/quad_set__i14
+   Register : quad_ins_2__u_quad_decoder/quad_set__i13
+   Register : quad_ins_2__u_quad_decoder/quad_set__i12
+   Register : quad_ins_2__u_quad_decoder/quad_set__i11
+   Register : quad_ins_2__u_quad_decoder/quad_set__i10
+   Register : quad_ins_2__u_quad_decoder/quad_set__i9
+   Register : quad_ins_2__u_quad_decoder/quad_set__i8
+   Register : quad_ins_2__u_quad_decoder/quad_set__i7
+   Register : quad_ins_2__u_quad_decoder/quad_set__i6
+   Register : quad_ins_2__u_quad_decoder/quad_set__i5
+   Register : quad_ins_2__u_quad_decoder/quad_set__i4
+   Register : quad_ins_2__u_quad_decoder/quad_set__i3
+   Register : quad_ins_2__u_quad_decoder/quad_set__i2
+   Register : quad_ins_2__u_quad_decoder/quad_set__i1
+   Register : quad_ins_2__u_quad_decoder/quad_homing__i1
+   Register : quad_ins_2__u_quad_decoder/quad_set_valid_404
+   Register : stepper_ins_3__u_stepper/reset_r_480
+   Register : stepper_ins_3__u_stepper/Cnt__i0
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i0
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i11
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i10
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i9
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i8
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i7
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i6
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i5
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i4
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i3
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i2
+   Register : stepper_ins_3__u_stepper/Cnt_NSL__i1
+   Register : stepper_ins_3__u_stepper/mode__i0
+   Register : stepper_ins_3__u_stepper/i159_483
+   Register : stepper_ins_3__u_stepper/digital_output_r_481
+   Register : stepper_ins_3__u_stepper/Cnt__i7
+   Register : stepper_ins_3__u_stepper/Cnt__i6
+   Register : stepper_ins_3__u_stepper/Cnt__i5
+   Register : stepper_ins_3__u_stepper/Cnt__i4
+   Register : stepper_ins_3__u_stepper/Cnt__i3
+   Register : stepper_ins_3__u_stepper/Cnt__i2
+
+                                   Page 39
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : stepper_ins_3__u_stepper/Cnt__i1
+   Register : stepper_ins_3__u_stepper/mode__i1
+   Register : stepper_ins_3__u_stepper/mode__i2
+   Register : stepper_ins_3__u_stepper/MA_Temp_474
+   Register : quad_ins_1__u_quad_decoder/quad_homing__i0
+   Register : quad_ins_1__u_quad_decoder/state_FSM_i0
+   Register : quad_ins_1__u_quad_decoder/quad_set__i0
+   Register : quad_ins_1__u_quad_decoder/quad_set__i31
+   Register : quad_ins_1__u_quad_decoder/quad_set__i30
+   Register : quad_ins_1__u_quad_decoder/quad_set__i29
+   Register : quad_ins_1__u_quad_decoder/quad_set__i28
+   Register : quad_ins_1__u_quad_decoder/quad_set__i27
+   Register : quad_ins_1__u_quad_decoder/quad_set__i26
+   Register : quad_ins_1__u_quad_decoder/quad_set__i25
+   Register : quad_ins_1__u_quad_decoder/quad_set__i24
+   Register : quad_ins_1__u_quad_decoder/quad_set__i23
+   Register : quad_ins_1__u_quad_decoder/quad_set__i22
+   Register : quad_ins_1__u_quad_decoder/quad_set__i21
+   Register : quad_ins_1__u_quad_decoder/quad_set__i20
+   Register : quad_ins_1__u_quad_decoder/quad_set__i19
+   Register : quad_ins_1__u_quad_decoder/quad_set__i18
+   Register : quad_ins_1__u_quad_decoder/quad_set__i17
+   Register : quad_ins_1__u_quad_decoder/quad_set__i16
+   Register : quad_ins_1__u_quad_decoder/quad_set__i15
+   Register : quad_ins_1__u_quad_decoder/quad_set__i14
+   Register : quad_ins_1__u_quad_decoder/quad_set__i13
+   Register : quad_ins_1__u_quad_decoder/quad_set__i12
+   Register : quad_ins_1__u_quad_decoder/quad_set__i11
+   Register : quad_ins_1__u_quad_decoder/quad_set__i10
+   Register : quad_ins_1__u_quad_decoder/quad_set__i9
+   Register : quad_ins_1__u_quad_decoder/quad_set__i8
+   Register : quad_ins_1__u_quad_decoder/quad_set__i7
+   Register : quad_ins_1__u_quad_decoder/quad_set__i6
+   Register : quad_ins_1__u_quad_decoder/quad_set__i5
+   Register : quad_ins_1__u_quad_decoder/quad_set__i4
+   Register : quad_ins_1__u_quad_decoder/quad_set__i3
+   Register : quad_ins_1__u_quad_decoder/quad_set__i2
+   Register : quad_ins_1__u_quad_decoder/quad_set__i1
+   Register : quad_ins_1__u_quad_decoder/i41_407
+   Register : quad_ins_1__u_quad_decoder/quad_set_complete_451
+   Register : quad_ins_1__u_quad_decoder/state_FSM_i3
+   Register : quad_ins_1__u_quad_decoder/state_FSM_i2
+   Register : quad_ins_1__u_quad_decoder/state_FSM_i1
+   Register : quad_ins_1__u_quad_decoder/quad_homing__i1
+   Register : quad_ins_1__u_quad_decoder/quad_set_valid_404
+   Register : stepper_ins_6__u_stepper/digital_output_r_481
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i0
+   Register : stepper_ins_6__u_stepper/mode__i0
+   Register : stepper_ins_6__u_stepper/Cnt__i0
+   Register : stepper_ins_6__u_stepper/i159_483
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i1
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i2
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i3
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i4
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i5
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i6
+
+                                   Page 40
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i7
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i8
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i9
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i10
+   Register : stepper_ins_6__u_stepper/Cnt_NSL__i11
+   Register : stepper_ins_6__u_stepper/mode__i1
+   Register : stepper_ins_6__u_stepper/mode__i2
+   Register : stepper_ins_6__u_stepper/Cnt__i1
+   Register : stepper_ins_6__u_stepper/Cnt__i2
+   Register : stepper_ins_6__u_stepper/Cnt__i3
+   Register : stepper_ins_6__u_stepper/Cnt__i4
+   Register : stepper_ins_6__u_stepper/Cnt__i5
+   Register : stepper_ins_6__u_stepper/Cnt__i6
+   Register : stepper_ins_6__u_stepper/Cnt__i7
+   Register : stepper_ins_6__u_stepper/MA_Temp_474
+   Register : stepper_ins_6__u_stepper/reset_r_480
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i11
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i10
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i9
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i8
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i7
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i6
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i5
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i4
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i3
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i2
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i1
+   Register : stepper_ins_0__u_stepper/Cnt__i0
+   Register : stepper_ins_0__u_stepper/Cnt_NSL__i0
+   Register : stepper_ins_0__u_stepper/mode__i0
+   Register : stepper_ins_0__u_stepper/i159_483
+   Register : stepper_ins_0__u_stepper/digital_output_r_481
+   Register : stepper_ins_0__u_stepper/Cnt__i7
+   Register : stepper_ins_0__u_stepper/Cnt__i6
+   Register : stepper_ins_0__u_stepper/Cnt__i5
+   Register : stepper_ins_0__u_stepper/Cnt__i4
+   Register : stepper_ins_0__u_stepper/Cnt__i3
+   Register : stepper_ins_0__u_stepper/Cnt__i2
+   Register : stepper_ins_0__u_stepper/Cnt__i1
+   Register : stepper_ins_0__u_stepper/reset_r_480
+   Register : stepper_ins_0__u_stepper/mode__i1
+   Register : stepper_ins_0__u_stepper/mode__i2
+   Register : stepper_ins_0__u_stepper/MA_Temp_474
+   Register : u_rs232/mode_26
+   Register : io_ins_6__u_io/mode_90
+   Register : quad_ins_3__u_quad_decoder/state_FSM_i0
+   Register : quad_ins_3__u_quad_decoder/quad_homing__i0
+   Register : quad_ins_3__u_quad_decoder/quad_set__i0
+   Register : quad_ins_3__u_quad_decoder/quad_set_complete_451
+   Register : quad_ins_3__u_quad_decoder/i41_407
+   Register : quad_ins_3__u_quad_decoder/state_FSM_i3
+   Register : quad_ins_3__u_quad_decoder/state_FSM_i2
+   Register : quad_ins_3__u_quad_decoder/state_FSM_i1
+   Register : quad_ins_3__u_quad_decoder/quad_homing__i1
+   Register : quad_ins_3__u_quad_decoder/quad_set__i1
+   Register : quad_ins_3__u_quad_decoder/quad_set__i2
+
+                                   Page 41
+
+
+
+
+Design:  mcm_top                                       Date:  04/21/22  17:03:31
+
+GSR Usage (cont)
+----------------
+   Register : quad_ins_3__u_quad_decoder/quad_set__i3
+   Register : quad_ins_3__u_quad_decoder/quad_set__i4
+   Register : quad_ins_3__u_quad_decoder/quad_set__i5
+   Register : quad_ins_3__u_quad_decoder/quad_set__i6
+   Register : quad_ins_3__u_quad_decoder/quad_set__i7
+   Register : quad_ins_3__u_quad_decoder/quad_set__i8
+   Register : quad_ins_3__u_quad_decoder/quad_set__i9
+   Register : quad_ins_3__u_quad_decoder/quad_set__i10
+   Register : quad_ins_3__u_quad_decoder/quad_set__i11
+   Register : quad_ins_3__u_quad_decoder/quad_set__i12
+   Register : quad_ins_3__u_quad_decoder/quad_set__i13
+   Register : quad_ins_3__u_quad_decoder/quad_set__i14
+   Register : quad_ins_3__u_quad_decoder/quad_set__i15
+   Register : quad_ins_3__u_quad_decoder/quad_set__i16
+   Register : quad_ins_3__u_quad_decoder/quad_set__i17
+   Register : quad_ins_3__u_quad_decoder/quad_set__i18
+   Register : quad_ins_3__u_quad_decoder/quad_set__i19
+   Register : quad_ins_3__u_quad_decoder/quad_set__i20
+   Register : quad_ins_3__u_quad_decoder/quad_set__i21
+   Register : quad_ins_3__u_quad_decoder/quad_set__i22
+   Register : quad_ins_3__u_quad_decoder/quad_set__i23
+   Register : quad_ins_3__u_quad_decoder/quad_set__i24
+   Register : quad_ins_3__u_quad_decoder/quad_set__i25
+   Register : quad_ins_3__u_quad_decoder/quad_set__i26
+   Register : quad_ins_3__u_quad_decoder/quad_set__i27
+   Register : quad_ins_3__u_quad_decoder/quad_set__i28
+   Register : quad_ins_3__u_quad_decoder/quad_set__i29
+   Register : quad_ins_3__u_quad_decoder/quad_set__i30
+   Register : quad_ins_3__u_quad_decoder/quad_set__i31
+   Register : quad_ins_3__u_quad_decoder/quad_set_valid_404
+   Register : u_uart_controller/uart_slot_en_r__i1
+   Register : u_uart_controller/uart_slot_en_r__i2
+   Register : u_uart_controller/uart_slot_en_r__i3
+   Register : u_uart_controller/uart_slot_en_r__i4
+   Register : u_status_led/pwm_freq_cntr_3086__i2
+   Register : u_status_led/pwm_freq_cntr_3086__i3
+   Register : u_status_led/pwm_freq_cntr_3086__i4
+   Register : u_status_led/pwm_freq_cntr_3086__i5
+   Register : u_status_led/pwm_freq_cntr_3086__i6
+   Register : u_status_led/pwm_freq_cntr_3086__i7
+   Register : u_status_led/pwm_freq_cntr_3086__i8
+   Register : u_status_led/pwm_freq_cntr_3086__i9
+   Register : u_status_led/pwm_freq_cntr_3086__i10
+   Register : u_status_led/pwm_freq_cntr_3086__i11
+   Register : u_status_led/pwm_freq_cntr_3086__i0
+   Register : u_status_led/pwm_freq_cntr_3086__i1
+   EFB : spi_slave_top_inst/spi_slave_efb_inst/EFBInst_0
+
+Run Time and Memory Usage
+-------------------------
+
+   Total CPU Time: 3 secs  
+   Total REAL Time: 4 secs  
+   Peak Memory Usage: 98 MB
+        
+
+
+                                   Page 42
+
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+     Copyright (c) 1995 AT&T Corp.   All rights reserved.
+     Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+     Copyright (c) 2001 Agere Systems   All rights reserved.
+     Copyright (c) 2002-2020 Lattice Semiconductor Corporation,  All rights
+     reserved.

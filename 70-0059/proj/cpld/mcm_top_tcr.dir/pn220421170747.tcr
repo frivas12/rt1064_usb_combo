@@ -1,0 +1,35 @@
+#Start recording tcl command: 4/21/2022 16:51:47
+#Project Location: C:/Users/sbenish/repositories/70-0059/cpld; Project name: mcm_top
+prj_project open "C:/Users/sbenish/repositories/70-0059/cpld/mcm_top.ldf"
+prj_src remove "C:/s_links/sources/mcm_top.v" "C:/s_links/sources/spi_slave_top.v" "C:/s_links/sources/wb_ctrl.v" "C:/s_links/sources/commands.v" "C:/s_links/sim/tb_mcm_top.v" "C:/s_links/sources/spi_ctrl.v" "C:/s_links/sources/status_led.v" "C:/s_links/sources/quad_decoder.v" "C:/s_links/sources/pwm_controller.v" "C:/s_links/sources/cs_decoder.v" "C:/s_links/sources/intrpt_ctrl.v" "C:/s_links/sources/otm_dac.v" "C:/s_links/sources/uart_controller.v" "C:/s_links/sources/rs232.v" "C:/s_links/sources/config_mcm/config.v" "C:/s_links/sources/slot_cards/servo.v" "C:/s_links/sources/slot_cards/shutter_4.v" "C:/s_links/sources/slot_cards/slider_io.v" "C:/s_links/sources/slot_cards/stepper.v" "C:/s_links/sources/slot_cards/peizo_elliptec.v" "C:/s_links/sources/config_mcm/ip/spi_slave_efb.ipx" "C:/s_links/sources/config_mcm/ip/pll.ipx" "C:/s_links/sources/slot_cards/piezo.v"
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/sources/commands.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/cs_decoder.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/galvo_driver.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/intrpt_ctrl.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/Mag_Sensor.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/mcm_top.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/otm_dac.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/pwm_controller.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/quad_decoder.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/rs232.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/set_pins.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/spi_ctrl.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/spi_slave_top.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/status_led.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/uart_controller.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/wb_ctrl.v"
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/peizo_elliptec.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/piezo.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/servo.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/shutter_4.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/slider_io.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/stepper.v"
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/sources/config_mcm/config.v"
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/sources/config_mcm/ip/pll.ipx" "C:/Users/sbenish/repositories/70-0059/cpld/sources/config_mcm/ip/spi_slave_efb.ipx"
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/sim/tb_mcm_top/tb_mcm_top.spf"
+prj_src remove "C:/s_links/sim/tb_mcm_top/tb_mcm_top.spf"
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/sim/tb_mcm_top.v"
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/reveal_prj/ra1.rva" "C:/Users/sbenish/repositories/70-0059/cpld/reveal_prj/rv1.rvl"
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/reveal_prj/rv1.rvl"
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/reveal_prj/ra1.rva"
+prj_src remove "C:/s_links/reveal_prj/rv1.rvl"
+prj_src remove "C:/s_links/reveal_prj/ra1.rva"
+prj_src add -exclude "C:/Users/sbenish/repositories/70-0059/cpld/mcm_top.lpf" "C:/Users/sbenish/repositories/70-0059/cpld/hex_top.lpf"
+prj_src remove "C:/s_links/hex_top.lpf"
+prj_run Export -impl impl_mcm -task Jedecgen
+prj_src remove "C:/Users/sbenish/repositories/70-0059/cpld/sources/galvo_driver.v"
+prj_run Export -impl impl_mcm -task Jedecgen
+prj_src remove "C:/Users/sbenish/repositories/70-0059/cpld/sources/Mag_Sensor.v"
+prj_run Export -impl impl_mcm -task Jedecgen
+prj_run Synthesis -impl impl_mcm -task Lattice_Synthesis
+prj_run Synthesis -impl impl_mcm -task Lattice_Synthesis
+prj_src add "C:/Users/sbenish/repositories/70-0059/cpld/sources/commands.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/cs_decoder.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/galvo_driver.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/intrpt_ctrl.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/Mag_Sensor.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/mcm_top.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/otm_dac.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/pwm_controller.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/quad_decoder.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/rs232.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/set_pins.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/spi_ctrl.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/spi_slave_top.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/status_led.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/uart_controller.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/wb_ctrl.v"
+prj_src exclude "C:/Users/sbenish/repositories/70-0059/cpld/sources/galvo_driver.v" "C:/Users/sbenish/repositories/70-0059/cpld/sources/Mag_Sensor.v"
+prj_src exclude "C:/Users/sbenish/repositories/70-0059/cpld/sources/set_pins.v"
+prj_run Synthesis -impl impl_mcm -task Lattice_Synthesis
+prj_src enable "C:/Users/sbenish/repositories/70-0059/cpld/mcm_top.lpf"
+prj_src remove "C:/s_links/mcm_top.lpf"
+prj_src exclude "C:/Users/sbenish/repositories/70-0059/cpld/sim/tb_mcm_top.v"
+prj_run Synthesis -impl impl_mcm -task Lattice_Synthesis
+prj_run Export -impl impl_mcm -task Jedecgen
+#Stop recording: 4/21/2022 17:07:47

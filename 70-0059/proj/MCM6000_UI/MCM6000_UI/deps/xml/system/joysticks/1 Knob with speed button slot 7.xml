@@ -1,0 +1,71 @@
+<Joystick>
+  <InMap control="0">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="64" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0" />
+    <PID value="0" />
+    <ModifySpeed value="15" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="0" />
+  </InMap>
+  <InMap control="1">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="64" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0" />
+    <PID value="0" />
+    <ModifySpeed value="240" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="5" />
+  </InMap>
+  <InMap control="2">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="64" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0" />
+    <PID value="0" />
+    <ModifySpeed value="16" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="21" />
+  </InMap>
+  <OutMap control="0">
+    <Source>
+      <Slot value="64" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Source>
+    <Usage value="8" />
+    <VID value="0" />
+    <PID value="0" />
+    <Mode value="0" />
+    <ColorID index="1" value="2" />
+    <ColorID index="2" value="3" />
+    <ColorID index="3" value="4" />
+  </OutMap>
+</Joystick>

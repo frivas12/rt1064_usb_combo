@@ -1,0 +1,76 @@
+<?xml version="1.0" ?>
+
+<OneWire>
+    <Signature>
+        <DefaultSlotType value="{19:u16}"/>
+        <DeviceID value="{u16}"/>
+    </Signature>
+
+    <!--The part number is typically left empty so an application-->
+    <!--can customize it before flashing to the device.-->
+    <PartNumber value="{'':str}" />
+    <DeviceConfigurations />
+    <ConfigEntries>
+        <Struct>
+            <Signature>
+                <StructID value="2"/>
+                <ConfigID value="0xFFF0"/>
+            </Signature>
+            <Data>
+                <StageID value="{19:u16}"/> <!--typically DefaultSlotType-->
+                <AxisID value="{u16}"/> <!--Typically DeviceID-->
+                <AxisSerial value="{0:u32}"/>
+                <CountsPerUnit value="{f32}"/>
+                <Position min="{i32}" max="{i32}"/>
+                <CollisionThreshold value="{0:u16}"/>
+            </Data>
+        </Struct>
+        <Struct>
+            <Signature>
+                <StructID value="4"/>
+                <ConfigID value="0xFFF1"/>
+            </Signature>
+            <Data>
+                <Flags value="{u8}"/>
+            </Data>
+        </Struct>
+        <Struct>
+            <Signature>
+                <StructID value="7"/>
+                <ConfigID value="0xFFF2"/>
+            </Signature>
+            <Data>
+                <Kp value="{u32}"/>
+                <Ki value="{0:u32}"/>
+                <Kd value="{0:u32}"/>
+                <IMax value="{0:u32}"/>
+                <FilterControl value="{0:u16}"/>
+            </Data>
+        </Struct>
+        <Struct>
+            <Signature>
+                <StructID value="5"/>
+                <ConfigID value="0xFFF3"/>
+            </Signature>
+            <Data>
+                <Mode value="{u8}"/>
+                <Direction value="{u8}"/>
+                <LimitSwitch value="{u16}"/>
+                <Velocity value="{80:u32}"/>
+                <OffsetDistance value="{0:i32}"/>
+            </Data>
+        </Struct>
+        <Struct>
+            <Signature>
+                <StructID value="1"/>
+                <ConfigID value="0xFFF4"/>
+            </Signature>
+            <Data>
+                <HardLimit cw="{u16}" ccw="{u16}"/>
+                <SoftLimit cw="{2147483647:i32}" ccw="{-2147483648:i32}"/>
+                <AbsLimit high="{2147483647:i32}" low="{-2147483648:i32}"/>
+                <Mode value="{u16}"/>
+            </Data>
+        </Struct>
+    </ConfigEntries>
+</OneWire>

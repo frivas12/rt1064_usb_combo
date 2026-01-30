@@ -1,0 +1,12 @@
+.\..\..\sources\intrpt_ctrl.v
+.\..\..\sources\quad_decoder.v
+.\..\..\sources\pwm_controller.v
+.\..\..\sources\cs_decoder.v
+.\..\..\sources\set_pins.v
+.\..\..\sources\spi_ctrl.v
+.\..\..\sources\wb_ctrl.v
+.\..\..\sources\ip\spi_slave_efb.v
+.\..\..\sources\spi_slave_top.v
+.\..\..\sources\mcm_top.v
+.\..\tb_mcm_top.v
+.\..\..\sources\commands.v

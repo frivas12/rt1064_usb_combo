@@ -1,0 +1,31 @@
+\section{Preprocessors}\label{sec:preprocessors}
+In addition to the reserved tags, the XML preprocessor also supports macros for importing
+    information handled by the preprocessor.
+Macros apply to all attributes in an XML document.
+Macros are currently simple; attributes with contents starting with the character '\$' are
+    sent through the macro preprocessor.
+To literally declare a '\$' character at the start of an attribute use ``\$\$''.
+
+\subsection*{\$PATH:}\label{sec:preprocessors/path}
+The path macro allows for path-relative addressing in attributes.
+This uses the same system as the ``Import'' and ``Include'' tags.
+
+Commonly, this is used in compiled/processed XMLs, such as config LUT entries.
+
+For example, a config LUT XML will usually be compiled into a binary file in the ``bin/''
+    subdirectory.
+To do this, the ``Struct'' tag will use the ``binary'' attribute with the path macro.
+The example below shows a structure that will be compiled into the path 
+    ``bin/out.bin'' relative to the XML's location.
+\begin{lstlisting}
+<?xml version="1.0">
+<Struct binary="$PATH:bin/out.bin">
+    <Signature>
+        <StructID value="4" />
+        <ConfigID value="0xFFF0" />
+    </Signature>
+    <Data>
+        <Flags value="0" />
+    </Data>
+</Struct>
+\end{lstlisting}

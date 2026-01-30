@@ -1,0 +1,45 @@
+\documentclass{article}
+
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+
+\title{System XML Formatting and Design Guide}
+\author{Sean Benish}
+\date{\today}
+
+\pagestyle{fancy}
+\fancyhead[L]{\small{System XML Formatting and Design Guide}}
+\fancyhead[R]{\small{Built on \today}}
+\fancyfoot[L]{\small{Sean Benish}}
+\fancyfoot[C]{}
+\fancyfoot[R]{Page \thepage\ of \pageref{LastPage}}
+
+\begin{document}
+\lstset{language=xml}
+
+\maketitle
+\clearpage
+
+\tableofcontents
+\clearpage
+
+% Introduction
+% Design Principles
+% XML Formats
+% Reserved Tags
+% Preprocessors
+% UI Code
+% Utilities
+
+\input{src/intro.tex}
+\input{src/design-principles.tex}
+\input{src/reserved-tags.tex}
+\input{src/preprocessors.tex}
+\input{src/ui-code.tex}
+\input{src/utilities.tex}
+
+\end{document}

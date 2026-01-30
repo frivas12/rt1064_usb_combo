@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<ServoParameters>
+	
+<!-- Mirror --> 
+	<Mirror_Parameters command="0x0510" data_length="40"> <!--MGMSG_MOT_SET_MFF_OPERPARAMS-->
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="6" />
+		<Parameter name="TransitTime" type="UInt32" length="4" offset="8" value="25000" />
+		<Parameter name="TransitTimeADC" type="UInt32" length="4" offset="12" value="0" /> <!-- not used-->
+		<Parameter name="OperMode1" type="UInti6" length="2" offset="16" value="0" /> <!-- not used-->
+		<Parameter name="SigMode1" type="UInti6" length="2" offset="18" value="0" /> <!-- not used-->
+		<Parameter name="PulseWidth1" type="UInt32" length="4" offset="20" value="470" />
+		<Parameter name="OperMode2" type="UInti6" length="2" offset="24" value="0" /> <!-- not used-->
+		<Parameter name="SigMode2" type="UInti6" length="2" offset="26" value="0" /> <!-- not used-->
+		<Parameter name="PulseWidth2" type="UInt32" length="4" offset="28" value="0" /> <!-- not used-->
+		<Parameter name="NA" type="UInt32" length="4" offset="32" value="0" /> <!-- not used-->
+		<Parameter name="NA" type="UInt32" length="4" offset="36" value="0" /> <!-- not used-->
+	</Mirror_Parameters>
+
+
+
+</ServoParameters>
+
+
+<!-- <Parameter name="" type="" length="" offset="" value="" /> -->

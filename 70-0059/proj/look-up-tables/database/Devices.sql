@@ -1,0 +1,12 @@
+INSERT INTO Devices VALUES(9,0,'3X Signal Mirror Cable',1);
+INSERT INTO Devices VALUES(10,0,'Bergamo III Shutter Cable (Uniblitz, SH, SH)',1);
+INSERT INTO Devices VALUES(19,0,'PnP 1" PLS Stage',1);
+INSERT INTO Devices VALUES(19,1,'1" Red Post',1);
+INSERT INTO Devices VALUES(19,2,'PnP 1" PLS Stage (Y config)',0);
+INSERT INTO Devices VALUES(19,3,'PnP 2" LNR Stage',1);
+INSERT INTO Devices VALUES(19,4,'Bergamo III 4418S, 5:1, 500nm',1);
+INSERT INTO Devices VALUES(19,5,'Bergamo III 4418S, 1:1, 500nm',1);
+INSERT INTO Devices VALUES(19,6,'Bergamo III 4418C, 5:1, 100nm',1);
+INSERT INTO Devices VALUES(19,7,'ELB43 R Stage',1);
+INSERT INTO Devices VALUES(19,8,'ELB4X E Stage',1);
+INSERT INTO Devices VALUES(19,9,'Rotation Cerna Stage',1);

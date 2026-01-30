@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!--Stepper Driver Parameters-->
+<Struct>
+    <Signature>
+        <StructID value="0x0003"/>
+        <ConfigID value="0x0000"/>
+    </Signature>
+    <Data>
+        <Acceleration min="0" max="0" />
+        <!--Min acceleration = MAX deceleration-->
+        <Speed min="0" max="0" />
+        <FullStepSpeed value="0" />
+        <KVal>
+            <Hold value="0" />
+            <Run value="0" />
+            <Accel value="0" />
+            <Decel value="0" />
+        </KVal>
+        <IntersectSpeed value="0" />
+        <StallThreshold value="0" />
+        <Slope>
+            <Start value="0" />
+            <FinalAccel value="0" />
+            <FinalDecel value="0" />
+        </Slope>
+        <OCDThreshold value="0" />
+        <StepMode value="0" />
+        <ICConfig value="0" />
+        <GateDriverConfig value="0" />
+        <ApproachVelocity value="0" />
+        <Deadband value="0" />
+        <Backlash value="0" />
+        <KickoutTime value="0" />
+        <CollisionThreshold value="0" />
+    </Data>
+</Struct>

@@ -1,0 +1,24 @@
+name = "mcm301"
+version = "7.1.0"
+
+[[devices]]
+slot_type = 19
+device_id = 0
+
+[[devices]]
+slot_type = 19
+device_id = 1
+
+# Deprecated (1.0.0)
+# [[devices]]
+# slot_type = 19
+# device_id = 2
+
+[[devices]]
+slot_type = 19
+device_id = 3
+
+[[devices]]
+# Rotation Cerna
+slot_type = 19
+device_id = 9

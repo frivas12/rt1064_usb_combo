@@ -1,0 +1,27 @@
+PAR: Place And Route Diamond (64-bit) 3.12.0.240.2.
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2020 Lattice Semiconductor Corporation,  All rights reserved.
+Thu Apr 21 17:03:36 2022
+
+C:/lscc/diamond/3.12/ispfpga\bin\nt64\par -f mcm_top_impl_mcm.p2t
+mcm_top_impl_mcm_map.ncd mcm_top_impl_mcm.dir mcm_top_impl_mcm.prf -gui -msgset
+C:/Users/sbenish/repositories/70-0059/cpld/promote.xml
+
+
+Preference file: mcm_top_impl_mcm.prf.
+
+Level/       Number       Worst        Timing       Worst        Timing       Run          NCD
+Cost [ncd]   Unrouted     Slack        Score        Slack(hold)  Score(hold)  Time         Status
+----------   --------     -----        ------       -----------  -----------  ----         ------
+5_1   *      0            7.631        0            0.220        0            01:16        Completed
+
+* : Design saved.
+
+Total (real) run time for 1-seed: 1 mins 16 secs 
+
+par done!
+
+Note: user must run 'Trace' for timing closure signoff.

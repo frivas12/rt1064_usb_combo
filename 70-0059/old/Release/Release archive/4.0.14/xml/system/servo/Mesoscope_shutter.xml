@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<ServoParameters>
+	
+<!-- Shutter --> 
+	<Shutter_Parameters command="0x4064" data_length="20"> <!--MGMSG_MCM_SET_SHUTTERPARAMS-->
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="0" />
+		<Parameter name="shutter_initial_state" type="Byte" length="1" offset="8" value="0" />
+		<Parameter name="shutter_mode" type="Byte" length="1" offset="9" value="2" />
+		<Parameter name="external_trigger_mode" type="Byte" length="1" offset="10" value="1" />
+		<Parameter name="on_time" type="Byte" length="1" offset="11" value="2" />
+		<Parameter name="duty_cycle_pulse" type="UInt32" length="4" offset="12" value="900" />
+		<Parameter name="duty_cycle_hold" type="UInt32" length="4" offset="16" value="500" />
+	</Shutter_Parameters>
+
+
+
+</ServoParameters>
+
+
+<!-- <Parameter name="" type="" length="" offset="" value="" /> -->

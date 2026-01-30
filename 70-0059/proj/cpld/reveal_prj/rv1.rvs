@@ -1,0 +1,112 @@
+<Project ModBy="Analyzer" Name="C:/Users/ashahi/Documents/Git/70-0059/cpld/reveal_prj/rv1.rvs" Date="2020-02-18">
+ <Core Name="mcm_top_LA0">
+  <Setting>
+   <Capture SamplesPerTrig="2048" NumTrigsCap="1"/>
+   <Event EventCnt="1" CntEnableRun="0"/>
+   <TrigSetting PreTrgSamples="" AND_ALL="0" PostTrgSamples="" TURadix="0"/>
+  </Setting>
+  <Dataset Name="Base">
+   <Trace>
+    <Sig Name="clk_1MHz"/>
+    <Sig Name="stepper_ins[1].u_stepper/MA_Temp"/>
+    <Sig Name="stepper_ins[1].u_stepper/MA"/>
+    <Bus Name="stepper_ins[1].u_stepper/SLO" Radix="0">
+     <Sig Name="stepper_ins[1].u_stepper/SLO:0"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:1"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:2"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:3"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:4"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:5"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:6"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:7"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:8"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:9"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:10"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:11"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:12"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:13"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:14"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:15"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:16"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:17"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:18"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:19"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:20"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:21"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:22"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:23"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:24"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:25"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:26"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:27"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:28"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:29"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:30"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:31"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:32"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:33"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:34"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:35"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:36"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:37"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:38"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:39"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:40"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:41"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:42"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:43"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:44"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:45"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO:46"/>
+    </Bus>
+    <Bus Name="stepper_ins[1].u_stepper/SLO_buf" Radix="0">
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:0"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:1"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:2"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:3"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:4"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:5"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:6"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:7"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:8"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:9"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:10"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:11"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:12"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:13"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:14"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:15"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:16"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:17"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:18"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:19"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:20"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:21"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:22"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:23"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:24"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:25"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:26"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:27"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:28"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:29"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:30"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:31"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:32"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:33"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:34"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:35"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:36"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:37"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:38"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:39"/>
+     <Sig Name="stepper_ins[1].u_stepper/SLO_buf:40"/>
+    </Bus>
+   </Trace>
+   <Trigger>
+    <TU Operator="6" Name="TU1" ID="1" Value="1" Radix="0"/>
+    <TE Enable="1" Expression="TU1" Name="TE1" ID="1"/>
+   </Trigger>
+  </Dataset>
+ </Core>
+</Project>

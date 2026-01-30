@@ -1,0 +1,158 @@
+Results of NGD DRC are available in peizo_elliptec_drc.log.
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/xo2c00a/data/xo2alib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/xo2c00/data/xo2clib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/mg5g00/data/mg5glib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/or5g00/data/orc5glib.ngl'...
+
+
+Running DRC...
+
+WARNING - synthesis: logical net 'clk' has no load.
+WARNING - synthesis: input pad net 'clk' has no legal load.
+WARNING - synthesis: logical net 'resetn' has no load.
+WARNING - synthesis: input pad net 'resetn' has no legal load.
+WARNING - synthesis: logical net 'rx' has no load.
+WARNING - synthesis: input pad net 'rx' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[15]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[15]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[14]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[14]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[13]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[13]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[12]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[12]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[11]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[11]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[10]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[10]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[9]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[9]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[8]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[8]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[7]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[7]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[6]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[6]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[5]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[5]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[4]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[4]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[3]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[3]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[2]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[2]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[1]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[1]' has no legal load.
+WARNING - synthesis: logical net 'spi_cmd_r[0]' has no load.
+WARNING - synthesis: input pad net 'spi_cmd_r[0]' has no legal load.
+WARNING - synthesis: logical net 'spi_addr_r[7]' has no load.
+WARNING - synthesis: input pad net 'spi_addr_r[7]' has no legal load.
+WARNING - synthesis: logical net 'spi_addr_r[6]' has no load.
+WARNING - synthesis: input pad net 'spi_addr_r[6]' has no legal load.
+WARNING - synthesis: logical net 'spi_addr_r[5]' has no load.
+WARNING - synthesis: input pad net 'spi_addr_r[5]' has no legal load.
+WARNING - synthesis: logical net 'spi_addr_r[4]' has no load.
+WARNING - synthesis: input pad net 'spi_addr_r[4]' has no legal load.
+WARNING - synthesis: logical net 'spi_addr_r[3]' has no load.
+WARNING - synthesis: input pad net 'spi_addr_r[3]' has no legal load.
+WARNING - synthesis: logical net 'spi_addr_r[2]' has no load.
+WARNING - synthesis: input pad net 'spi_addr_r[2]' has no legal load.
+WARNING - synthesis: logical net 'spi_addr_r[1]' has no load.
+WARNING - synthesis: input pad net 'spi_addr_r[1]' has no legal load.
+WARNING - synthesis: logical net 'spi_addr_r[0]' has no load.
+WARNING - synthesis: input pad net 'spi_addr_r[0]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[39]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[39]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[38]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[38]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[37]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[37]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[36]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[36]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[35]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[35]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[34]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[34]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[33]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[33]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[32]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[32]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[31]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[31]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[30]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[30]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[29]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[29]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[28]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[28]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[27]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[27]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[26]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[26]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[25]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[25]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[24]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[24]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[23]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[23]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[22]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[22]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[21]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[21]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[20]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[20]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[19]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[19]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[18]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[18]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[17]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[17]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[16]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[16]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[15]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[15]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[14]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[14]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[13]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[13]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[12]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[12]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[11]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[11]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[10]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[10]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[9]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[9]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[8]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[8]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[7]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[7]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[6]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[6]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[5]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[5]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[4]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[4]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[3]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[3]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[2]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[2]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[1]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[1]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_r[0]' has no load.
+WARNING - synthesis: input pad net 'spi_data_r[0]' has no legal load.
+WARNING - synthesis: logical net 'spi_data_valid_r' has no load.
+WARNING - synthesis: input pad net 'spi_data_valid_r' has no legal load.
+WARNING - synthesis: logical net 'uart_slot_en[-1]' has no load.
+WARNING - synthesis: input pad net 'uart_slot_en[-1]' has no legal load.
+WARNING - synthesis: logical net 'uart_slot_en[0]' has no load.
+WARNING - synthesis: input pad net 'uart_slot_en[0]' has no legal load.
+WARNING - synthesis: logical net 'tx_slot' has no load.
+WARNING - synthesis: input pad net 'tx_slot' has no legal load.
+WARNING - synthesis: DRC complete with 142 warnings.
+
+Design Results:
+      6 blocks expanded
+completed the first expansion
+All blocks are expanded and NGD expansion is successful.
+Writing NGD file mcm_top_impl_hex.ngd.

@@ -1,0 +1,33 @@
+Problem:
+After writing the LUT file, the USB slave task locks up.
+
+Notes:
+The ISR never fires again.
+I can still control it with the HID device.
+When locked up, udi_cdc_rx_start nor udi_cdc_data_received is called.
+udi_cdc_rx_start tests:
+UI has item by 8th call -> 7th call finished the get call.
+15 calls before lockup
+prvUSB_slave_Rx_Handler:
+	2 hits after the UI element appears
+	
+	3 hits, then UI shows element
+	5 hits, then stall
+	
+
+Write 3-byte file.  Success.
+Delete 3-byte file.  Success.
+Write 94-byte file.  Stall.
+Restart.
+Write 94-byte file.  Stall.
+Restart.
+Write 93-byte file.  Stall.
+Restart.
+Write 50-byte file.  Success.
+Write 89-byte file.  Success.
+Write 90-byte file.  Stall.
+
+90 + 4 + 1 = 95 -> two packets.
+Multiple write packets -> stall!!!!!!!!!
+
+Issue has been resolves.  Problem:  The UI code would always write the bytes_to_send array length instead of the actual bytes to send, causing the system to send more bytes than APT was expecting.

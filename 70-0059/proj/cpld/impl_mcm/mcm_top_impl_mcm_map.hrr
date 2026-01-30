@@ -1,0 +1,689 @@
+---------------------------------------------------
+Report for cell mcm_top
+   Instance path: mcm_top
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	    1883.00        100.0
+                                  LUT4	    2915.00        100.0
+                                 IOBUF	        102        100.0
+                                PFUREG	       3178        100.0
+                                RIPPLE	        298        100.0
+                                   EBR	         23        100.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                               xo2chub	          1         1.3
+                uart_controller_uniq_1	          1         0.1
+                        stepper_uniq_5	          1         3.2
+                        stepper_uniq_7	          1         9.1
+                        stepper_uniq_6	          1         3.2
+                        stepper_uniq_3	          1         3.1
+                        stepper_uniq_4	          1         3.0
+                        stepper_uniq_1	          1         3.3
+                        stepper_uniq_2	          1         4.9
+                     status_led_uniq_1	          1         1.7
+                  spi_slave_top_uniq_1	          1        15.6
+                        reveal_coretop	          1        19.3
+                        shutter_uniq_2	          1         0.1
+                        shutter_uniq_6	          1         0.1
+                        shutter_uniq_7	          1         0.1
+                        shutter_uniq_4	          1         0.1
+                        shutter_uniq_5	          1         0.1
+                        shutter_uniq_3	          1         0.1
+                        shutter_uniq_1	          1         0.3
+                          servo_uniq_7	          1         0.0
+                          servo_uniq_3	          1         0.0
+                          servo_uniq_5	          1         0.0
+                          servo_uniq_6	          1         0.0
+                          servo_uniq_4	          1         0.0
+                          servo_uniq_1	          1         0.1
+                          servo_uniq_2	          1         0.0
+                          rs232_uniq_1	          1         0.1
+                   quad_decoder_uniq_3	          1         3.9
+                   quad_decoder_uniq_6	          1         3.6
+                   quad_decoder_uniq_7	          1         3.6
+                   quad_decoder_uniq_5	          1         3.8
+                   quad_decoder_uniq_4	          1         3.8
+                   quad_decoder_uniq_1	          1         3.2
+                   quad_decoder_uniq_2	          1         3.9
+                            pll_uniq_1	          1         0.0
+                          piezo_uniq_1	          1         0.3
+                          piezo_uniq_5	          1         0.3
+                          piezo_uniq_6	          1         0.1
+                          piezo_uniq_7	          1         0.5
+                          piezo_uniq_3	          1         0.1
+                          piezo_uniq_4	          1         0.1
+                          piezo_uniq_2	          1         0.2
+                        otm_dac_uniq_1	          1         0.1
+                 peizo_elliptec_uniq_1	          1         0.0
+                    intrpt_ctrl_uniq_5	          1         0.2
+                    intrpt_ctrl_uniq_7	          1         0.2
+                    intrpt_ctrl_uniq_6	          1         0.2
+                    intrpt_ctrl_uniq_1	          1         0.2
+                    intrpt_ctrl_uniq_3	          1         0.2
+                    intrpt_ctrl_uniq_4	          1         0.2
+                    intrpt_ctrl_uniq_2	          1         0.2
+                             io_uniq_3	          1         0.0
+                             io_uniq_7	          1         0.0
+                             io_uniq_5	          1         0.0
+                             io_uniq_6	          1         0.0
+                             io_uniq_4	          1         0.0
+                             io_uniq_1	          1         0.1
+                             io_uniq_2	          1         0.0
+                     cs_decoder_uniq_1	          1         1.2
+---------------------------------------------------
+Report for cell shutter_uniq_2
+   Instance path: mcm_top/shutter_ins_1__u_shutter
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       2.03         0.1
+                                  LUT4	       6.50         0.2
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell shutter_uniq_3
+   Instance path: mcm_top/shutter_ins_2__u_shutter
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       1.83         0.1
+                                  LUT4	       6.00         0.2
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell io_uniq_4
+   Instance path: mcm_top/io_ins_3__u_io
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.50         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell io_uniq_6
+   Instance path: mcm_top/io_ins_5__u_io
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.33         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell io_uniq_5
+   Instance path: mcm_top/io_ins_4__u_io
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.33         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell io_uniq_3
+   Instance path: mcm_top/io_ins_2__u_io
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.50         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell otm_dac_uniq_1
+   Instance path: mcm_top/u_otm_dac
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       1.25         0.1
+                                  LUT4	       2.00         0.1
+                                PFUREG	          2         0.1
+---------------------------------------------------
+Report for cell servo_uniq_4
+   Instance path: mcm_top/servo_ins_3__u_servo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.58         0.0
+                                  LUT4	       1.00         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell io_uniq_1
+   Instance path: mcm_top/io_ins_0__u_io
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       1.58         0.1
+                                  LUT4	       4.00         0.1
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell io_uniq_2
+   Instance path: mcm_top/io_ins_1__u_io
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.50         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell servo_uniq_1
+   Instance path: mcm_top/servo_ins_0__u_servo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       1.25         0.1
+                                  LUT4	       3.00         0.1
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell servo_uniq_5
+   Instance path: mcm_top/servo_ins_4__u_servo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.58         0.0
+                                  LUT4	       1.00         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell servo_uniq_3
+   Instance path: mcm_top/servo_ins_2__u_servo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.58         0.0
+                                  LUT4	       1.00         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell servo_uniq_2
+   Instance path: mcm_top/servo_ins_1__u_servo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.58         0.0
+                                  LUT4	       1.00         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell servo_uniq_6
+   Instance path: mcm_top/servo_ins_5__u_servo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.58         0.0
+                                  LUT4	       1.00         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell intrpt_ctrl_uniq_5
+   Instance path: mcm_top/intrpt_ins_4__u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.00         0.2
+                                  LUT4	       2.00         0.1
+                                PFUREG	         12         0.4
+---------------------------------------------------
+Report for cell shutter_uniq_7
+   Instance path: mcm_top/shutter_ins_6__u_shutter
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       2.08         0.1
+                                  LUT4	       7.00         0.2
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell shutter_uniq_6
+   Instance path: mcm_top/shutter_ins_5__u_shutter
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       1.83         0.1
+                                  LUT4	       6.00         0.2
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell shutter_uniq_5
+   Instance path: mcm_top/shutter_ins_4__u_shutter
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       2.08         0.1
+                                  LUT4	       7.00         0.2
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell intrpt_ctrl_uniq_4
+   Instance path: mcm_top/intrpt_ins_3__u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.25         0.2
+                                  LUT4	       2.00         0.1
+                                PFUREG	         12         0.4
+---------------------------------------------------
+Report for cell intrpt_ctrl_uniq_3
+   Instance path: mcm_top/intrpt_ins_2__u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.25         0.2
+                                  LUT4	       2.00         0.1
+                                PFUREG	         12         0.4
+---------------------------------------------------
+Report for cell intrpt_ctrl_uniq_2
+   Instance path: mcm_top/intrpt_ins_1__u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.25         0.2
+                                  LUT4	       2.00         0.1
+                                PFUREG	         12         0.4
+---------------------------------------------------
+Report for cell intrpt_ctrl_uniq_1
+   Instance path: mcm_top/intrpt_ins_0__u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.33         0.2
+                                  LUT4	       2.00         0.1
+                                PFUREG	         12         0.4
+---------------------------------------------------
+Report for cell pll_uniq_1
+   Instance path: mcm_top/__
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+---------------------------------------------------
+Report for cell shutter_uniq_1
+   Instance path: mcm_top/shutter_ins_0__u_shutter
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.92         0.3
+                                  LUT4	      17.00         0.6
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell piezo_uniq_1
+   Instance path: mcm_top/piezo_ins_0__u_piezo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.33         0.3
+                                  LUT4	      19.00         0.7
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell piezo_uniq_2
+   Instance path: mcm_top/piezo_ins_1__u_piezo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       3.00         0.2
+                                  LUT4	      10.00         0.3
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell piezo_uniq_3
+   Instance path: mcm_top/piezo_ins_2__u_piezo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       1.75         0.1
+                                  LUT4	       4.00         0.1
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell cs_decoder_uniq_1
+   Instance path: mcm_top/u_cs_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      22.50         1.2
+                                  LUT4	      48.00         1.6
+                                PFUREG	         16         0.5
+---------------------------------------------------
+Report for cell shutter_uniq_4
+   Instance path: mcm_top/shutter_ins_3__u_shutter
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       1.83         0.1
+                                  LUT4	       6.00         0.2
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell piezo_uniq_4
+   Instance path: mcm_top/piezo_ins_3__u_piezo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       2.42         0.1
+                                  LUT4	       7.00         0.2
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell piezo_uniq_5
+   Instance path: mcm_top/piezo_ins_4__u_piezo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.25         0.3
+                                  LUT4	      20.00         0.7
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell piezo_uniq_6
+   Instance path: mcm_top/piezo_ins_5__u_piezo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       2.67         0.1
+                                  LUT4	       9.00         0.3
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell reveal_coretop
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     363.98        19.3
+                                  LUT4	     676.00        23.2
+                                PFUREG	        581        18.3
+                                RIPPLE	         42        14.1
+                                   EBR	         23        100.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                           mcm_top_la0	          1        19.3
+---------------------------------------------------
+Report for cell mcm_top_la0
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     362.98        19.3
+                                  LUT4	     673.00        23.1
+                                PFUREG	        581        18.3
+                                RIPPLE	         42        14.1
+                                   EBR	         23        100.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+rvl_jtag_int(NUM_TRACE_SIGNALS=91,NUM_TRIGGER_SIGNALS=1)	          1         8.4
+rvl_tm(NUM_TRACE_SIGNALS=91,NUM_TRACE_SAMPLES=2048,NUM_TRIGGER_SIGNALS=1,NUM_TRIG_MAX=1,REVEAL_SIG=279110681,LSCC_FAMILY="XO2")	          1         8.5
+                      mcm_top_la0_trig	          1         2.4
+---------------------------------------------------
+Report for cell mcm_top_la0_trig
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      44.67         2.4
+                                  LUT4	      78.33         2.7
+                                PFUREG	         65         2.0
+                                RIPPLE	          9         3.0
+                                   EBR	          1         4.3
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                 rvl_tu(NUM_TU_BITS=1)	          1         0.3
+rvl_te(NUM_TU=1,NUM_TE_ROW=2,NUM_TE_COL=1,TE_EBR=1,NUM_TE_EVENT_CNT_BITS=0,LSCC_FAMILY="XO2")	          1         1.4
+    rvl_tcnt(NUM_TE=1,NUM_TCNT_BITS=3)	          1         0.5
+         rvl_decode(NUM_TU=1,NUM_TE=1)	          1         0.1
+---------------------------------------------------
+Report for cell rvl_tu(NUM_TU_BITS=1)
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/tu_0
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.25         0.3
+                                  LUT4	      10.00         0.3
+                                PFUREG	          8         0.3
+---------------------------------------------------
+Report for cell rvl_te(NUM_TU=1,NUM_TE_ROW=2,NUM_TE_COL=1,TE_EBR=1,NUM_TE_EVENT_CNT_BITS=0,LSCC_FAMILY="XO2")
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      26.17         1.4
+                                  LUT4	      35.33         1.2
+                                PFUREG	         45         1.4
+                                RIPPLE	          9         3.0
+                                   EBR	          1         4.3
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+    pmi_ram_dpXbnonesadr11211211401afe	          1         0.0
+---------------------------------------------------
+Report for cell pmi_ram_dpXbnonesadr11211211401afe
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/te_0/pmi_ram_dpXO2binarynonespeedasyncdisablereg112112
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                   EBR	          1         4.3
+---------------------------------------------------
+Report for cell rvl_tcnt(NUM_TE=1,NUM_TCNT_BITS=3)
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/tcnt_0
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       8.58         0.5
+                                  LUT4	      18.00         0.6
+                                PFUREG	         12         0.4
+---------------------------------------------------
+Report for cell rvl_decode(NUM_TU=1,NUM_TE=1)
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/trig_u/decode_u
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       2.50         0.1
+                                  LUT4	       9.00         0.3
+---------------------------------------------------
+Report for cell rvl_tm(NUM_TRACE_SIGNALS=91,NUM_TRACE_SAMPLES=2048,NUM_TRIGGER_SIGNALS=1,NUM_TRIG_MAX=1,REVEAL_SIG=279110681,LSCC_FAMILY="XO2")
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     160.65         8.5
+                                  LUT4	     239.33         8.2
+                                PFUREG	        306         9.6
+                                RIPPLE	         24         8.1
+                                   EBR	         22        95.7
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+pmi_ram_dpXbnonesadr911120489111204811f45a5e	          1         1.3
+---------------------------------------------------
+Report for cell pmi_ram_dpXbnonesadr911120489111204811f45a5e
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/tm_u/pmi_ram_dpXO2binarynonespeedasyncdisablereg9111204891112048
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      23.67         1.3
+                                  LUT4	      91.00         3.1
+                                PFUREG	          2         0.1
+                                   EBR	         22        95.7
+---------------------------------------------------
+Report for cell rvl_jtag_int(NUM_TRACE_SIGNALS=91,NUM_TRIGGER_SIGNALS=1)
+   Instance path: mcm_top/mcm_top_reveal_coretop_instance/mcm_top_la0_inst_0/jtag_int_u
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     157.67         8.4
+                                  LUT4	     355.33        12.2
+                                PFUREG	        210         6.6
+                                RIPPLE	          9         3.0
+---------------------------------------------------
+Report for cell servo_uniq_7
+   Instance path: mcm_top/servo_ins_6__u_servo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.58         0.0
+                                  LUT4	       1.00         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell status_led_uniq_1
+   Instance path: mcm_top/u_status_led
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      31.92         1.7
+                                  LUT4	      31.00         1.1
+                                PFUREG	         43         1.4
+                                RIPPLE	         26         8.7
+---------------------------------------------------
+Report for cell quad_decoder_uniq_6
+   Instance path: mcm_top/quad_ins_5__u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      68.00         3.6
+                                  LUT4	      46.00         1.6
+                                PFUREG	        141         4.4
+                                RIPPLE	         17         5.7
+---------------------------------------------------
+Report for cell peizo_elliptec_uniq_1
+   Instance path: mcm_top/u_peizo_elliptec
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.75         0.0
+                                  LUT4	       1.00         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell intrpt_ctrl_uniq_7
+   Instance path: mcm_top/intrpt_ins_6__u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.25         0.2
+                                  LUT4	       2.00         0.1
+                                PFUREG	         12         0.4
+---------------------------------------------------
+Report for cell piezo_uniq_7
+   Instance path: mcm_top/piezo_ins_6__u_piezo
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       9.92         0.5
+                                  LUT4	      33.33         1.1
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell quad_decoder_uniq_7
+   Instance path: mcm_top/quad_ins_6__u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      68.00         3.6
+                                  LUT4	      46.00         1.6
+                                PFUREG	        141         4.4
+                                RIPPLE	         17         5.7
+---------------------------------------------------
+Report for cell quad_decoder_uniq_5
+   Instance path: mcm_top/quad_ins_4__u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      71.33         3.8
+                                  LUT4	      54.00         1.9
+                                PFUREG	        141         4.4
+                                RIPPLE	         17         5.7
+---------------------------------------------------
+Report for cell spi_slave_top_uniq_1
+   Instance path: mcm_top/spi_slave_top_inst
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     294.67        15.6
+                                  LUT4	     792.00        27.2
+                                PFUREG	        259         8.1
+                                RIPPLE	         10         3.4
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                        wb_ctrl_uniq_1	          1         0.3
+                  spi_slave_efb_uniq_1	          1         0.0
+                       spi_ctrl_uniq_1	          1        11.5
+---------------------------------------------------
+Report for cell wb_ctrl_uniq_1
+   Instance path: mcm_top/spi_slave_top_inst/wb_ctrl_inst
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.3
+                                  LUT4	       2.00         0.1
+                                PFUREG	         14         0.4
+---------------------------------------------------
+Report for cell spi_slave_efb_uniq_1
+   Instance path: mcm_top/spi_slave_top_inst/spi_slave_efb_inst
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.50         0.0
+                                  LUT4	       2.00         0.1
+---------------------------------------------------
+Report for cell spi_ctrl_uniq_1
+   Instance path: mcm_top/spi_slave_top_inst/spi_ctrl_inst
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     217.17        11.5
+                                  LUT4	     655.00        22.5
+                                PFUREG	        104         3.3
+                                RIPPLE	         10         3.4
+---------------------------------------------------
+Report for cell intrpt_ctrl_uniq_6
+   Instance path: mcm_top/intrpt_ins_5__u_intrpt_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.25         0.2
+                                  LUT4	       2.00         0.1
+                                PFUREG	         12         0.4
+---------------------------------------------------
+Report for cell stepper_uniq_6
+   Instance path: mcm_top/stepper_ins_5__u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      60.33         3.2
+                                  LUT4	      43.00         1.5
+                                PFUREG	        160         5.0
+                                RIPPLE	         12         4.0
+---------------------------------------------------
+Report for cell quad_decoder_uniq_1
+   Instance path: mcm_top/quad_ins_0__u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      61.00         3.2
+                                  LUT4	      56.00         1.9
+                                PFUREG	        141         4.4
+                                RIPPLE	         17         5.7
+---------------------------------------------------
+Report for cell stepper_uniq_2
+   Instance path: mcm_top/stepper_ins_1__u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      92.40         4.9
+                                  LUT4	      85.50         2.9
+                                PFUREG	        161         5.1
+                                RIPPLE	         12         4.0
+---------------------------------------------------
+Report for cell stepper_uniq_5
+   Instance path: mcm_top/stepper_ins_4__u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      59.42         3.2
+                                  LUT4	      44.00         1.5
+                                PFUREG	        160         5.0
+                                RIPPLE	         12         4.0
+---------------------------------------------------
+Report for cell stepper_uniq_3
+   Instance path: mcm_top/stepper_ins_2__u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      58.00         3.1
+                                  LUT4	      43.00         1.5
+                                PFUREG	        160         5.0
+                                RIPPLE	         12         4.0
+---------------------------------------------------
+Report for cell quad_decoder_uniq_3
+   Instance path: mcm_top/quad_ins_2__u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      73.42         3.9
+                                  LUT4	      46.00         1.6
+                                PFUREG	        141         4.4
+                                RIPPLE	         17         5.7
+---------------------------------------------------
+Report for cell stepper_uniq_4
+   Instance path: mcm_top/stepper_ins_3__u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      56.67         3.0
+                                  LUT4	      39.00         1.3
+                                PFUREG	        160         5.0
+                                RIPPLE	         12         4.0
+---------------------------------------------------
+Report for cell quad_decoder_uniq_2
+   Instance path: mcm_top/quad_ins_1__u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      72.67         3.9
+                                  LUT4	      46.00         1.6
+                                PFUREG	        141         4.4
+                                RIPPLE	         17         5.7
+---------------------------------------------------
+Report for cell stepper_uniq_7
+   Instance path: mcm_top/stepper_ins_6__u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     171.67         9.1
+                                  LUT4	     490.67        16.8
+                                PFUREG	        160         5.0
+                                RIPPLE	         12         4.0
+---------------------------------------------------
+Report for cell stepper_uniq_1
+   Instance path: mcm_top/stepper_ins_0__u_stepper
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      61.83         3.3
+                                  LUT4	      50.00         1.7
+                                PFUREG	        160         5.0
+                                RIPPLE	         12         4.0
+---------------------------------------------------
+Report for cell rs232_uniq_1
+   Instance path: mcm_top/u_rs232
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       1.00         0.1
+                                  LUT4	       2.00         0.1
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell io_uniq_7
+   Instance path: mcm_top/io_ins_6__u_io
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.33         0.0
+                                PFUREG	          1         0.0
+---------------------------------------------------
+Report for cell quad_decoder_uniq_4
+   Instance path: mcm_top/quad_ins_3__u_quad_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      71.33         3.8
+                                  LUT4	      46.00         1.6
+                                PFUREG	        141         4.4
+                                RIPPLE	         17         5.7
+---------------------------------------------------
+Report for cell uart_controller_uniq_1
+   Instance path: mcm_top/u_uart_controller
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       1.00         0.1
+                                PFUREG	          4         0.1
+---------------------------------------------------
+Report for cell xo2chub
+   Instance path: mcm_top/xo2chub
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      25.25         1.3
+                                  LUT4	      12.00         0.4
+                                PFUREG	         51         1.6
+                                RIPPLE	         17         5.7

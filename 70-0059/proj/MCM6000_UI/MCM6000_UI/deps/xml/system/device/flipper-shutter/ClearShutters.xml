@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<FlipperShutterParameters>
+    <Card version='0'>
+        <InterlockCableEnabled value="false" />
+    </Card>
+    <Shutter channel="0" version='0'>
+        <PowerUpPosition value="0" /> <!--Also accepts:  OPEN, CLOSED, and UNKNOWN-->
+        <TriggerMode value="0" /> <!--Also accepts:  DISABLED, ENABLED, REVERSED-->
+        <Type value="0" /> <!--Also accepts:  PULSED, HOLD, and NO RETURN-->
+        <OnTimeSeconds value="1E-5" />
+        <PulseVoltage value="24" />
+        <HoldVoltage value="10" />
+    </Shutter>
+    <!--Missing shutter channels will be disabled-->
+    <Mirror channel="5" version='0'>
+        <PowerUpPosition value="IN" />
+        <InIsSignalHigh value="true" />
+    </Mirror>
+    <Mirror channel="6" version='0'>
+        <PowerUpPosition value="OUT" />
+        <InIsSignalHigh value="true" />
+    </Mirror>
+    <!--Missing mirror channels may be missing-->
+</FlipperShutterParameters>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DiamondModule name="spi_slave_efb" module="spi_slave_efb" VendorName="Lattice Semiconductor Corporation" generator="IPexpress" date="2020 07 28 05:32:30.721" version="1.2" type="Module" synthesis="lse" source_format="Verilog HDL">
+  <Package>
+		<File name="spi_slave_efb.lpc" type="lpc" modified="2020 07 28 05:32:28.177"/>
+		<File name="spi_slave_efb.v" type="top_level_verilog" modified="2020 07 28 05:32:28.335"/>
+		<File name="spi_slave_efb_tmpl.v" type="template_verilog" modified="2020 07 28 05:32:28.336"/>
+  </Package>
+</DiamondModule>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Set smart devices (*** look at "device_id.xml" for ids ***)-->
+<Devices>
+
+	<Device_ID command="0x4005" data_length="10"><!--MGMSG_SET_DEVICE-->
+		<Parameter name="device_part_number" type="UInt16" length="2" offset="8" value="8" />
+	</Device_ID>
+
+	<MatchDevice_ID command="0x4008" data_length="10"><!--MGMSG_SET_DEVICE_BOARD-->
+		<Parameter name="device_part_number" type="UInt16" length="2" offset="8" value="8" />
+	</MatchDevice_ID>
+</Devices>

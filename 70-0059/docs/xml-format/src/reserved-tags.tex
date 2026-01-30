@@ -1,0 +1,40 @@
+\section{Reserved Tags}\label{sec:reserved-tags}
+Certain tag names are reserved as special tags.
+As a result, these tag names are \textbf{must} be defined for their use as defined in this section.
+
+\subsection*{Import}\label{sec:reserved-tags/import}
+The ``Import'' tag allows for XML elements from other files to be included where the import tag is declared.
+To use this tag, declare the ``href'' and ``xpath'' attributes.
+The ``href'' attribute declares a relative path to the XML file to reference.
+The ``xpath'' attribute declares an XPath path in the XML to the element to be imported.
+
+For example, assume that file ``B.xml'' exists in the subdirectory ``src'' with the following
+    contents:
+\begin{lstlisting}
+<?xml version="1.0" ?>
+
+<B>
+    <MyTag>
+        <MyElement myAttr="C" />
+    </MyTag>
+    <SomeoneElse otherAttr="D" />
+</B>
+\end{lstlisting}
+
+If ``A.xml'' wants to import the MyTag block, then one would use the ``Import'' tag as follows.
+\begin{lstlisting}
+<Import href="src/B.xml" xpath="/B/MyTag" />
+\end{lstlisting}
+
+After ``A.xml'' is preprocessed, then the ``Import'' tag will be replaced with the ``MyTag''
+    element, including all of that tag's content.
+
+\subsection*{Include}\label{sec:reserved-tags/include}
+The ``Include'' tag acts as a useful shorthand for a common use-case of the ``Import'' tag--full
+    content importing.
+Functionally, it is equivalent to\dots\\
+\lstinline{<Import href="your/href/here" xpath="/" />}
+
+To use this tag, declare the ``href'' attribute.
+Just like the ``Import'' tag, the ``href'' attribute declares a relative path to an XML file to
+    reference.

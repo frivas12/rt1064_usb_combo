@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<OneWire>
+    <Signature>
+        <DefaultSlotType value="19"/>
+        <DeviceID value="0"/>
+    </Signature>
+    <DeviceConigurations/>
+    <ConfigEntries>
+        <Struct binary="$PATH:bin/19-0-64ab3aeed7fbf04b.bin">
+            <Signature>
+                <StructID value="2"/>
+                <ConfigID value="65520"/>
+            </Signature>
+            <Data>
+                <StageID value="0"/>
+                <AxisID value="0"/>
+                <AxisSerial value="0"/>
+                <CountsPerUnit value="1.65"/>
+                <Position min="0" max=" 0"/>
+                <CollisionThreshold value="0"/>
+            </Data>
+        </Struct>
+        <Struct binary="$PATH:bin/19-0-62d0842052374911.bin">
+            <Signature>
+                <StructID value="4"/>
+                <ConfigID value="65521"/>
+            </Signature>
+            <Data>
+                <Flags value="55"/>
+            </Data>
+        </Struct>
+        <Struct binary="$PATH:bin/19-0-2de9a24bc579e965.bin">
+            <Signature>
+                <StructID value="5"/>
+                <ConfigID value="65523"/>
+            </Signature>
+            <Data>
+                <Mode value="0"/>
+                <Direction value="2"/>
+                <LimitSwitch value="1"/>
+                <Velocity value="80"/>
+                <OffsetDistance value="0"/>
+            </Data>
+        </Struct>
+        <Struct binary="$PATH:bin/19-0-581794b196da6e3f.bin">
+            <Signature>
+                <StructID value="1"/>
+                <ConfigID value="65524"/>
+            </Signature>
+            <Data>
+                <HardLimit cw="1" ccw="1"/>
+                <SoftLimit cw="2147483647" ccw="-2147483648"/>
+                <AbsLimit high="2147483647" low="-2147483648"/>
+                <Mode value="1"/>
+            </Data>
+        </Struct>
+        <Struct binary="$PATH:bin/19-0-836b895be0d284c.bin">
+            <Signature>
+                <StructID value="7"/>
+                <ConfigID value="65522"/>
+            </Signature>
+            <Data>
+                <Kp value="400"/>
+                <Ki value="0"/>
+                <Kd value="0"/>
+                <IMax value="0"/>
+                <FilterControl value="0"/>
+            </Data>
+        </Struct>
+    </ConfigEntries>
+</OneWire>

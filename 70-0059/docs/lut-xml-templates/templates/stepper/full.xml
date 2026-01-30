@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+
+<StepperParameters>
+
+    <Config>
+        <StageID value="1" />
+        <AxisID value="1" />
+        <AxisName value="Y Axis" />
+        <AxisSerial value="0" />
+        <CountsPerUnit value="0" />
+        <Position min="0" max="0" />
+        <CollisionThreshold value="0" />
+    </Config>
+
+    <Drive>
+        <Acceleration min="0" max="0" />
+        <!--Min acceleration = MAX deceleration-->
+        <Speed min="0" max="0" />
+        <FullStepSpeed value="0" />
+        <KVal>
+            <Hold value="0" />
+            <Run value="0" />
+            <Accel value="0" />
+            <Decel value="0" />
+        </KVal>
+        <IntersectSpeed value="0" />
+        <StallThreshold value="0" />
+        <Slope>
+            <Start value="0" />
+            <FinalAccel value="0" />
+            <FinalDecel value="0" />
+        </Slope>
+        <OCDThreshold value="0" />
+        <StepMode value="0" />
+        <ICConfig value="0" />
+        <GateDriverConfig value="0" />
+        <ApproachVelocity value="0" />
+        <Deadband value="0" />
+        <Backlash value="0" />
+        <KickoutTime value="0" />
+    </Drive>
+
+    <Flags>
+        <Flags value="0" />
+    </Flags>
+
+    <Limit>
+        <HardLimit cw="0" ccw="0" />
+        <SoftLimit cw="0" ccw="0" />
+        <AbsLimit low="0" high="0" />
+        <Mode value="0" />
+    </Limit>
+
+    <Homing>
+        <Mode value="1" />
+        <Direction value="1" />
+        <Velocity value="1" />
+        <LimitSwitch value="1" />
+        <OffsetDistance value="1" />
+    </Homing>
+
+    <Jog>
+        <Mode value="0" />
+        <StepSize value="0" />
+        <Velocity min="0" max="0" />
+        <Accel value="0" />
+        <StopMode value="0" />
+    </Jog>
+
+    <Encoder>
+        <EncoderType value="0" />
+        <IndexDelta min="0" incr="0" />
+        <CountsPerNm value="0.000" />
+    </Encoder>
+
+    <PID>
+        <Kp value="0" />
+        <Ki value="0" />
+        <Kd value="0" />
+        <IMax value="0" />
+        <FilterControl value="0" />
+    </PID>
+
+    <!--LUT puts CRC here-->
+
+    <!--Not saved in LUT-->
+    <Store ignore="1">
+        <Deadband value="0" />
+        <CalibratedPositions>
+            <!--Auto Counter-->
+            <Position index="1" value="0" />
+            <Position value="0" />
+            <Position value="0" />
+            <Position value="0" />
+            <Position index="5" value="0" />
+            <Position value="0" />
+        </CalibratedPositions>
+    </Store>
+   
+
+</StepperParameters>

@@ -1,0 +1,31 @@
+\section{Design Principles}\label{sec:design-principles}
+In the previous XML format, xml files were declared as APT commands that were sent
+    to the controller.
+As a result, XML files declared the structure and parameters for the command in
+    byte form, making the files difficult to understand without referencing
+    the APT documentation and/or the firmware's source code.
+
+The new XML format seeks to separate how the XMLs are written and the APT commands
+    sent to the controller.
+In the new format, XMLs are easier to understand and easier to maintain.
+In addition, the new XML format provides a cohesive structure for XML files
+    for configuration of the controller.
+A large middleware layer in form of the SystemXMLParser has arisen to convert the
+    structure of each XML file into a configuration to send to the controller.
+
+As the XMLs stored define the parameters for configuring a controller and/or one-wire
+    device, \textbf{extensive} XMLs act as the core pillar of every XML document.
+Extensiveness requires that one XML should hold all the information needed to
+    configure a device.
+This makes configuration a simple as selecting a file.
+Thus, only configuration XMLs are the only XMLs loaded by other programs.
+
+
+If extensiveness was the only pillar, however, the modular nature of the MCM controllers would
+    make this design principle unfeasible.
+The pillar of \textbf{indirection} bridges this issue, allowing for extensive files to be split
+    into separate files.
+This pillar creates a system where XMLs can include elements from other XMLs, allowing for a single file
+    to branch into multiple files in the directory.
+Furthermore, extensive XMLs can then reuse the same file, reducing file size and automatically
+    propagating changes.

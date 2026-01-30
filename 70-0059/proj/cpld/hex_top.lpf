@@ -1,0 +1,143 @@
+rvl_alias "clk_in" "clk_in";
+RVL_ALIAS "clk" "clk"; 
+// pins for LCMXO2-4000HC-4TG144C
+BLOCK RESETPATHS ;
+BLOCK ASYNCPATHS ;
+//FREQUENCY NET "clk_133_MHz" 16.63 MHz  PAR_ADJ 20 ; // max 133MHz
+//FREQUENCY NET "osc_clk" 16.63 MHz  PAR_ADJ 20 ; // max 133MHz
+//FREQUENCY NET "osc_clk" 38.00 MHz  PAR_ADJ 0 ; // max 133MHz
+BANK 0 VCCIO 3.3 V;
+BANK 1 VCCIO 3.3 V;
+BANK 2 VCCIO 3.3 V;
+BANK 3 VCCIO 3.3 V;
+BANK 4 VCCIO 3.3 V;
+BANK 5 VCCIO 3.3 V;
+IOBUF ALLPORTS IO_TYPE=LVCMOS33 PULLMODE=NONE ;
+LOCATE COMP "clk_in" SITE "C11" ;// 12 MHz Clock from uC CPLD_CLK
+LOCATE COMP "resetn" SITE "N2" ;
+// SPI
+LOCATE COMP "spi_scsn" SITE "P3" ;
+LOCATE COMP "spi_miso" SITE "N4" ;// data out from CPLD  ***Wrong pin in design, must jump on board from C4 to MISO
+LOCATE COMP "spi_mosi" SITE "P13" ;// data into CPLD
+LOCATE COMP "spi_clk" SITE "M4" ;
+LOCATE COMP "CS_READY" SITE "K3" ;// use for SPI cs trigger
+// data out from CPLD
+// data into CPLD
+// Interrupts to Atmel from each slot
+LOCATE COMP "intrpt_out[0]" SITE "F2" ;
+LOCATE COMP "intrpt_out[1]" SITE "H3" ;
+LOCATE COMP "intrpt_out[2]" SITE "J2" ;
+LOCATE COMP "intrpt_out[3]" SITE "K2" ;
+LOCATE COMP "intrpt_out[4]" SITE "M2" ;
+LOCATE COMP "intrpt_out[5]" SITE "J3" ;
+LOCATE COMP "intrpt_out[6]" SITE "M1" ;
+// Slot 1 GPIO's
+LOCATE COMP "pin_io[0]" SITE "A2" ;
+LOCATE COMP "pin_io[1]" SITE "B7" ;
+LOCATE COMP "pin_io[2]" SITE "B8" ;
+LOCATE COMP "pin_io[3]" SITE "A9" ;
+LOCATE COMP "pin_io[4]" SITE "A10" ;
+LOCATE COMP "pin_io[5]" SITE "J12" ;
+LOCATE COMP "pin_io[6]" SITE "B5" ;
+LOCATE COMP "pin_io[7]" SITE "A7" ;
+LOCATE COMP "pin_io[8]" SITE "A11" ;
+LOCATE COMP "pin_io[9]" SITE "A12" ;
+// Slot 2 GPIO's
+LOCATE COMP "pin_io[10]" SITE "H12" ;
+LOCATE COMP "pin_io[11]" SITE "B14" ;
+LOCATE COMP "pin_io[12]" SITE "D12" ;
+LOCATE COMP "pin_io[13]" SITE "C14" ;
+LOCATE COMP "pin_io[14]" SITE "A3" ;
+LOCATE COMP "pin_io[15]" SITE "C13" ;
+LOCATE COMP "pin_io[16]" SITE "B12" ;
+LOCATE COMP "pin_io[17]" SITE "C12" ;
+LOCATE COMP "pin_io[18]" SITE "E14" ;
+LOCATE COMP "pin_io[19]" SITE "E13" ;
+// Slot 3 GPIO's
+LOCATE COMP "pin_io[20]" SITE "B3" ;
+LOCATE COMP "pin_io[21]" SITE "G14" ;
+LOCATE COMP "pin_io[22]" SITE "G13" ;
+LOCATE COMP "pin_io[23]" SITE "J14" ;
+LOCATE COMP "pin_io[24]" SITE "J13" ;
+LOCATE COMP "pin_io[25]" SITE "G12" ;
+LOCATE COMP "pin_io[26]" SITE "F14" ;
+LOCATE COMP "pin_io[27]" SITE "F13" ;
+LOCATE COMP "pin_io[28]" SITE "K14" ;
+LOCATE COMP "pin_io[29]" SITE "K13" ;
+// Slot 4 GPIO's
+LOCATE COMP "pin_io[30]" SITE "E12" ;
+LOCATE COMP "pin_io[31]" SITE "M13" ;
+LOCATE COMP "pin_io[32]" SITE "N14" ;
+LOCATE COMP "pin_io[33]" SITE "M12" ;
+LOCATE COMP "pin_io[34]" SITE "M11" ;
+LOCATE COMP "pin_io[35]" SITE "K12" ;
+LOCATE COMP "pin_io[36]" SITE "L14" ;
+LOCATE COMP "pin_io[37]" SITE "M14" ;
+LOCATE COMP "pin_io[38]" SITE "P12" ;
+LOCATE COMP "pin_io[39]" SITE "P11" ;
+// Slot 5 GPIO's
+LOCATE COMP "pin_io[40]" SITE "M9" ;
+LOCATE COMP "pin_io[41]" SITE "N9" ;
+LOCATE COMP "pin_io[42]" SITE "P8" ;
+LOCATE COMP "pin_io[43]" SITE "N8" ;
+LOCATE COMP "pin_io[44]" SITE "P7" ;
+LOCATE COMP "pin_io[45]" SITE "M10" ;
+LOCATE COMP "pin_io[46]" SITE "N10" ;
+LOCATE COMP "pin_io[47]" SITE "P9" ;
+LOCATE COMP "pin_io[48]" SITE "N7" ;
+LOCATE COMP "pin_io[49]" SITE "P6" ;
+// Slot 6 GPIO's
+LOCATE COMP "pin_io[50]" SITE "M7" ;
+LOCATE COMP "pin_io[51]" SITE "M5" ;
+LOCATE COMP "pin_io[52]" SITE "D1" ;
+LOCATE COMP "pin_io[53]" SITE "C1" ;
+LOCATE COMP "pin_io[54]" SITE "C2" ;
+LOCATE COMP "pin_io[55]" SITE "C9" ;
+LOCATE COMP "pin_io[56]" SITE "C6" ;
+LOCATE COMP "pin_io[57]" SITE "C8" ;
+LOCATE COMP "pin_io[58]" SITE "B1" ;
+LOCATE COMP "pin_io[59]" SITE "C3" ;
+// Slot 7 GPIO's
+//LOCATE COMP "pin_io[60]" SITE "" ;
+//LOCATE COMP "pin_io[61]" SITE "" ;
+//LOCATE COMP "pin_io[62]" SITE "" ;
+//LOCATE COMP "pin_io[63]" SITE "" ;
+//LOCATE COMP "pin_io[64]" SITE "" ;
+//LOCATE COMP "pin_io[65]" SITE "" ;
+//LOCATE COMP "pin_io[66]" SITE "" ;
+//LOCATE COMP "pin_io[67]" SITE "" ;
+//LOCATE COMP "pin_io[68]" SITE "" ;
+//LOCATE COMP "pin_io[69]" SITE "" ;
+// chip select
+LOCATE COMP "cs[0]" SITE "H2" ;
+LOCATE COMP "cs[1]" SITE "F3" ;
+LOCATE COMP "cs[2]" SITE "G3" ;
+LOCATE COMP "cs[3]" SITE "K1" ;
+LOCATE COMP "cs[4]" SITE "N13" ;
+// UART
+LOCATE COMP "UC_TXD0" SITE "J1" ;// TX on the Atmel IC
+LOCATE COMP "UC_RXD0" SITE "H1" ;// RX on the Atmel IC
+// LED's
+LOCATE COMP "led_sw" SITE "E2" ;
+// Chip select for flash
+LOCATE COMP "FLASH_CS" SITE "M8" ;
+// Chip select for max3421
+LOCATE COMP "MAX3421_CS" SITE "E1" ;
+// Fan
+//LOCATE COMP "FAN" SITE ""; 
+// extra pins to uC
+//LOCATE COMP "CM_1" SITE "L3" ;
+//LOCATE COMP "CM_2" SITE "M3" ;
+//LOCATE COMP "CM_3" SITE "F1" ;
+// pins on extra header
+LOCATE COMP "C_1" SITE "N6" ;
+LOCATE COMP "C_2" SITE "N5" ;
+LOCATE COMP "C_3" SITE "P4" ;
+LOCATE COMP "C_4" SITE "C7"; // Should be N4" ; but there was a wiring error in design
+LOCATE COMP "C_5" SITE "N3" ;
+LOCATE COMP "C_6" SITE "P2" ;
+LOCATE COMP "C_7" SITE "B2" ;
+//LOCATE COMP "C_8" SITE "" ;
+BLOCK JTAGPATHS ;
+SYSCONFIG SLAVE_SPI_PORT=ENABLE ;
+SYSCONFIG SDM_PORT=DISABLE CONFIGURATION=CFG MASTER_SPI_PORT=DISABLE ;

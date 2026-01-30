@@ -1,0 +1,14 @@
+INSERT INTO PartNumbers VALUES('000-106-067',0,19,8,1,'Bergamo III Axis E');
+INSERT INTO PartNumbers VALUES('000-106-545',0,19,7,1,'ELB43 Rotation');
+INSERT INTO PartNumbers VALUES('000-106-545',1,19,7,1,'ELB49 Rotation');
+INSERT INTO PartNumbers VALUES('000-106-545',2,19,7,1,'ELB45 Rotation');
+INSERT INTO PartNumbers VALUES('000-106-545',3,19,9,1,'Rotation Cerna Stage');
+INSERT INTO PartNumbers VALUES('000-106-677',0,19,4,1,'ELB43 XYZ Base (-30 to 60 deg.)');
+INSERT INTO PartNumbers VALUES('000-106-677',1,19,5,1,'ELB43 XYZ Base (-30 to 60 deg.)');
+INSERT INTO PartNumbers VALUES('000-106-677',2,19,6,1,'ELB43 XYZ Base (-30 to 60 deg.)');
+INSERT INTO PartNumbers VALUES('30-0313',0,19,3,1,'PnP 2" LNR Stage');
+INSERT INTO PartNumbers VALUES('30-1303',0,19,1,1,'1" Red Post');
+INSERT INTO PartNumbers VALUES('30-1305',0,19,0,1,'PnP 1" PLS Stage');
+INSERT INTO PartNumbers VALUES('30-1412',0,19,1,1,'1" Red Post');
+INSERT INTO PartNumbers VALUES('40-0321',0,10,0,1,'Bergamo III Shutters');
+INSERT INTO PartNumbers VALUES('40-0322',0,9,0,1,'Bergamo III Mirrors');

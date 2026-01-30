@@ -1,0 +1,35 @@
+{
+    
+    "configurations": [
+        {
+            "name": "(gdb) Bash",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/owc.exe",
+            "args": [
+                "../MCM6000_UI/MCM6000_UI/bin/Debug/xml/system/one-wire/src/stepper/PLS-X.xml"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+    ],
+
+
+
+}

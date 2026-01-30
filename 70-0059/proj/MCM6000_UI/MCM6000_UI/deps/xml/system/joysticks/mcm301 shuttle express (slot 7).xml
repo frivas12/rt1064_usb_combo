@@ -1,0 +1,98 @@
+<Joystick>
+    <InMap control="0">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="128" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+          </Destination>
+          <VID value="0" />
+          <PID value="0" />
+          <ModifySpeed value="240" />
+          <ReverseDir value="0" />
+          <Deadband value="2" />
+          <Mode value="0" />
+    </InMap>
+    <InMap control="1">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="128" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+          </Destination>
+          <VID value="0" />
+          <PID value="0" />
+          <ModifySpeed value="0" />
+          <ReverseDir value="0" />
+          <Deadband value="2" />
+          <Mode value="0" />
+    </InMap>
+
+    <!--Left Dimpled-->
+    <InMap control="3">
+        <ModifyControl>
+            <Port value="1" />
+            <ControlNum value="3" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="16" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+          </Destination>
+          <VID value="0" />
+          <PID value="0" />
+          <ModifySpeed value="0" />
+          <ReverseDir value="0" />
+          <Deadband value="0" />
+          <Mode value="1" />
+    </InMap>
+
+    <!--Center Dimpled-->
+    <InMap control="4">
+        <ModifyControl>
+            <Port value="1" />
+            <ControlNum value="3" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="32" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+          </Destination>
+          <VID value="0" />
+          <PID value="0" />
+          <ModifySpeed value="0" />
+          <ReverseDir value="0" />
+          <Deadband value="0" />
+          <Mode value="1" />
+    </InMap>
+
+    <!--Right Dimpled-->
+    <InMap control="5">
+        <ModifyControl>
+            <Port value="1" />
+            <ControlNum value="3" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+          </Destination>
+          <VID value="0" />
+          <PID value="0" />
+          <ModifySpeed value="0" />
+          <ReverseDir value="0" />
+          <Deadband value="0" />
+          <Mode value="1" />
+    </InMap>
+</Joystick>

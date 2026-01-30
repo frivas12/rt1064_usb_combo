@@ -1,0 +1,25 @@
+12
+~M 0 "" 0 $root
+~A 1 "" 0 $root
+~M 3 "./../../../sources/cs_decoder.v" 7 cs_decoder
+~A 1 "./../../../sources/cs_decoder.v" 7 cs_decoder
+~M 3 "./../../../sources/intrpt_ctrl.v" 6 intrpt_ctrl
+~A 1 "./../../../sources/intrpt_ctrl.v" 6 intrpt_ctrl
+~M 3 "./../../../sources/mcm_top.v" 8 mcm_top
+~A 1 "./../../../sources/mcm_top.v" 8 mcm_top
+~M 3 "./../../../sources/pwm_controller.v" 11 pwm_controller
+~A 1 "./../../../sources/pwm_controller.v" 11 pwm_controller
+~M 3 "./../../../sources/quad_decoder.v" 8 quad_decoder
+~A 1 "./../../../sources/quad_decoder.v" 8 quad_decoder
+~M 3 "./../../../sources/set_pins.v" 8 set_pins
+~A 1 "./../../../sources/set_pins.v" 8 set_pins
+~M 3 "./../../../sources/spi_ctrl.v" 9 spi_ctrl
+~A 1 "./../../../sources/spi_ctrl.v" 9 spi_ctrl
+~M 3 "./../../../sources/ip/spi_slave_efb.v" 8 spi_slave_efb
+~A 1 "./../../../sources/ip/spi_slave_efb.v" 8 spi_slave_efb
+~M 3 "./../../../sources/spi_slave_top.v" 9 spi_slave_top
+~A 1 "./../../../sources/spi_slave_top.v" 9 spi_slave_top
+~M 3 "./../../tb_mcm_top.v" 11 tb_mcm_top
+~A 1 "./../../tb_mcm_top.v" 11 tb_mcm_top
+~M 3 "./../../../sources/wb_ctrl.v" 53 wb_ctrl
+~A 1 "./../../../sources/wb_ctrl.v" 53 wb_ctrl

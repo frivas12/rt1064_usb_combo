@@ -1,0 +1,16 @@
+name = "package-name" # [a-bA-b0-9_-]
+version = "0.0.0"     # Semantic Versioning 2
+
+[[devices]]           # Supported Device
+slot_type = 19        # All device table entries matching glob
+device_id = 0         # *:0013:0000 will be added.
+
+[[devices]]           # Supported Device
+slot_type = 19        # Device table entries 0013:0013:0005
+device_id = 5         # and 0003:0013:0005 will be added.
+slot_filter = [19, 3] #
+
+# Deprecated (1.2.0)  # Deprecation note w/ version of removal
+# [[devices]]
+# slot_type = 19
+# device_id = 7

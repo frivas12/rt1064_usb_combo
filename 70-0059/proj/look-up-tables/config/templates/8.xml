@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<Struct>
+    <Signature>
+        <StructID value="8"/>
+        <ConfigID value="{u16}"/>
+    </Signature>
+    <Data>
+        <Position index="1"  value="{2147483647:i32}"/>
+        <Position index="2"  value="{2147483647:i32}"/>
+        <Position index="3"  value="{2147483647:i32}"/>
+        <Position index="4"  value="{2147483647:i32}"/>
+        <Position index="5"  value="{2147483647:i32}"/>
+        <Position index="6"  value="{2147483647:i32}"/>
+        <Position index="7"  value="{2147483647:i32}"/>
+        <Position index="8"  value="{2147483647:i32}"/>
+        <Position index="9"  value="{2147483647:i32}"/>
+        <Position index="10" value="{2147483647:i32}"/>
+        <Deadband value="{0:u16}"/>
+    </Data>
+</Struct>

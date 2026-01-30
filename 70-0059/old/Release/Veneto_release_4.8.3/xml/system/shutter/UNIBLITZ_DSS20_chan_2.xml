@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ShutterParameters>
+	<Shutter_Parameters command="0x4064" data_length="20">
+		<Parameter name="chan_id" type="Byte" length="1" offset="6" value="1" />
+		<Parameter name="shutter_initial_state" type="Byte" length="1" offset="8" value="0" />
+		<Parameter name="shutter_mode" type="Byte" length="1" offset="9" value="1" />
+		<Parameter name="external_trigger_mode" type="Byte" length="1" offset="10" value="0" />
+		<Parameter name="on_time" type="Byte" length="1" offset="11" value="4" />
+		<Parameter name="duty_cycle_pulse" type="UInt32" length="4" offset="12" value="700" />
+		<Parameter name="duty_cycle_hold" type="UInt32" length="4" offset="15" value="0" />
+	</Shutter_Parameters>
+</ShutterParameters>
+
+
+<!-- <Parameter name="" type="" length="" offset="" value="" /> -->

@@ -1,0 +1,55 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../Firmware/src/",
+                "${workspaceFolder}/../Firmware/src/system/drivers/lut/**",
+                "${workspaceFolder}/../Firmware/src/system/slots/**",
+                "${workspaceFolder}/../Firmware/src/system/drivers/save_constructor/**",
+                "${workspaceFolder}/../Firmware/src/system/drivers/cpp_allocator/**",
+                "${workspaceFolder}/../Firmware/src/system/cards/stepper/**",
+                "C:/Users/sbenish/repositories/70-0059/proj/Firmware/src/system/drivers/efs",
+                "C:/Users/sbenish/repositories/70-0059/proj/Firmware/src/system/slots",
+                "C:/Users/sbenish/repositories/70-0059/proj/Firmware/src/system/sync/gate",
+                "C:/Users/sbenish/repositories/70-0059/proj/Firmware/src/system/sync/lock_guard"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "_TESTING"
+            ],
+            "compilerPath": "C:\\mingw64\\bin\\gcc.exe",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "WSL",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../Firmware/src/",
+                "${workspaceFolder}/../Firmware/src/system/drivers/lut/**",
+                "${workspaceFolder}/../Firmware/src/system/slots/**",
+                "${workspaceFolder}/../Firmware/src/system/drivers/save_constructor/**",
+                "${workspaceFolder}/../Firmware/src/system/drivers/cpp_allocator/**",
+                "${workspaceFolder}/../Firmware/src/system/drivers/efs/**",
+                "${workspaceFolder}/../Firmware/src/system/cards/stepper/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
+        }
+    ],
+    "version": 4
+}

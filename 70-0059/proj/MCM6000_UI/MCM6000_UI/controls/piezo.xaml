@@ -1,0 +1,37 @@
+﻿<Page x:Class="MCM6000_UI.controls.piezo"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MCM6000_UI.controls"
+      mc:Ignorable="d" 
+      d:DesignHeight="168" d:DesignWidth="590"
+      d:DataContext="{d:DesignInstance Type=local:piezo}"
+      Title="piezo">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ThemeControl;component/ThorStyleDark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!--Used for populating combobox in system tabs for device id's-->
+            <XmlDataProvider x:Key="Device_id_XmlData"/>
+        </ResourceDictionary>
+    </Page.Resources>
+    
+    <StackPanel>
+        <Frame x:Name="e_frm_header" Height="28" d:DataContext="{d:DesignInstance Type=local:slot_header, IsDesignTimeCreatable=True}"  Content="{Binding}"/>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Stop" Width="150" Margin="5,5,5,5" Click="StopButtonClick" />
+            <Button Content="Analog Input Mode" Width="150" Margin="5,5,5,5" Click="AnalogInputModeClick" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Must not be in analog mode to use jog, press &quot;Stop&quot; above." />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Jog Down" Width="60" Margin="10,5,5,5" Click="JogDownClick" />
+            <Button Content="Jog Up" Width="60" Margin="5,5,5,5" Click="JogUpClick" />
+            <TextBox x:Name="e_tbx_jog_size" Text="{Binding JogSize, Mode=OneWayToSource}" Width="100" Margin="5,5,5,5" />
+        </StackPanel>
+    </StackPanel>
+</Page>

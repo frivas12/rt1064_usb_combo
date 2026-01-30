@@ -1,0 +1,4 @@
+#Start recording tcl command: 4/22/2022 13:56:04
+#Project Location: C:/Users/sbenish/repositories/70-0059/cpld; Project name: mcm_top
+prj_project open "C:/Users/sbenish/repositories/70-0059/cpld/mcm_top.ldf"
+#Stop recording: 4/22/2022 13:57:38

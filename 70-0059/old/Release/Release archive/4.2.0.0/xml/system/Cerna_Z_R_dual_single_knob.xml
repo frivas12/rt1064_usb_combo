@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!-- 
+Slot 1
+Slot 2 
+Slot 3 Z axis  High_Current_Stepper_Card_HD,   // 8  (41-0107)
+Slot 4 R axis High_Current_Stepper_Card,      // 3  (41-0093-004)
+Slot 5 
+Slot 6 
+Slot 7 
+Slot 8 (half slot)
+
+
+-->
+
+<System>
+
+
+<SystemSettings>
+
+<!-- Program solt cards -->
+
+	<!-- Slot 3 -->
+	<CardType command="0x4004" data_length="10">
+	<Parameter name="slot" type="Byte" length="1" offset="6" value="2"/>	
+	<Parameter name="b_type" type="UInt16" length="2" offset="8" value="8"/>
+	</CardType>
+
+	<!-- Slot 4 -->
+	<CardType command="0x4004" data_length="10">
+	<Parameter name="slot" type="Byte" length="1" offset="6" value="3"/>	
+	<Parameter name="b_type" type="UInt16" length="2" offset="8" value="3"/>
+	</CardType>
+
+	
+
+</SystemSettings>
+
+<Slots>
+	
+	<Slot type="Stage" name="SLOT_3" slot_num="2"><Stage name="PLS"/></Slot>
+	<Slot type="Stage" name="SLOT_4" slot_num="3"><Stage name="NEMA_17_B_Scope_R_GB_5_1"/></Slot>
+
+</Slots>
+
+<!-- Set smart devices (*** look at "device_id.xml" for ids ***)-->
+<Devices>
+	
+</Devices>
+
+<Joysticks>
+	<Joystick type="Port" name="PORT_1" port_num="1"><Joystick_type name="1_Knob_slot_3" /></Joystick>
+	<Joystick type="Port" name="PORT_2" port_num="2"><Joystick_type name="1_Knob_slot_4" /></Joystick>
+</Joysticks>
+
+</System>
+
+
+
+

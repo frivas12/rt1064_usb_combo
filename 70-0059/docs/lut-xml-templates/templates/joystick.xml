@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+
+<Joystick>
+    <!--In mapping-->
+    <!--Control number starts at 0 and auto-increments.-->
+    <InMap control="0">
+        <VID value="0" />
+        <PID value="0" />
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="0" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <ModifySpeed value="0" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="0" />
+    </InMap>
+
+    <!--Out Mapping-->
+    <!--Control number starts at 0 and auto-increments.-->
+    <OutMap control="0">
+        <Usage value="0" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="0" />
+        <!--ColorID index starts at 0 and auto-increments.-->
+        <ColorID value="0" />
+        <ColorID value="0" />
+        <ColorID index="3" value="0" />
+        <Source>
+            <Slot value="0" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+    </OutMap>
+</Joystick>

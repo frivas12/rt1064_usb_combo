@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<!--Encoder-->
+<Struct>
+    <Signature>
+        <StructID value="0x0000"/>
+        <ConfigID value="0x0000"/>
+    </Signature>
+    <Data>
+        <EncoderType value="0" />
+        <IndexDelta min="0" step="0" />
+        <CountsPerNm value="0.000" />
+    </Data>
+</Struct>

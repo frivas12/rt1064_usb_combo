@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<Struct binary="$PATH:bin/6-0.bin" >
+    <Signature>
+        <StructID value="6"/>
+        <ConfigID value="0"/>
+    </Signature>
+    <Data>
+        <Mode value="0" />
+        <StepSize value="1000" />
+        <Velocity min="0" max="0" />
+        <Accel value="0" />
+        <StopMode value="0" />
+    </Data>
+</Struct>

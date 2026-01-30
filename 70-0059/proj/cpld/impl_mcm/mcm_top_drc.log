@@ -1,0 +1,37 @@
+Results of NGD DRC are available in mcm_top_drc.log.
+Loading NGL library 'C:/lscc/diamond/3.12/ispfpga/xo2c00a/data/xo2alib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.12/ispfpga/xo2c00/data/xo2clib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.12/ispfpga/mg5g00/data/mg5glib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.12/ispfpga/or5g00/data/orc5glib.ngl'...
+WARNING - synthesis: Port 'CLKOS2' has no signal connected to it. Property 'FREQUENCY_PIN_CLKOS2' is ignored for instance 'PLLInst_0'.
+WARNING - synthesis: Port 'CLKOS' has no signal connected to it. Property 'FREQUENCY_PIN_CLKOS' is ignored for instance 'PLLInst_0'.
+WARNING - synthesis: Port 'CLKOP' has no signal connected to it. Property 'FREQUENCY_PIN_CLKOP' is ignored for instance 'PLLInst_0'.
+Loading NGL library 'C:/lscc/diamond/3.12/ispfpga/data/neoprims.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.12/ispfpga/data/neomacro.ngl'...
+Loading NGO design 'lngotmp/pmi_ram_dpxbnonesadr11211211401afe.ngo'...
+Loading NGO design 'lngotmp/pmi_ram_dpxbnonesadr911120489111204811f45a5e.ngo'...
+Logic has been added to the IP to support JTAG capability.
+Loading NGO design 'C:/lscc/diamond/3.12/ispfpga/xo2c00/data/xo2chub.ngl'...
+
+
+Running DRC...
+
+WARNING - synthesis: logical net 'mcm_top_reveal_coretop_instance/jupdate[0]' has no load.
+WARNING - synthesis: logical net 'stepper_ins_1__u_stepper/SLO_buf[51]' has no load.
+WARNING - synthesis: logical net 'stepper_ins_1__u_stepper/SLO_buf[50]' has no load.
+WARNING - synthesis: logical net 'stepper_ins_1__u_stepper/SLO_buf[49]' has no load.
+WARNING - synthesis: logical net 'stepper_ins_1__u_stepper/SLO_buf[48]' has no load.
+WARNING - synthesis: logical net 'stepper_ins_1__u_stepper/SLO_buf[47]' has no load.
+WARNING - synthesis: logical net 'stepper_ins_1__u_stepper/SLO_buf[46]' has no load.
+WARNING - synthesis: logical net 'xo2chub/tdoa' has no load.
+WARNING - synthesis: logical net 'xo2chub/cdn' has no load.
+WARNING - synthesis: logical net 'xo2chub/ip_enable[15]' has no load.
+WARNING - synthesis: logical net 'xo2chub/genblk7.un1_jtagf_u' has no load.
+WARNING - synthesis: logical net 'xo2chub/genblk7.un1_jtagf_u_1' has no load.
+WARNING - synthesis: DRC complete with 12 warnings.
+
+Design Results:
+   6626 blocks expanded
+completed the first expansion
+All blocks are expanded and NGD expansion is successful.
+Writing NGD file mcm_top_impl_mcm.ngd.

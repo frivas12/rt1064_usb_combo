@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<PiezoParameters>
+	
+<!-- Set what slot the encoder is on and the gain factor for analog input mode --> 
+	<Piezo_Parameters command="0x40DC" data_length="10"> <!--MGMSG_MCM_PIEZO_SET_PRAMS-->
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="6" />
+		<Parameter name="slot_encoder_on" type="Byte" length="1" offset="8" value="0" />
+		<Parameter name="gain_factor" type="Byte" length="1" offset="9" value="70" /> 
+	</Piezo_Parameters>
+
+	<!-- Not used but lets set to 0 -->
+	<Piezo_PID_Parameters command="0x40E5" data_length="24"> <!--MGMSG_MCM_PIEZO_SET_PID_PARMS-->
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="6" />
+		<Parameter name="Kp" type="UInt32" length="4" offset="8" value="0" />
+		<Parameter name="Ki" type="UInt32" length="4" offset="12" value="0" />
+		<Parameter name="Kd" type="UInt32" length="4" offset="16" value="0" />
+		<Parameter name="iMax" type="UInt32" length="4" offset="20" value="0" />
+	</Piezo_PID_Parameters>
+
+</PiezoParameters>

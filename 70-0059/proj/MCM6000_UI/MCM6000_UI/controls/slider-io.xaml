@@ -1,0 +1,39 @@
+﻿<Page x:Class="MCM6000_UI.controls.slider_io"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MCM6000_UI.controls"
+      mc:Ignorable="d" 
+      d:DesignHeight="168" d:DesignWidth="590"
+      Title="slider_io_view">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ThemeControl;component/ThorStyleDark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!--Used for populating combobox in system tabs for device id's-->
+            <XmlDataProvider x:Key="Device_id_XmlData"/>
+        </ResourceDictionary>
+    </Page.Resources>
+    
+    <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Slot N" />
+            <Label Content="Slider IO" Width="90" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Galvo/Galvo Mirror:" Width="120" />
+            <Button Content="Unknown" Width="120" Margin="5,5,5,5" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Galvo/Res Mirror:" Width="120" />
+            <Button Content="Unknwon" Width="120" Margin="5,5,5,5" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Cam/PMT Mirror:" Width="120" />
+            <Button Content="Unknown" Width="120" Margin="5,5,5,5" />
+        </StackPanel>
+    </StackPanel>
+</Page>

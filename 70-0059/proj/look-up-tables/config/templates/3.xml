@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<Struct>
+    <Signature>
+        <StructID value="3"/>
+        <ConfigID value="{u16}"/>
+    </Signature>
+    <Data>
+        <KVal>
+            <Hold value="{u8}"/>
+            <Run value="{u8}"/>
+            <Accel value="{u8}"/>
+            <Decel value="{u8}"/>
+        </KVal>
+        <Slope>
+            <Start value="{u8}"/>
+            <FinalAccel value="{u8}"/>
+            <FinalDecel value="{u8}"/>
+        </Slope>
+        <Acceleration max="{u32}" min="{u32}"/>
+        <Speed max="{u32}" min="{0:u16}"/>
+        <FullStepSpeed value="{1023:u16}"/>
+        <IntersectSpeed value="{u16}"/>
+        <StallThreshold value="{31:u8}"/>
+        <OCDThreshold value="{31:u8}"/>
+        <StepMode value="{7:u8}"/>
+        <ICConfig value="{u16}"/>
+        <GateDriverConfig value="{u24}"/>
+        <ApproachVelocity value="{u16}"/>
+        <Deadband value="{u16}"/>
+        <Backlash value="{u16}"/>
+        <KickoutTime value="{[0, 2550]}"/> <!--In Milliseconds-->
+    </Data>
+</Struct>

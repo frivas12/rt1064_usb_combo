@@ -1,0 +1,214 @@
+﻿<UserControl x:Class="MCM6000_UI.views.CommsDiagnosticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MCM6000_UI.views"
+             xmlns:vms="clr-namespace:MCM6000_UI.view_models"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance vms:UsbUsageProfilerVM}"
+             Background="#333333"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ThemeControl;component/ThorStyleDark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0"
+                Margin="3,3,5,3"
+                BorderBrush="White" BorderThickness="1">
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0"
+                        BorderBrush="White" BorderThickness="1"
+                        Margin="5"
+                        >
+                    <Grid Grid.IsSharedSizeScope="True">
+                            <Grid.RowDefinitions>
+                                <RowDefinition SharedSizeGroup="Row"/>
+                                <RowDefinition SharedSizeGroup="Row"/>
+                                <RowDefinition SharedSizeGroup="Row"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="1"
+                                   Content="Interval" />
+                            <Label Grid.Row="0" Grid.Column="2"
+                                   Content="Window 1" />
+                            <Label Grid.Row="0" Grid.Column="3"
+                                   Content="Window 2" />
+
+                            <Label Grid.Row="1" Grid.Column="0"
+                                   Content="Period (s)" />
+                            <Label Grid.Row="1" Grid.Column="1"
+                                   d:Content="1"
+                                   ContentStringFormat="{}{0:0.000}"
+                                   Content="{Binding UsageUpdateIntervalSeconds}" />
+                            <Label Grid.Row="1" Grid.Column="2"
+                                   d:Content="5"
+                                   ContentStringFormat="{}{0:0.000}"
+                                   Content="{Binding UsageWindow1IntervalSeconds}" />
+                            <Label Grid.Row="1" Grid.Column="3"
+                                   d:Content="10"
+                                   ContentStringFormat="{}{0:0.000}"
+                                   Content="{Binding UsageWindow2IntervalSeconds}" />
+
+                            <Label Grid.Row="2" Grid.Column="0"
+                                   Content="Usage (%)" />
+                            <Label Grid.Row="2" Grid.Column="1"
+                                   d:Content="0"
+                                   ContentStringFormat="{}{0:0}"
+                                   Content="{Binding UsagePercentage}" />
+                            <Label Grid.Row="2" Grid.Column="2"
+                                   d:Content="0"
+                                   ContentStringFormat="{}{0:0}"
+                                   Content="{Binding UsagePercentageWindow1}" />
+                            <Label Grid.Row="2" Grid.Column="3"
+                                   d:Content="0"
+                                   ContentStringFormat="{}{0:0}"
+                                   Content="{Binding UsagePercentageWindow2}" />
+                        </Grid>
+                </Border>
+
+                <Border Grid.Row="1"
+                        BorderBrush="White" BorderThickness="1"
+                        Margin="5"
+                        >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <DataGrid Grid.Row="0"
+                                  ItemsSource="{Binding FilteredProfiles}"
+                                  AutoGenerateColumns="False"
+                                  >
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                                <DataGridTextColumn Header="Blocking Time (total)" Binding="{Binding TotalBlockingTime}" />
+                                <DataGridTextColumn Header="Blocking Time (avg.)" Binding="{Binding AverageBlockingTime}" />
+                                <DataGridTextColumn Header="Mutex Blocking Time (total)" Binding="{Binding TotalMutexBlockingTime}" />
+                                <DataGridTextColumn Header="Mutex Blocking Time (avg.)" Binding="{Binding AverageMutexBlockingTime}" />
+                                <DataGridTextColumn Header="Bytes Transfered" Binding="{Binding TotalBytesTransferred}" />
+                                <DataGridTextColumn Header="Bytes Transfered per Call" Binding="{Binding AverageBytesTransferred}" />
+                                <DataGridTextColumn Header="Total Calls" Binding="{Binding TotalCalls}" />
+                                <DataGridTextColumn Header="Timeout Calls" Binding="{Binding TimeoutCalls}" />
+                                <DataGridTextColumn Header="Executed Calls" Binding="{Binding ExecutionCalls}" />
+                                <DataGridTextColumn Header="Failed Executions" Binding="{Binding FailedCalls}" />
+                                <DataGridTextColumn Header="Timed-out Calls" Binding="{Binding NonExecutionCalls}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Label Grid.Row="1"
+                               HorizontalAlignment="Right"
+                               Content="{Binding ProfileDumpTime}"
+                               ContentStringFormat="Timestamp: {0}"
+                               />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+
+        <Border Grid.Column="1"
+                Margin="5,3,3,3"
+                BorderBrush="White" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="Labels" />
+                    <ColumnDefinition SharedSizeGroup="Values" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" SharedSizeGroup="Labels"/>
+                            <ColumnDefinition MinWidth="100" MaxWidth="250" SharedSizeGroup="Values"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Grid.Column="0"
+                               Content="Usage Update Interval (ms)"
+                               />
+                        <TextBox Grid.Row="0" Grid.Column="1"
+                                Text="{Binding UsageUpdateIntervalMs}"
+                                d:Text="1000"
+                                />
+
+                        <Label Grid.Row="1" Grid.Column="0"
+                               Content="Usage Averaging Window 1"
+                               />
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                                Text="{Binding UsageWindowCount1}"
+                                d:Text="5"
+                                />
+
+                        <Label Grid.Row="2" Grid.Column="0"
+                               Content="Usage Averaging Window 2"
+                               />
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                                Text="{Binding UsageWindowCount2}"
+                                d:Text="10"
+                                />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" SharedSizeGroup="Labels"/>
+                            <ColumnDefinition MinWidth="100" MaxWidth="250" SharedSizeGroup="Values"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Row="0" Grid.Column="0"
+                               Content="Show Profiles By Thread"
+                               />
+                        <CheckBox Grid.Row="0" Grid.Column="1"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding AreProfilesSeparatedByThread}"
+                                />
+
+                        <Button Grid.Row="1" Grid.ColumnSpan="2"
+                                Content="Dump Profiles"
+                                Margin="8,5,8,5"
+                                Command="{Binding DumpProfiles}"
+                                />
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

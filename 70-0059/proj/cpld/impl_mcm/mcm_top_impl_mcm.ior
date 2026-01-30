@@ -1,0 +1,229 @@
+Loading design for application iotiming from file mcm_top_impl_mcm.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-7000HC
+Package:     TQFP144
+Performance: 5
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 34.4.
+Loading design for application iotiming from file mcm_top_impl_mcm.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-7000HC
+Package:     TQFP144
+Performance: 6
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 34.4.
+Loading design for application iotiming from file mcm_top_impl_mcm.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-7000HC
+Package:     TQFP144
+Performance: M
+Package Status:                     Final          Version 1.39.
+Performance Hardware Data Status:   Final          Version 34.4.
+// Design: mcm_top
+// Package: TQFP144
+// ncd File: mcm_top_impl_mcm.ncd
+// Version: Diamond (64-bit) 3.12.0.240.2
+// Written on Thu Apr 21 17:05:03 2022
+// M: Minimum Performance Grade
+// iotiming mcm_top_impl_mcm.ncd mcm_top_impl_mcm.prf -gui -msgset C:/Users/sbenish/repositories/70-0059/cpld/promote.xml
+
+I/O Timing Report (All units are in ns)
+
+Worst Case Results across Performance Grades (M, 6, 5, 4):
+
+// Input Setup and Hold Times
+
+Port       Clock    Edge  Setup Performance_Grade  Hold Performance_Grade
+----------------------------------------------------------------------
+cs[0]      CS_READY R    11.048      4       0.145     M
+cs[1]      CS_READY R     7.968      4       1.272     4
+cs[2]      CS_READY R    10.375      4       0.466     4
+cs[3]      CS_READY R     9.860      4       1.053     4
+cs[4]      CS_READY R    11.767      4       0.259     4
+pin_io[14] clk_in   R     2.687      4       2.497     4
+pin_io[18] clk_in   R    -1.181      M      16.028     4
+pin_io[19] clk_in   R    -1.186      M       5.253     4
+pin_io[24] clk_in   R     5.796      4       1.947     4
+pin_io[28] clk_in   R    -1.014      M      10.854     4
+pin_io[29] clk_in   R    -0.870      M       4.407     4
+pin_io[34] clk_in   R     6.451      4       0.940     6
+pin_io[38] clk_in   R    -1.103      M      12.199     4
+pin_io[39] clk_in   R    -0.954      M       4.653     4
+pin_io[44] clk_in   R     5.925      4       0.993     4
+pin_io[48] clk_in   R    -1.078      M      10.201     4
+pin_io[49] clk_in   R    -0.899      M       4.587     4
+pin_io[4]  clk_in   R     2.959      4       2.133     4
+pin_io[54] clk_in   R     4.055      4       1.206     6
+pin_io[58] clk_in   R    -0.632      M      12.068     4
+pin_io[59] clk_in   R    -0.656      M       3.722     4
+pin_io[64] clk_in   R     6.479      4       0.323     M
+pin_io[68] clk_in   R    -0.975      M       8.939     4
+pin_io[69] clk_in   R    -1.199      M       5.197     4
+pin_io[8]  clk_in   R    -0.725      M       6.744     4
+pin_io[9]  clk_in   R    -1.052      M       4.859     4
+resetn     clk_in   R     5.674      4       5.316     4
+spi_scsn   spi_clk  R     9.437      4      -1.088     M
+
+
+// Clock to Output Delay
+
+Port       Clock    Edge  Max_Delay Performance_Grade  Min_Delay Performance_Grade
+------------------------------------------------------------------------
+FLASH_CS   CS_READY R    10.180         4        3.051          M
+MAX3421_CS CS_READY R    15.948         4        4.630          M
+pin_io[0]  CS_READY R    15.736         4        4.489          M
+pin_io[10] CS_READY R    17.447         4        4.956          M
+pin_io[13] CS_READY R    14.079         4        4.021          M
+pin_io[16] CS_READY R    18.292         4        5.156          M
+pin_io[17] clk_in   R    16.550         4        4.922          M
+pin_io[19] clk_in   R    23.489         4        6.893          M
+pin_io[20] CS_READY R    14.436         4        4.112          M
+pin_io[23] CS_READY R    13.629         4        3.920          M
+pin_io[26] CS_READY R    17.200         4        4.855          M
+pin_io[27] clk_in   R    17.445         4        5.178          M
+pin_io[29] clk_in   R    19.360         4        5.631          M
+pin_io[30] CS_READY R    16.578         4        4.709          M
+pin_io[33] CS_READY R    14.851         4        4.223          M
+pin_io[36] CS_READY R    16.686         4        4.716          M
+pin_io[37] clk_in   R    18.531         4        5.459          M
+pin_io[39] clk_in   R    19.451         4        5.745          M
+pin_io[3]  CS_READY R    15.189         4        4.308          M
+pin_io[40] CS_READY R    17.122         4        4.773          M
+pin_io[43] CS_READY R    18.062         4        5.115          M
+pin_io[46] CS_READY R    13.857         4        3.978          M
+pin_io[47] clk_in   R    16.954         4        5.004          M
+pin_io[49] clk_in   R    15.453         4        4.652          M
+pin_io[50] CS_READY R    16.443         4        4.645          M
+pin_io[53] CS_READY R    13.009         4        3.705          M
+pin_io[56] CS_READY R    18.674         4        5.243          M
+pin_io[57] clk_in   R    17.053         4        4.980          M
+pin_io[59] clk_in   R    20.203         4        5.934          M
+pin_io[60] CS_READY R    17.426         4        4.938          M
+pin_io[63] CS_READY R    13.898         4        3.996          M
+pin_io[66] CS_READY R    17.051         4        4.832          M
+pin_io[67] clk_in   R    18.263         4        5.395          M
+pin_io[69] clk_in   R    16.985         4        5.041          M
+pin_io[6]  CS_READY R    15.638         4        4.447          M
+pin_io[7]  clk_in   R    16.850         4        4.986          M
+pin_io[9]  clk_in   R    17.319         4        5.131          M
+spi_miso   spi_clk  R    11.787         4        2.014          M
+spi_mosi   spi_clk  R    11.519         4        2.796          M
+
+
+// Internal_Clock to Input
+
+Port       Internal_Clock
+--------------------------------------------------------
+pin_io[12] clk           
+pin_io[13] clk           
+pin_io[14] clk           
+pin_io[18] reveal_ist_179
+pin_io[22] clk           
+pin_io[23] clk           
+pin_io[24] clk           
+pin_io[28] stepper_ins_2_
+pin_io[2]  clk           
+pin_io[32] clk           
+pin_io[33] clk           
+pin_io[34] clk           
+pin_io[38] stepper_ins_3_
+pin_io[3]  clk           
+pin_io[42] clk           
+pin_io[43] clk           
+pin_io[44] clk           
+pin_io[48] stepper_ins_4_
+pin_io[4]  clk           
+pin_io[52] clk           
+pin_io[53] clk           
+pin_io[54] clk           
+pin_io[58] stepper_ins_5_
+pin_io[62] clk           
+pin_io[63] clk           
+pin_io[64] clk           
+pin_io[68] stepper_ins_6_
+pin_io[8]  stepper_ins_0_
+resetn     clk           
+spi_miso   spi_clk_o     
+spi_mosi   spi_clk_o     
+spi_scsn   clk           
+
+
+// Internal_Clock to Output
+
+Port          Internal_Clock
+--------------------------------------------------------
+C_1           clk           
+C_2           clk           
+C_3           clk           
+C_4           clk           
+C_6           clk           
+C_7           clk           
+intrpt_out[0] clk           
+intrpt_out[1] clk           
+intrpt_out[2] clk           
+intrpt_out[3] clk           
+intrpt_out[4] clk           
+intrpt_out[5] clk           
+intrpt_out[6] clk           
+led_sw        clk           
+pin_io[0]     clk           
+pin_io[10]    clk           
+pin_io[11]    clk           
+pin_io[13]    clk           
+pin_io[15]    clk           
+pin_io[16]    clk           
+pin_io[17]    clk           
+pin_io[19]    clk           
+pin_io[1]     clk           
+pin_io[20]    clk           
+pin_io[21]    clk           
+pin_io[23]    clk           
+pin_io[25]    clk           
+pin_io[26]    clk           
+pin_io[27]    clk           
+pin_io[29]    clk           
+pin_io[30]    clk           
+pin_io[31]    clk           
+pin_io[33]    clk           
+pin_io[35]    clk           
+pin_io[36]    clk           
+pin_io[37]    clk           
+pin_io[39]    clk           
+pin_io[3]     clk           
+pin_io[40]    clk           
+pin_io[41]    clk           
+pin_io[43]    clk           
+pin_io[45]    clk           
+pin_io[46]    clk           
+pin_io[47]    clk           
+pin_io[49]    clk           
+pin_io[50]    clk           
+pin_io[51]    clk           
+pin_io[53]    clk           
+pin_io[55]    clk           
+pin_io[56]    clk           
+pin_io[57]    clk           
+pin_io[59]    clk           
+pin_io[5]     clk           
+pin_io[60]    clk           
+pin_io[61]    clk           
+pin_io[63]    clk           
+pin_io[65]    clk           
+pin_io[66]    clk           
+pin_io[67]    clk           
+pin_io[69]    clk           
+pin_io[6]     clk           
+pin_io[7]     clk           
+pin_io[9]     clk           
+spi_clk       spi_clk_o     
+spi_miso      spi_clk_o     
+spi_mosi      spi_clk_o     
+WARNING: you must also run trce with hold speed: 4
+WARNING: you must also run trce with hold speed: 6
+WARNING: you must also run trce with setup speed: M

@@ -1,0 +1,122 @@
+/**
+ * @file
+ *
+ * @brief Text description here . . .
+ *
+ */
+#include "board.h"
+#include "soft_i2c.h"
+#include "m24c08.h"
+#include "slots.h"
+#include "Debugging.h"
+
+/****************************************************************************
+ * Private Data
+ ****************************************************************************/
+
+/****************************************************************************
+ * Function Prototypes
+ ****************************************************************************/
+
+/****************************************************************************
+ * Interrupt Handler
+ ****************************************************************************/
+
+/****************************************************************************
+ * Private Functions
+ ****************************************************************************/
+
+/**
+ * @brief Get the type of board.
+ * 		First we need to read the type of board from the EEPROM on each board.
+ * 		Some boards have a i2c multiplexer with the board EEPROM on channel 8
+ * 		the rest of the channels are for detecting the slot cards.
+ *
+ * 		For boards w/o the multiplexer we still set the channel to 8 and then read
+ * 		the EEPROM even though it doesn't exist.  Once we read the type of board
+ * 		we continue with it's init_board function.  Some boards have static
+ * 		hardware on the slot so we don't read each slot EEPROM just initialize the
+ * 		static hardware
+ */
+static enum board_types get_board_type(void)
+{
+	enum board_types board_type;
+
+	if (m24c08_read_page(I2C_BOARD_EEPROM_CH, EEPROM_ADDRESS_M24C08_BLOCK0, 0, 2,
+			(uint8_t *) &board_type))
+	{
+		debug_print("ERROR: Could not read board type./r/n");
+	}
+
+	if (board_type == BOARD_NOT_PROGRAMMED)
+	{
+		debug_print("WARNING: Must be new EEPROM writing board type to NO_BOARD.");
+		set_board_type(NO_BOARD);
+		board_type = NO_BOARD;
+	}
+
+	this_board_type = board_type;
+	return board_type;
+}
+
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+
+/**
+ * @brief This function must be called in init.  It gathers board information and configures
+ * 		hardware and starts all tasks
+ */
+void board_init(void)
+{
+	// temp test pin
+	set_pin_as_output(PIN_SMIO_7, 1);
+
+#if 0
+	set_slot_type(SLOT_1, ST_Stepper_type);
+#endif
+
+#if 0	// set to one to set board type
+	if (set_board_type(MCM6000_REV_001))
+	{
+		debug_print("ERROR: Could not set board type.");
+	}
+#endif
+	// end of temp
+
+	soft_i2c_init();
+
+	// Get the board type and do it's initialization
+	switch (get_board_type())
+	{
+		case OTM_BOARD_REV_001:
+		break;
+
+		case MCM6000_REV_001:
+			init_slots();
+		break;
+
+		case HEXAPOD_BOARD_REV_001:
+		break;
+
+		default:
+		break;
+	}
+
+
+}
+
+/**
+ * @brief Sets the type of board we are using
+ * @param board_type	A list of boards is in board.h.  Any new boards or revisions should be added there
+ * @return 0 everything went well, 1 if could not set board type
+ */
+uint8_t set_board_type(uint16_t board_type)
+{
+	// make sure board_type is greater than or equal to NO_BOARD 0x8000
+	if (board_type < NO_BOARD)
+		return FAIL;
+	return m24c08_write_page(I2C_BOARD_EEPROM_CH, EEPROM_ADDRESS_M24C08_BLOCK0, 0, 2,
+			(uint8_t*) &board_type);
+}
+

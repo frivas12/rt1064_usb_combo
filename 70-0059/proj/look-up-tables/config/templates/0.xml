@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<Struct>
+    <Signature>
+        <StructID value="0"/>
+        <ConfigID value="{u16}"/>
+    </Signature>
+    <Data>
+        <NmPerCount value="{f32}"/>
+        <EncoderType value="{u8}"/>
+        <IndexDelta min="{u32}" step="{u32}"/>
+    </Data>
+</Struct>

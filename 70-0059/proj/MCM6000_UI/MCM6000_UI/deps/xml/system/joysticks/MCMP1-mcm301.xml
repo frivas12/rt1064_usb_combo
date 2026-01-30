@@ -1,0 +1,417 @@
+<!--
+    Maps the Fluorencscne turret to the 6 positions on slot 7
+         the light path to positions 1, 2, and 3 on the Y stage.
+         the NDD to positions 1 and 2 on the X stage.
+-->
+<Joystick>
+    <!--Fluorescence Turret Button 1-->
+    <InMap control="0">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="11" />
+    </InMap>
+    
+    <!--Fluorescence Turret Button 2-->
+    <InMap control="1">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="12" />
+    </InMap>
+
+    <!--Fluorescence Turret Button 3-->
+    <InMap control="2">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="13" />
+    </InMap>
+
+    <!--Fluorescence Turret Button 4-->
+    <InMap control="3">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="14" />
+    </InMap>
+
+    <!--Fluorescence Turret Button 5-->
+    <InMap control="4">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="15" />
+    </InMap>
+
+    <!--Fluorescence Turret Button 6-->
+    <InMap control="5">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="16" />
+    </InMap>
+
+    <!--Light Path Left-->
+    <InMap control="6">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="32" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="11" />
+    </InMap>
+
+    <!--Light Path Center-->
+    <InMap control="7">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="32" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="12" />
+    </InMap>
+
+    <!--Light Path Right-->
+    <InMap control="8">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="32" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="13" />
+    </InMap>
+
+    <!--NDD IN-->
+    <InMap control="9">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="16" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="11" />
+    </InMap>
+
+    <!--NDD IN-->
+    <InMap control="10">
+        <ModifyControl>
+            <Port value="0" />
+            <ControlNum value="0" />
+        </ModifyControl>
+        <Destination>
+            <Slot value="16" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Destination>
+        <VID value="0x1313" />
+        <PID value="0x2013" />
+        <ModifySpeed value="255" />
+        <ReverseDir value="0" />
+        <Deadband value="0" />
+        <Mode value="12" />
+    </InMap>
+
+
+    <!--Fluorescence Turret Button 1-->
+    <OutMap control="0">
+        <Source>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="3" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--Fluorescence Turret Button 2-->
+    <OutMap>
+        <Source>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="4" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--Fluorescence Turret Button 3-->
+    <OutMap>
+        <Source>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="5" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--Fluorescence Turret Button 4-->
+    <OutMap>
+        <Source>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="6" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--Fluorescence Turret Button 5-->
+    <OutMap>
+        <Source>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="7" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--Fluorescence Turret Button 6-->
+    <OutMap>
+        <Source>
+            <Slot value="64" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="8" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--Light Path Left-->
+    <OutMap>
+        <Source>
+            <Slot value="32" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="3" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--Light Path Center-->
+    <OutMap>
+        <Source>
+            <Slot value="32" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="4" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--Light Path Right-->
+    <OutMap>
+        <Source>
+            <Slot value="32" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="5" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--NDD IN-->
+    <OutMap>
+        <Source>
+            <Slot value="16" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="3" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+    <!--NDD OUT-->
+    <OutMap>
+        <Source>
+            <Slot value="16" />
+            <Bit value="0" />
+            <Port value="0" />
+            <Virtual value="0" />
+        </Source>
+        <Usage value="8" />
+        <VID value="0" />
+        <PID value="0" />
+        <Mode value="4" />
+        <ColorID index="1" value="3" />
+        <ColorID index="2" value="2" />
+        <ColorID index="3" value="0" />
+    </OutMap>
+
+
+
+</Joystick>

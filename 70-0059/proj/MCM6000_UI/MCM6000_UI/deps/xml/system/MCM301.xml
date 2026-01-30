@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+
+<System>
+
+    <Settings>
+        <Card slot="5" type="19" static="1" device-detect="true" />
+        <Card type="19" static="1" device-detect="true" />
+        <Card type="19" static="1" device-detect="true" />
+    </Settings>
+
+    <AllowedDevices>
+        <!--Only Using Serial Number protection-->
+        <Device>
+            <Signature>
+                <DefaultSlotType value="19" />
+                <DeviceID value="0xFFFF" />
+            </Signature>
+            <Allow slot="5" />
+            <Allow slot="6" />
+            <Allow slot="7" />
+            <DeviceLock slot="5" enabled="false" />
+            <DeviceLock slot="6" enabled="false" />
+            <DeviceLock slot="7" enabled="false" />
+        </Device>
+        <!--X Axis Stage-->
+        <!-- <Device>
+            <Import href="device/PLS-X.xml" xpath="/Device/Signature" />
+            <Allow slot="5" />
+        </Device> -->
+
+        <!--Y Axis Stage-->
+        <!-- <Device>
+            <Import href="device/PLS-Y.xml" xpath="/Device/Signature" />
+            <Allow slot="6" />
+        </Device> -->
+
+        <!--Z Axis Stage: 1 in.-->
+        <!-- <Device>
+            <Import href="device/MPM250.xml" xpath="/Device/Signature" />
+            <Allow slot="7" />
+        </Device> -->
+    </AllowedDevices>
+
+    <Joysticks>
+        <Port index="0">
+            <Name value="PORT_1" />
+            <Include href="joysticks/3_Knob_slot_567_port_0.xml" />
+            <Include href="joysticks/3_Knob_slot_567_port_1.xml" />
+            <Include href="joysticks/3_Knob_slot_567_port_2.xml" />
+            <Include href="joysticks/3_Knob_slot_567_port_3.xml" />
+            <Include href="joysticks/3_Knob_slot_567_port_4.xml" />
+        </Port>
+    </Joysticks>
+
+</System>

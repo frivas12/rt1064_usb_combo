@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!--Stepper Store-->
+<Struct>
+    <Signature>
+        <StructID value="0x0000"/>
+        <ConfigID value="0x0000"/>
+    </Signature>
+    <Data>
+        <CalibratedPositions>
+            <Deadband value="0" />
+            <!--Auto Counter in [1,10]-->
+            <Position index="1" value="0" />
+            <Position value="0" />
+            <Position value="0" />
+            <Position value="0" />
+            <Position index="5" value="0" />
+            <Position value="0" />
+            <Position value="0" />
+            <Position value="0" />
+            <Position value="0" />
+            <Position value="0" />
+        </CalibratedPositions>
+    </Data>
+</Struct>

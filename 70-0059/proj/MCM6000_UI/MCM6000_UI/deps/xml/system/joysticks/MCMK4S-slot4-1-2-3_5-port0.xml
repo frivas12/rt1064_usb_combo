@@ -1,0 +1,305 @@
+<Joystick>
+  <!--X-Axis Knob-->
+  <InMap control="1">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="1" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="255" />
+    <ReverseDir value="1" />
+    <Deadband value="0" />
+    <Mode value="0" />
+  </InMap>
+
+  <!--Y-Axis Knob-->
+  <InMap control="2">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="2" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="255" />
+    <ReverseDir value="1" />
+    <Deadband value="0" />
+    <Mode value="0" />
+  </InMap>
+
+  <!--Z-Axis Knob-->
+  <InMap control="3">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="4" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="255" />
+    <ReverseDir value="1" />
+    <Deadband value="0" />
+    <Mode value="0" />
+  </InMap>
+
+  <!--R-Axis Knob-->
+  <InMap control="0">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="8" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="255" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="0" />
+  </InMap>
+  
+  <!--R-Axis Toggle Button-->
+  <InMap control="4">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="8" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="255" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="5" />
+  </InMap>
+
+  <!--X-Axis Toggle Button-->
+  <InMap control="5">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="1" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="0" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="5" />
+  </InMap>
+
+  <!--Y-Axis Toggle Button-->
+  <InMap control="6">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="2" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="0" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="5" />
+  </InMap>
+
+  <!--Z-Axis Toggle Button-->
+  <InMap control="7">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="4" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="0" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="5" />
+  </InMap>
+
+  <!--Disable All Button-->
+  <InMap control="8">
+    <ModifyControl>
+      <Port value="0" />
+      <ControlNum value="0" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="31" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="0" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="6" />
+  </InMap>
+
+  <!-- Lower Toggle Button (course/fine, etc.) -->
+  <InMap control="9">
+    <ModifyControl>
+      <Port value="1" />
+      <ControlNum value="136" />
+    </ModifyControl>
+    <Destination>
+      <Slot value="16" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Destination>
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <ModifySpeed value="255" />
+    <ReverseDir value="0" />
+    <Deadband value="0" />
+    <Mode value="2" />
+  </InMap>
+
+  <!--R-Axis LED-->
+  <OutMap control="0">
+    <Source>
+      <Slot value="8" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Source>
+    <Usage value="8" />
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <Mode value="0" />
+    <ColorID index="1" value="2" />
+    <ColorID index="2" value="3" />
+    <ColorID index="3" value="4" />
+  </OutMap>
+
+
+
+  <!--X-Axis LED-->
+  <OutMap control="1">
+    <Source>
+      <Slot value="1" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Source>
+    <Usage value="8" />
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <Mode value="0" />
+    <ColorID index="1" value="2" />
+    <ColorID index="2" value="3" />
+    <ColorID index="3" value="4" />
+  </OutMap>
+
+  <!--Y-Axis LED-->
+  <OutMap control="2">
+    <Source>
+      <Slot value="2" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Source>
+    <Usage value="8" />
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <Mode value="0" />
+    <ColorID index="1" value="2" />
+    <ColorID index="2" value="3" />
+    <ColorID index="3" value="4" />
+  </OutMap>
+
+  <!--Z-Axis LED-->
+  <OutMap control="3">
+    <Source>
+      <Slot value="4" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Source>
+    <Usage value="8" />
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <Mode value="0" />
+    <ColorID index="1" value="2" />
+    <ColorID index="2" value="3" />
+    <ColorID index="3" value="4" />
+  </OutMap>
+
+  <!--Disable All LED-->
+  <OutMap control="4">
+    <Source>
+      <Slot value="31" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Source>
+    <Usage value="8" />
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <Mode value="1" />
+    <ColorID index="1" value="2" />
+    <ColorID index="2" value="0" />
+    <ColorID index="3" value="0" />
+  </OutMap>
+
+  <!--Lower Toggle Button LED-->
+  <OutMap control="5">
+    <Source>
+      <Slot value="4" />
+      <Bit value="0" />
+      <Port value="0" />
+      <Virtual value="0" />
+    </Source>
+    <Usage value="8" />
+    <VID value="0x1313" />
+    <PID value="0x200A" />
+    <Mode value="2" />
+    <ColorID index="1" value="2" />
+    <ColorID index="2" value="3" />
+    <ColorID index="3" value="4" />
+  </OutMap>
+</Joystick>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!--Stepper Flags-->
+<Struct>
+    <Signature>
+        <StructID value="0x0004"/>
+        <ConfigID value="0x0000"/>
+    </Signature>
+    <Data>
+        <Flags value="0" />
+    </Data>
+</Struct>

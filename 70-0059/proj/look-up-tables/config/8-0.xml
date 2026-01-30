@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<Struct binary="$PATH:bin/8-0.bin" >
+    <Signature>
+        <StructID value="8"/>
+        <ConfigID value="0"/>
+    </Signature>
+    <Data>
+        <Position index="1"  value="2147483647"/>
+        <Position index="2"  value="2147483647"/>
+        <Position index="3"  value="2147483647"/>
+        <Position index="4"  value="2147483647"/>
+        <Position index="5"  value="2147483647"/>
+        <Position index="6"  value="2147483647"/>
+        <Position index="7"  value="2147483647"/>
+        <Position index="8"  value="2147483647"/>
+        <Position index="9"  value="2147483647"/>
+        <Position index="10" value="2147483647"/>
+        <Deadband value="0"/>
+    </Data>
+</Struct>

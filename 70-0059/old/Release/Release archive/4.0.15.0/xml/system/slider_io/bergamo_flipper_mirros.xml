@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<Slider_IO_Parameters>
+
+<!--
+	mirror_initial_state 
+		Mirror Out = 0
+		Mirror In = 1
+	mirror_mode
+		Disabled = 0
+		Direct = 1
+		Signal = 2
+
+-->
+	
+<!-- Mirror  CH 0--> 
+	<Mirror_Parameters command="0x408A" data_length="12"> <!--MGMSG_MCM_SET_MIRROR_PARAMS-->
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="0" />
+		<Parameter name="mirror_initial_state" type="Byte" length="1" offset="8" value="0" />
+		<Parameter name="mirror_mode" type="Byte" length="1" offset="9" value="2" />
+		<Parameter name="pwm_low_val" type="Byte" length="1" offset="10" value="0" />
+		<Parameter name="pwm_high_val" type="Byte" length="1" offset="11" value="0" />
+	</Mirror_Parameters>
+
+<!-- Mirror  CH 1--> 
+	<Mirror_Parameters command="0x408A" data_length="12"> <!--MGMSG_MCM_SET_MIRROR_PARAMS-->
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="1" />
+		<Parameter name="mirror_initial_state" type="Byte" length="1" offset="8" value="0" />
+		<Parameter name="mirror_mode" type="Byte" length="1" offset="9" value="2" />
+		<Parameter name="pwm_low_val" type="Byte" length="1" offset="10" value="0" />
+		<Parameter name="pwm_high_val" type="Byte" length="1" offset="11" value="0" />
+	</Mirror_Parameters>
+
+<!-- Mirror  CH 2--> 
+	<Mirror_Parameters command="0x408A" data_length="12"> <!--MGMSG_MCM_SET_MIRROR_PARAMS-->
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="2" />
+		<Parameter name="mirror_initial_state" type="Byte" length="1" offset="8" value="0" />
+		<Parameter name="mirror_mode" type="Byte" length="1" offset="9" value="2" />
+		<Parameter name="pwm_low_val" type="Byte" length="1" offset="10" value="0" />
+		<Parameter name="pwm_high_val" type="Byte" length="1" offset="11" value="0" />
+	</Mirror_Parameters>
+
+
+
+</Slider_IO_Parameters>
+
+
+<!-- <Parameter name="" type="" length="" offset="" value="" /> -->

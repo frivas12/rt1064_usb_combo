@@ -1,0 +1,14 @@
+i<>.\..\..\sources\stepper.v
+i<>.\..\..\sources\led.v
+i<>.\..\..\sources\intrpt_ctrl.v
+i<>.\..\..\sources\quad_decoder.v
+i<>.\..\..\sources\pwm_controller.v
+i<>.\..\..\sources\cs_decoder.v
+i<>.\..\..\sources\set_pins.v
+i<>.\..\..\sources\spi_ctrl.v
+i<>.\..\..\sources\wb_ctrl.v
+i<>.\..\..\sources\ip\spi_slave_efb.v
+i<>.\..\..\sources\spi_slave_top.v
+i<>.\..\..\sources\mcm_top.v
+i<>.\..\tb_mcm_top.v
+i<>.\..\..\sources\commands.v

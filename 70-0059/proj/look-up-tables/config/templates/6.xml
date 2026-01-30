@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<Struct>
+    <Signature>
+        <StructID value="6"/>
+        <ConfigID value="{u16}"/>
+    </Signature>
+    <Data>
+        <Mode value="{0:u16}" />
+        <StepSize value="{i32}" />
+        <Velocity min="{0:u32}" max="{0:u32}" />
+        <Accel value="{0:u32}" />
+        <StopMode value="{0:u16}" />
+    </Data>
+</Struct>

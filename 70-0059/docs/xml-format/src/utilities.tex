@@ -1,0 +1,76 @@
+\section{Utilities}\label{sec:utilities}
+
+In the ``Misc'' folder of the repository, the ``lut-xml-templates'' folder contains tools XML creation.
+All of the tools are written in python 3.
+
+\subsection*{converter.py}
+The converter tool allows for the previous XML version to be converted into the new XML version.
+The first command-line argument to the tool is the old XML to convert.
+The second (optional) command-line argument defines what path the converted XML should be.
+If none is provided, the working directory will be used to output an XML with the same name as the input XML.
+\textbf{Notice:}  Do not use the default output path when the input file is in the same directory.
+
+Currently, joysticks and steppers are supported.
+Joysticks convert directly into the new XML format without the need for editing.
+These can be directly placed into the ``xml/system/joysticks/'' directory.
+Steppers convert into a ``StageParameters'' XML--the XMLs stored in the ``xml/system/device/full/stepper/''
+    directory.
+
+\subsection*{splitter.py}
+As the Plug-and-Play system splits configurations into multiple structures, porting device parameters
+    requires the splitter tool to separate the structures.
+The first command line argument is the path to the full configuration parameters for
+    a device (e.g. ``StageParameters'').
+The second (optional) argument defines the path to the output directory for the generated XML files.
+If no argument is given, then the directory will share the file name of the passed XML.
+
+In the output directory, files will be generated for each structure in addition to a device file.
+Each struct file will have the name of the original XML file followed by and underscore and the name of the
+    struct.
+For the device file, the name will have an ``_Device'' appended to the original name.
+Unlike the converter tool, the splitter tool requires\dots
+\begin{enumerate}
+    \item Setting the config id for each generated configuration structure.
+    \item Setting the device configuration set.
+    \item Setting the device signature.
+\end{enumerate}
+
+For Plug-and-Play devices, converted XMLs from ``converter.py'' will then be passed through this
+    tool to separate their structures.
+
+\subsection*{searcher.py}
+To aid in sharing common structures, the searcher tool finds is any struct XMLs in a directory matches in
+    content with a struct encoded in the config struct database.
+The first argument is the path to the MS Access database containing the configuration structures.
+For the remaining arguments (at least one), these will represent path(s) to XMLs to compare with the
+    config database.
+
+This tool can be used in conjunction with the splitter tool to see if any generated configs
+    match an already existing configuration.
+
+\subsection*{make_onewire.py}
+With the make-onewire tool, developers can easily create one-wire XMLs for a given device.
+To make the one-wire XML, enter the ``--slot-card'' and ``--device-id'' options.
+These will define the device signature of the device.
+Optionally, the ``--part-number'' can also be passed.
+Then, pass the ``--template'' file, an XML that tells the program how to order the incoming files.
+Optionally, the ``-output'' XML can be defined.
+Furthermore, the ``--delete'' option allows users to remove all the used files if an output was generated.
+Finally, pass in individual XML files into the program.
+This will pack them into a single one-wire XML.
+
+Notice:  the one-wire tool does not know if the total XML will be able to be stored in the EEPROM chip.
+
+
+\subsection*{make_config_set.py}
+Using the previous tools, the make-config-set tool will populate the fields in the device XML using the other
+    XMLs in the directory.
+
+\subsection*{joiner.py}
+Finally, the joiner tool can take XMLs (and the config database) to recreate the full device parameter XML
+    like the one generated from the converter tool.
+To do this, the joiner tool requires a device's configuration set and \emph{all} configurations in that set.
+Configurations, however, can be imported from both struct XMLs and one-wire XMLs.
+To use the tool, provide all of the input files as command line arguments.
+Optionally, the ``--output'' option allows users to set the path of the output file.
+Otherwise, the output file will be ``out.xml''.

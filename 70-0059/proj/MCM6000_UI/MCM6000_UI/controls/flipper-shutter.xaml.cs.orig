@@ -1,0 +1,547 @@
+﻿using MCM6000_UI.commands;
+using MCM6000_UI.controls.drivers;
+using ReactiveUI;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Reactive;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using thorlabs.imaging_systems.apt_mediator.core;
+
+namespace MCM6000_UI.controls
+{
+    /// <summary>
+    /// Interaction logic for flipper_shutter.xaml
+    /// </summary>
+    public partial class flipper_shutter : UserControl
+    {
+
+        #region Communication Events
+        public struct InterlockStateEventArgs
+        {
+            public byte slot;
+            public bool is_interlock_engaged;
+        }
+
+        #endregion
+
+
+
+
+        public byte Slot => _slot;
+
+        public slot_header Header
+        { get; }
+
+        public vms.TTLOutputVM[] Sios
+        { get; }
+
+        public vms.ShutterVM[] Shutters
+        { get; }
+
+        public flipper_shutter(byte slot, USBCallback callbacks,
+            IObservable<IAPTMediator> attachedMediator, slot_header.OpenErrorHandler open_error_handler)
+        {
+            InitializeComponent();
+
+            Header = new(slot, FLIPPER_SHUTTER_TYPE_STRING, callbacks, open_error_handler);
+
+            _slot = slot;
+            _callbacks = callbacks;
+
+            Sios = new vms.TTLOutputVM[SioChannels.Item2 - SioChannels.Item1 + 1];
+<<<<<<< HEAD
+            ShutterControllers = new vms.ShutterControllerVM[ShutterChannels.Item2 - ShutterChannels.Item1 + 1];
+            ShutterConfigurators= new vms.ShutterConfiguratorVM[ShutterChannels.Item2 - ShutterChannels.Item1 + 1];
+            _sioBuilders = new SioBuilderCacheEntry[Sios.Length];
+=======
+
+            Shutters = new vms.ShutterVM[ShutterChannels.Item2 - ShutterChannels.Item1 + 1];
+>>>>>>> develop/flipper-shutter-card
+
+            // Initialize Sio structures
+            for (int i = 0; i < Sios.Length; ++i)
+            {
+                Sios[i] = new vms.TTLOutputVM();
+            }
+
+<<<<<<< HEAD
+            for (int i = 0; i < ShutterControllers.Length; ++i)
+            {
+                ShutterControllers[i] = new();
+                ShutterConfigurators[i] = new();
+            }
+
+            // Schedule sio initialization.
+            Task.Run(() =>
+=======
+            // Initialize Shutter structures
+            for (int i = 0; i < Shutters.Length; ++i)
+>>>>>>> develop/flipper-shutter-card
+            {
+                Shutters[i] = new vms.ShutterVM();
+            }
+
+            attachedMediator.Subscribe(async x =>
+            {
+                if (x is null)
+                {
+                    // Destroy drivers
+                    foreach (var vm in Sios)
+                    {
+                        vm.Driver = null;
+                    }
+                    foreach (var vm in Shutters)
+                    {
+                        vm.Driver = null;
+                    }
+                }
+                else
+                {
+                    // Schedule driver initialization.
+
+                    // TODO (sbenish)  SIO dispatch tasks.
+                    var shutterDispatchTasks = Enumerable.Range(ShutterChannels.Item1, ShutterChannels.Item2 - ShutterChannels.Item1 + 1)
+                        .Select(y => ShutterDriver.CreateAsync(slot, y, x, CancellationToken.None))
+                        .ToList();
+
+                    void ConsumeShutter(ShutterDriver driver)
+                    {
+                        Shutters[driver.Channel - ShutterChannels.Item1].Driver = driver;
+                    }
+
+                    while (shutterDispatchTasks.Any())
+                    {
+                        var finished = await Task.WhenAny(shutterDispatchTasks);
+                        ConsumeShutter(finished.Result);
+                        shutterDispatchTasks.Remove(finished);
+                    }
+
+                    var sioDispatchTasks = Enumerable.Range(SioChannels.Item1, SioChannels.Item2 - SioChannels.Item1 + 1)
+                        .Select(y => SioDriver.CreateAsync(slot, y, x, CancellationToken.None))
+                        .ToList();
+
+                    void ConsumeSio(SioDriver driver)
+                    {
+                        Sios[driver.Channel - SioChannels.Item1].Driver = driver;
+                    }
+
+                    while (sioDispatchTasks.Any())
+                    {
+                        var finished = await Task.WhenAny(sioDispatchTasks);
+                        ConsumeSio(finished.Result);
+                        sioDispatchTasks.Remove(finished);
+                    }
+                }
+            });
+
+            this.DataContext = this;
+        }
+
+
+        public void DispatchPoll() => Task.Run(() => PollAsync(CancellationToken.None).Wait());
+        
+        public Task PollAsync(CancellationToken token)
+        {
+            return Task.WhenAll(
+                Enumerable.Concat(
+                    Sios.Select(x => x.Driver).OfType<SioDriver>().Select(x => x.PollStateAsync(token)),
+                    Shutters.Select(x => x.Driver).OfType<ShutterDriver>().Select(x => x.PollStateAsync(token))
+                ));
+        }
+
+
+        private readonly byte _slot;
+        private readonly USBCallback _callbacks;
+
+
+        private const string FLIPPER_SHUTTER_TYPE_STRING = "Flipper-Shutter";
+        private static readonly Tuple<int, int> SioChannels = Tuple.Create(4, 6);
+        private static readonly Tuple<int, int> ShutterChannels = Tuple.Create(0, 3);
+
+        private class SioDriver : ReactiveObject, ITTLOutputDriver
+        {
+            public bool Level
+            {
+                get
+                {
+                    lock (_lock)
+                    {
+                        return _is_mirror_state_IN;
+                    }
+                }
+                private set
+                {
+                    bool diff;
+                    lock (_lock)
+                    {
+                        diff = value != _is_mirror_state_IN;
+                        _is_mirror_state_IN = value;
+                    }
+                    if (diff)
+                    {
+                        this.RaisePropertyChanged();
+                    }
+                }
+            }
+
+            public bool IsEnabled
+            {
+                get
+                {
+                    lock (_lock)
+                    {
+                        return _is_enabled;
+                    }
+                }
+                private set
+                {
+                    bool diff;
+                    lock (_lock)
+                    {
+                        diff = value != _is_enabled;
+                        _is_enabled = value;
+                    }
+                    if (diff)
+                    {
+                        this.RaisePropertyChanged();
+                    }
+                }
+            }
+
+            public int Slot
+            { get; }
+
+            public int Channel
+            { get; }
+
+            public Task SetLevelAsync(bool level, CancellationToken token)
+            {
+                var currentLevel = Level;
+                if (currentLevel == level)
+                { return Task.CompletedTask; }
+
+
+                return _mediator.SendAndWaitAsync(new MirrorState()
+                {
+                    slot = Slot,
+                    channel = Channel,
+                    mirror_state = (byte)(Level ? 0x01 : 0x00),
+                }.ToSet(), token);
+            }
+
+            public Task SetEnabledAsync(bool enable, CancellationToken token)
+            {
+                var currentEnable = IsEnabled;
+                if (currentEnable == enable)
+                { return Task.CompletedTask; }
+
+                return _mediator.SendAndWaitAsync(new ChannelEnable()
+                {
+                    slot = Slot,
+                    channel = Channel,
+                    is_enabled = enable,
+                }.ToSet(), token);
+            }
+
+            public async Task PollStateAsync(CancellationToken token)
+            {
+                var enableTask = CmdUtils.ExecuteRequest(ChannelEnable.CreateRequest(Slot, Channel), _mediator, token);
+                var stateTask = CmdUtils.ExecuteRequest(MirrorState.CreateRequest(Slot, Channel), _mediator, token);
+
+                IsEnabled = ChannelEnable.FromGet(await enableTask).is_enabled;
+                Level = MirrorState.FromGet(await stateTask).IsIn();
+            }
+
+
+
+            public static async Task<SioDriver> CreateAsync(int slot, int channel, IAPTMediator mediator, CancellationToken token)
+            {
+                var rt = new SioDriver(slot, channel, mediator);
+
+                await rt.PollStateAsync(token);
+                return rt;
+            }
+
+            private SioDriver(int slot, int channel, IAPTMediator mediator)
+            {
+                Slot = slot;
+                Channel = channel;
+
+                _mediator = mediator;
+            }
+
+
+            private readonly IAPTMediator _mediator;
+
+            private readonly object _lock = new();
+            private bool _is_enabled = false;
+            private bool _is_mirror_state_IN = false;
+        }
+
+        private class ShutterDriver : ReactiveObject, IShutterDriver
+        {
+            public int Slot
+            { get; }
+            public int Channel
+            { get; }
+
+            public bool IsEnabled
+            {
+                get { lock (_lock) { return _isEnabled; } }
+                private set => this.ChangeWithLock(ref _isEnabled, value);
+            }
+            public IShutterDriver.States State
+            {
+                get { lock (_lock) { return _state; } }
+                private set => this.ChangeWithLock(ref _state, value);
+            }
+            public IShutterDriver.TriggerModes ExternalTriggerMode
+            {
+                get { lock (_lock) { return _externalTriggerMode; } }
+                private set => this.ChangeWithLock(ref _externalTriggerMode, value);
+            }
+            public IShutterDriver.Types Type
+            {
+                get { lock (_lock) { return _type; } }
+                private set => this.ChangeWithLock(ref _type, value);
+            }
+            public IShutterDriver.States StateAtPowerUp
+            {
+                get { lock (_lock) { return _stateAtPowerUp; } }
+                private set => this.ChangeWithLock(ref _stateAtPowerUp, value);
+            }
+            public double PulseDutyCyclePercentage
+            {
+                get { lock (_lock) { return _pulseDutyCyclePercentage; } }
+                private set => this.ChangeWithLock(ref _pulseDutyCyclePercentage, value);
+            }
+            public double HoldDutyCyclePercentage
+            {
+                get { lock (_lock) { return _holdDutyCyclePercentage; } }
+                private set => this.ChangeWithLock(ref _holdDutyCyclePercentage, value);
+            }
+            public TimeSpan PulseWidth
+            {
+                get { lock (_lock) { return _pulseWidth; } }
+                private set => this.ChangeWithLock(ref _pulseWidth, value);
+            }
+
+            public static async Task<ShutterDriver> CreateAsync(int slot, int channel, IAPTMediator mediator, CancellationToken token)
+            {
+                var rt = new ShutterDriver(slot, channel, mediator);
+
+                await rt.PollParametersAsync(token);
+                await rt.PollStateAsync(token);
+
+                return rt;
+            }
+
+            private ShutterDriver(int slot, int channel, IAPTMediator mediator)
+            {
+                Slot = slot;
+                Channel = channel;
+
+                _mediator = mediator;
+            }
+
+            public async Task PollStateAsync(CancellationToken token)
+            {
+                var enableTask = CmdUtils.ExecuteRequest(ChannelEnable.CreateRequest(Slot, Channel), _mediator, token);
+                var stateTask = CmdUtils.ExecuteRequest(SolenoidState.CreateRequest(Slot, Channel), _mediator, token);
+
+                HandleCommand(ChannelEnable.FromGet(await enableTask));
+                HandleCommand(SolenoidState.FromGet(await stateTask));
+            }
+            public async Task PollParametersAsync(CancellationToken token)
+            {
+                var paramsTask = CmdUtils.ExecuteRequest(ShutterParams.CreateRequest(Slot, Channel), _mediator, token);
+                
+                HandleCommand(ShutterParams.FromGet(await paramsTask));
+            }
+
+            public async Task ConfigureBidirectionalPulseHoldAsync(double pulseDutyCyclePercentage, TimeSpan pulseWidth,
+                double holdDutyCyclePercentage, IShutterDriver.States stateAtPowerUp, CancellationToken token)
+            {
+                await _mediator.SendAndWaitAsync(new ShutterParams()
+                {
+                    slot = Slot,
+                    channel = Channel,
+                    power_up_state = stateAtPowerUp,
+                    type = IShutterDriver.Types.BIDIRECTIONAL_PULSE_HOLD,
+                    external_trigger_mode = ExternalTriggerMode,
+                    duty_cycle_percentage_hold = holdDutyCyclePercentage,
+                    duty_cycle_percentage_pulse = pulseDutyCyclePercentage,
+                    pulse_width = pulseWidth,
+                }.ToSet(), token);
+
+                await PollParametersAsync(token);
+            }
+
+            public async Task ConfigureNoDriverAsync(CancellationToken token)
+            {
+                await _mediator.SendAndWaitAsync(new ShutterParams()
+                {
+                    slot = (byte)Slot,
+                    channel = Channel,
+                    power_up_state = IShutterDriver.States.UNKNOWN,
+                    type = IShutterDriver.Types.DISABLED,
+                    external_trigger_mode = IShutterDriver.TriggerModes.DISABLED,
+                    duty_cycle_percentage_hold = 0,
+                    duty_cycle_percentage_pulse = 0,
+                    pulse_width = TimeSpan.Zero,
+                }.ToSet(), token);
+
+                await PollParametersAsync(token);
+            }
+
+            public async Task ConfigurePulsedAsync(double pulseDutyCyclePercentage, TimeSpan pulseWidth,
+                IShutterDriver.States stateAtPowerUp, CancellationToken token)
+            {
+                await _mediator.SendAndWaitAsync(new ShutterParams()
+                {
+                    slot = (byte)Slot,
+                    channel = Channel,
+                    power_up_state = stateAtPowerUp,
+                    type = IShutterDriver.Types.PULSED,
+                    external_trigger_mode = ExternalTriggerMode,
+                    duty_cycle_percentage_hold = 0,
+                    duty_cycle_percentage_pulse = pulseDutyCyclePercentage,
+                    pulse_width = pulseWidth,
+                }.ToSet(), token);
+
+                await PollParametersAsync(token);
+            }
+
+            public async Task ConfigureUnidirectionalPulseHoldAsync(double pulseDutyCyclePercentage, TimeSpan pulseWidth,
+                double holdDutyCyclePercentage, IShutterDriver.States stateAtPowerUp, CancellationToken token)
+            {
+                await _mediator.SendAndWaitAsync(new ShutterParams()
+                {
+                    slot = (byte)Slot,
+                    channel = Channel,
+                    power_up_state = stateAtPowerUp,
+                    type = IShutterDriver.Types.UNIDIRECTIONAL_PULSE_HOLD,
+                    external_trigger_mode = ExternalTriggerMode,
+                    duty_cycle_percentage_hold = holdDutyCyclePercentage,
+                    duty_cycle_percentage_pulse = pulseDutyCyclePercentage,
+                    pulse_width = pulseWidth,
+                }.ToSet(), token);
+
+                await PollParametersAsync(token);
+            }
+
+            public double DutyCycleToVoltage(double percentage)
+            {
+                return 24d * percentage / 100;
+            }
+
+            public Task SetEnabledAsync(bool enable, CancellationToken token)
+            {
+                return _mediator.SendAndWaitAsync(new ChannelEnable()
+                {
+                    slot = (byte)Slot,
+                    channel = Channel,
+                    is_enabled = enable,
+                }.ToSet(), token);
+            }
+
+            public Task SetExternalTriggerModeAsync(IShutterDriver.TriggerModes mode, CancellationToken token) => Task.Run(() =>
+            {
+                ShutterParams toSend;
+                lock (_lock)
+                {
+                    toSend = new ShutterParams()
+                    {
+                        slot = (byte)Slot,
+                        channel = Channel,
+                        power_up_state = _stateAtPowerUp,
+                        type = _type,
+                        external_trigger_mode = mode,
+                        duty_cycle_percentage_hold = _holdDutyCyclePercentage,
+                        duty_cycle_percentage_pulse = _pulseDutyCyclePercentage,
+                        pulse_width = _pulseWidth,
+                    };
+                }
+
+                return _mediator.SendAndWaitAsync(toSend.ToSet(), token);
+            }, token);
+
+            public Task SetStateAsync(IShutterDriver.States state, CancellationToken token)
+            {
+                return _mediator.SendAndWaitAsync(
+                    new SolenoidState()
+                    {
+                        slot = (byte)Slot,
+                        channel = Channel,
+                        solenoid_on = state == IShutterDriver.States.OPEN,
+                    }.ToSet(), token);
+            }
+
+            public double VoltageToDutyCycle(double voltage)
+            {
+                return voltage / 24d * 100;
+            }
+
+
+            private void HandleCommand(ChannelEnable args)
+            {
+                IsEnabled = args.is_enabled;
+            }
+            private void HandleCommand(SolenoidState args)
+            {
+                State = args.solenoid_on ? IShutterDriver.States.OPEN : IShutterDriver.States.CLOSED;
+            }
+            private void HandleCommand(ShutterParams args)
+            {
+                ExternalTriggerMode = args.external_trigger_mode;
+                Type = args.type;
+                StateAtPowerUp = args.power_up_state;
+                PulseDutyCyclePercentage = args.duty_cycle_percentage_pulse;
+                HoldDutyCyclePercentage = args.duty_cycle_percentage_hold;
+                PulseWidth = args.pulse_width;
+            }
+
+            private readonly IAPTMediator _mediator;
+
+            private readonly object _lock = new();
+            private bool _isEnabled = false;
+            private IShutterDriver.States _state = IShutterDriver.States.UNKNOWN;
+            private IShutterDriver.TriggerModes _externalTriggerMode = IShutterDriver.TriggerModes.DISABLED;
+            private IShutterDriver.Types _type = IShutterDriver.Types.DISABLED;
+            private IShutterDriver.States _stateAtPowerUp = IShutterDriver.States.UNKNOWN;
+            private double _pulseDutyCyclePercentage = 0;
+            private double _holdDutyCyclePercentage = 0;
+            private TimeSpan _pulseWidth = TimeSpan.Zero;
+
+
+            private bool ChangeWithLock<T> (ref T obj, T value, [CallerMemberName] string propertyName = null)
+            {
+                bool changed;
+                lock (_lock)
+                {
+                    changed = !EqualityComparer<T>.Default.Equals(obj, value);
+                    obj = value;
+                }
+                if (changed)
+                { this.RaisePropertyChanged(propertyName); }
+
+                return changed;
+            }
+        }
+    }
+
+}

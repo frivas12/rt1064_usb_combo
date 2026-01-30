@@ -1,0 +1,5 @@
+
+
+-g RamCfg:Reset
+
+-path "C:/Users/sbenish/repositories/70-0059/cpld"  

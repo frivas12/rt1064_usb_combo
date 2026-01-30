@@ -1,0 +1,943 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.IO.Ports;
+using System.IO;
+using System.Timers;
+using Microsoft.Win32;
+using System.Threading;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Xml;
+
+namespace MCM6000_UI
+{
+    public partial class MainWindow
+    {
+        const byte NUM_OF_SLOTS = 8;
+
+        const bool FLEX_CARD_SLOT = false;
+        const bool STATIC_CARD_SLOT = true;
+
+        int[] card_type = new int[NUM_OF_SLOTS];
+        bool system_tab_init_done = false;
+        int board_type_t = 0x8000;
+
+        public enum BoardTypes
+        {
+            NO_BOARD = 0x8000,
+            BOARD_NOT_PROGRAMMED = 0x8001,
+            MCM6000_REV_002,
+            MCM6000_REV_003,
+            OTM_BOARD_REV_001,
+            HEXAPOD_BOARD_REV_001,
+            MCM6000_REV_004,
+            MCM_41_0117_001
+        }
+
+        public enum CardTypes
+        {
+            NO_CARD_IN_SLOT = 0,
+            CARD_IN_SLOT_NOT_PROGRAMMED = 1,
+            ST_Stepper_type,
+            High_Current_Stepper_Card,
+            Servo_type,
+            Shutter_type,
+            OTM_Dac_type,
+            OTM_RS232_type,
+            High_Current_Stepper_Card_HD,
+            Slider_IO_type,
+            Shutter_4_type,
+            Piezo_Elliptec_type,
+            ST_Invert_Stepper_type
+        }
+
+        public enum SetSystemTypes
+        {
+            Mesoscope = 0,
+            EMB1 = 1,   // B-scope only Z(5:1)
+            EMB3 = 2,   // B-scope only X,Y,Z(5:1)
+            EMB4 = 3,   // B-scope only X(5:1),Y,Z(5:1),R(15:1);E (spped adjustx,y)
+            Hexapod = 4,
+            OTM = 5,
+            Cerna_XYR = 6,
+            Inverted_Microscope = 7,
+        }
+
+/*        public enum JoystickTypes
+        {
+            Clear = 0,
+            Thor_4_knob,
+           // Thor_1_knob,
+            Thor_JS_knob//,
+         //   ShuttleExpress
+        }*/
+
+        public enum CablePartNums
+        {
+            NO_CABLE_IN_SLOT = 0,
+            CABLE_IN_SLOT_NOT_PROGRAMMED = 1,
+            STEPPER_CABLE_40_0186 = 186
+        }
+
+        // BoardTypes board_type = BoardTypes.BOARD_NOT_PROGRAMMED;
+        private void system_tab_get_cables_info(object sender, RoutedEventArgs e)
+        {
+            byte[] bytesToSend = new byte[6];
+
+            // send command to get each slot to get cable type
+            for (byte slot = 0; slot <= 7; slot++)
+            {
+                byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_REQ_CABLE));
+                bytesToSend = new byte[6] { command[0], command[1], (byte)(slot), 0x00, MOTHERBOARD_ID, HOST_ID };
+                usb_write(bytesToSend, 6);
+                Thread.Sleep(15);
+
+                command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_REQ_CABLE_BOARD));
+                bytesToSend = new byte[6] { command[0], command[1], (byte)(slot), 0x00, MOTHERBOARD_ID, HOST_ID };
+                usb_write(bytesToSend, 6);
+                Thread.Sleep(15);
+
+            }
+        }
+
+        private void openCableList(object sender, RoutedEventArgs e)
+        {
+            CableList cableList = new CableList();
+            cableList.Show();
+        }
+
+
+        // Response from MGMSG_REQ_CABLE_TYPE
+        public void system_tab_get_cables()
+        {
+            byte slot = ext_data[0];
+            int cable_type = ext_data[2] + (ext_data[3] << 8);
+
+            string cable_t = cable_type.ToString();
+
+            this.Dispatcher.Invoke(new Action(() =>
+                {
+                    switch (slot)
+                    {
+                        case SLOT1:
+                            tbcable_part_num_1.Text = cable_t;
+                            break;
+                        case SLOT2:
+                            tbcable_part_num_2.Text = cable_t;
+                            break;
+                        case SLOT3:
+                            tbcable_part_num_3.Text = cable_t;
+                            break;
+                        case SLOT4:
+                            tbcable_part_num_4.Text = cable_t;
+                            break;
+                        case SLOT5:
+                            tbcable_part_num_5.Text = cable_t;
+                            break;
+                        case SLOT6:
+                            tbcable_part_num_6.Text = cable_t;
+                            break;
+                        case SLOT7:
+                            tbcable_part_num_7.Text = cable_t;
+                            break;
+                        case SLOT8:
+                            tbcable_part_num_8.Text = cable_t;
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+        }
+
+        // Response from MGMSG_REQ_CABLE_BOARD
+        public void system_tab_get_cables_board()
+        {
+            byte slot = ext_data[0];
+            int cable_type = ext_data[2] + (ext_data[3] << 8);
+            string cable_t;
+
+            cable_t = cable_type.ToString();
+
+            this.Dispatcher.Invoke(new Action(() =>
+                {
+                    switch (slot)
+                    {
+                        case SLOT1:
+                            tbcable_part_num_board_1.Text = cable_t;
+                            break;
+                        case SLOT2:
+                            tbcable_part_num_board_2.Text = cable_t;
+                            break;
+                        case SLOT3:
+                            tbcable_part_num_board_3.Text = cable_t;
+                            break;
+                        case SLOT4:
+                            tbcable_part_num_board_4.Text = cable_t;
+                            break;
+                        case SLOT5:
+                            tbcable_part_num_board_5.Text = cable_t;
+                            break;
+                        case SLOT6:
+                            tbcable_part_num_board_6.Text = cable_t;
+                            break;
+                        case SLOT7:
+                            tbcable_part_num_board_7.Text = cable_t;
+                            break;
+                        default:
+                            break;
+                    }
+                }));
+        }
+
+        public void system_tab_init()
+        {
+            if (!system_tab_init_done)
+            {
+                Thread.Sleep(15);
+
+                foreach (var board_item in Enum.GetValues(typeof(BoardTypes)))
+                {
+                    cbBoardType.Items.Add(board_item);
+                }
+
+                foreach (var card_item in Enum.GetValues(typeof(CardTypes)))
+                {
+                    cbcardType_1.Items.Add(card_item);
+                    cbcardType_2.Items.Add(card_item);
+                    cbcardType_3.Items.Add(card_item);
+                    cbcardType_4.Items.Add(card_item);
+                    cbcardType_5.Items.Add(card_item);
+                    cbcardType_6.Items.Add(card_item);
+                    cbcardType_7.Items.Add(card_item);
+                    cbcardType_8.Items.Add(card_item);
+                }
+/*
+                foreach (var default_item in Enum.GetValues(typeof(SetSystemTypes)))
+                {
+                    cbDefault_type.Items.Add(default_item);
+                }
+*/
+  /*              foreach (var joystick_type_item in Enum.GetValues(typeof(JoystickTypes)))
+                {
+                    cb_js_type_p0.Items.Add(joystick_type_item);
+                    cb_js_type_p1.Items.Add(joystick_type_item);
+                    cb_js_type_p2.Items.Add(joystick_type_item);
+                    cb_js_type_p3.Items.Add(joystick_type_item);
+                }
+*/
+
+                system_tab_get_cables_info(null, null);
+                system_tab_init_done = true;
+            }
+        }
+
+        bool Test_bit(Int16 b, byte pos)
+        {
+            return ((b >> pos) & 1) != 0;
+        }
+
+        public void hardware_info(byte[] hwinfo)
+        {
+            string temp_string;
+
+            char[] serial_number = new char[4];
+/*
+            // serial number                
+            serial_number[0] = (char)hwinfo[6];
+            serial_number[1] = (char)hwinfo[7];
+            serial_number[2] = (char)hwinfo[8];
+            serial_number[3] = (char)hwinfo[9];
+
+            // serial number
+            temp_string = "Serial Number: "
+            + Convert.ToString(serial_number[0])
+            + Convert.ToString(serial_number[1])
+            + Convert.ToString(serial_number[2])
+            + Convert.ToString(serial_number[3])
+*/
+            temp_string = ""
+                
+            // firmware revision
+            + "         Firmware Rev: "
+            + Convert.ToString(hwinfo[22]) + "."      // Major
+            + Convert.ToString(hwinfo[21]) + "."      // Interim
+            + Convert.ToString(hwinfo[20])            // minor
+
+            // CPLD revision
+            + "         CPLD Rev: "
+            + Convert.ToString(hwinfo[23])
+            + "."
+            + Convert.ToString(hwinfo[24])
+
+            // UI revision
+            + "         UI Rev: "
+            + software_version;
+
+            card_type[0] = (Int16)(hwinfo[68] + (hwinfo[69] << 8));
+            card_type[1] = (Int16)(hwinfo[70] + (hwinfo[71] << 8));
+            card_type[2] = (Int16)(hwinfo[72] + (hwinfo[73] << 8));
+            card_type[3] = (Int16)(hwinfo[74] + (hwinfo[75] << 8));
+            card_type[4] = (Int16)(hwinfo[76] + (hwinfo[77] << 8));
+            card_type[5] = (Int16)(hwinfo[78] + (hwinfo[79] << 8));
+            card_type[6] = (Int16)(hwinfo[80] + (hwinfo[81] << 8));
+            card_type[7] = (Int16)(hwinfo[82] + (hwinfo[83] << 8));
+
+            board_type_t = (hwinfo[84] + (hwinfo[85] << 8));
+
+            string[] card_types = Enum.GetNames(typeof(CardTypes));
+            string[] board_types = Enum.GetNames(typeof(BoardTypes));
+
+            byte j = 0;
+            Int32 board_type_i = (Int32)BoardTypes.NO_BOARD;
+
+            foreach (int i in Enum.GetValues(typeof(BoardTypes)))
+            {
+                board_type_i = i;
+
+                if (board_type_t == board_type_i)
+                {
+                    break;
+                }
+                j++;
+            }
+
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                cbBoardType.SelectedIndex = j;
+
+                if (Test_bit((Int16)card_type[0], 15))
+                {
+                    cb_slot_static_1.IsChecked = true;
+                    card_type[0] &= 0x7fff;
+                }
+                else
+                {
+                    cb_slot_static_1.IsChecked = false;
+                }
+                cbcardType_1.SelectedIndex = card_type[0];
+
+
+                if (Test_bit((Int16)card_type[1], 15))
+                {
+                    cb_slot_static_2.IsChecked = true;
+                    card_type[1] &= 0x7fff;
+                }
+                else
+                {
+                    cb_slot_static_2.IsChecked = false;
+                }
+                cbcardType_2.SelectedIndex = card_type[1];
+
+                if (Test_bit((Int16)card_type[2], 15))
+                {
+                    cb_slot_static_3.IsChecked = true;
+                    card_type[2] &= 0x7fff;
+                }
+                else
+                {
+                    cb_slot_static_3.IsChecked = false;
+                }
+                cbcardType_3.SelectedIndex = card_type[2];
+
+                if (Test_bit((Int16)card_type[3], 15))
+                {
+                    cb_slot_static_4.IsChecked = true;
+                    card_type[3] &= 0x7fff;
+                }
+                else
+                {
+                    cb_slot_static_4.IsChecked = false;
+                }
+                cbcardType_4.SelectedIndex = card_type[3];
+
+                if (Test_bit((Int16)card_type[4], 15))
+                {
+                    cb_slot_static_5.IsChecked = true;
+                    card_type[4] &= 0x7fff;
+                }
+                else
+                {
+                    cb_slot_static_5.IsChecked = false;
+                }
+                cbcardType_5.SelectedIndex = card_type[4];
+
+                if (Test_bit((Int16)card_type[5], 15))
+                {
+                    cb_slot_static_6.IsChecked = true;
+                    card_type[5] &= 0x7fff;
+                }
+                else
+                {
+                    cb_slot_static_6.IsChecked = false;
+                }
+                cbcardType_6.SelectedIndex = card_type[5];
+
+                if (Test_bit((Int16)card_type[6], 15))
+                {
+                    cb_slot_static_7.IsChecked = true;
+                    card_type[6] &= 0x7fff;
+                }
+                else
+                {
+                    cb_slot_static_7.IsChecked = false;
+                }
+                cbcardType_7.SelectedIndex = card_type[6];
+
+                if (Test_bit((Int16)card_type[7], 15))
+                {
+                    cb_slot_static_8.IsChecked = true;
+                    card_type[7] &= 0x7fff;
+                }
+                else
+                {
+                    cb_slot_static_8.IsChecked = false;
+                }
+                cbcardType_8.SelectedIndex = card_type[7];
+
+                lbl_hardware_info.Content = temp_string;
+            }));
+
+        }
+
+        private void Set_board_type_Click(object sender, RoutedEventArgs e)
+        {
+            byte j = 0;
+
+            byte board_type_index = Convert.ToByte(cbBoardType.SelectedIndex);
+            Int32 board_type_i = (Int32)BoardTypes.NO_BOARD;
+            string[] board_types = Enum.GetNames(typeof(BoardTypes));
+
+            foreach (int i in Enum.GetValues(typeof(BoardTypes)))
+            {
+                if (j == board_type_index)
+                {
+                    board_type_i = i;
+                    break;
+                }
+                j++;
+            }
+
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_SET_HW_REV));
+            byte[] b_type = BitConverter.GetBytes(board_type_i);
+
+            byte[] bytesToSend = new byte[8] { command[0], command[1], 2, 0x00, Convert.ToByte(MOTHERBOARD_ID | 0x80), HOST_ID,
+            b_type[0], b_type[1] };
+            usb_write(bytesToSend, 8);
+            Thread.Sleep(100);
+        }
+
+        private void Set_card_type_Click(object sender, RoutedEventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            string button_name = clickedButton.Name;
+            string slot = button_name.Substring(button_name.Length - 1, 1);
+            Byte slot_number = Convert.ToByte(slot);
+            Byte slot_id = (Byte)(slot_number | 0x20);
+            slot_number -= 1;
+            bool static_slot = FLEX_CARD_SLOT; 
+
+            byte card_type_index = 0;
+
+            switch (slot_number)
+            {
+                case SLOT1:
+                    card_type_index = Convert.ToByte(cbcardType_1.SelectedIndex);
+                    static_slot = (bool) cb_slot_static_1.IsChecked;
+                    break;
+                case SLOT2:
+                    card_type_index = Convert.ToByte(cbcardType_2.SelectedIndex);
+                    static_slot = (bool) cb_slot_static_2.IsChecked;
+                    break;
+                case SLOT3:
+                    card_type_index = Convert.ToByte(cbcardType_3.SelectedIndex);
+                    static_slot = (bool) cb_slot_static_3.IsChecked;
+                    break;
+                case SLOT4:
+                    card_type_index = Convert.ToByte(cbcardType_4.SelectedIndex);
+                    static_slot = (bool) cb_slot_static_4.IsChecked;
+                    break;
+                case SLOT5:
+                    card_type_index = Convert.ToByte(cbcardType_5.SelectedIndex);
+                    static_slot = (bool) cb_slot_static_5.IsChecked;
+                    break;
+                case SLOT6:
+                    card_type_index = Convert.ToByte(cbcardType_6.SelectedIndex);
+                    static_slot = (bool) cb_slot_static_6.IsChecked;
+                    break;
+                case SLOT7:
+                    card_type_index = Convert.ToByte(cbcardType_7.SelectedIndex);
+                    static_slot = (bool) cb_slot_static_7.IsChecked;
+                    break;
+                case SLOT8:
+                    card_type_index = Convert.ToByte(cbcardType_8.SelectedIndex);
+                    static_slot = (bool) cb_slot_static_8.IsChecked;
+                    break;
+            }
+
+            byte j = 0;
+            Int32 card_type_i = (Int32)BoardTypes.NO_BOARD;
+            string[] card_types = Enum.GetNames(typeof(CardTypes));
+
+            foreach (int i in Enum.GetValues(typeof(CardTypes)))
+            {
+                if (j == card_type_index)
+                {
+                    card_type_i = i;
+                    break;
+                }
+                j++;
+            }
+
+            if (static_slot)
+            {
+                card_type_i = card_type_i | 0x8000;
+            }
+
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_SET_CARD_TYPE));
+            byte[] b_type = BitConverter.GetBytes(card_type_i);
+
+            byte[] bytesToSend = new byte[10] { command[0], command[1], 4, 0x00, Convert.ToByte(MOTHERBOARD_ID | 0x80), HOST_ID,
+            slot_number, 0,
+            b_type[0], b_type[1] };
+            usb_write(bytesToSend, 10);
+            Thread.Sleep(100);
+        }
+
+        private void Set_cable_type_Click(object sender, RoutedEventArgs e)
+        {
+
+            Button clickedButton = (Button)sender;
+            string button_name = clickedButton.Name;
+            string slot = button_name.Substring(button_name.Length - 1, 1);
+            Byte slot_number = Convert.ToByte(slot);
+            slot_number -= 1;   // slot starts on 0
+            Byte slot_id = (Byte)(slot_number | 0x21);
+
+            int cable_type = 0;
+
+            switch (slot_number)
+            {
+                case SLOT1:
+                    cable_type = Int32.Parse(tbcable_part_num_1.Text);
+                    break;
+                case SLOT2:
+                    cable_type = Int32.Parse(tbcable_part_num_2.Text);
+                    break;
+                case SLOT3:
+                    cable_type = Int32.Parse(tbcable_part_num_3.Text);
+                    break;
+                case SLOT4:
+                    cable_type = Int32.Parse(tbcable_part_num_4.Text);
+                    break;
+                case SLOT5:
+                    cable_type = Int32.Parse(tbcable_part_num_5.Text);
+                    break;
+                case SLOT6:
+                    cable_type = Int32.Parse(tbcable_part_num_6.Text);
+                    break;
+                case SLOT7:
+                    cable_type = Int32.Parse(tbcable_part_num_7.Text);
+                    break;
+                case SLOT8:
+                    cable_type = Int32.Parse(tbcable_part_num_8.Text);
+                    break;
+            }
+
+
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_SET_CABLE));
+            byte[] cable_part_number = BitConverter.GetBytes(cable_type);
+
+            byte[] bytesToSend = new byte[6 + 4] { command[0], command[1], 4, 0x00, Convert.ToByte(MOTHERBOARD_ID | 0x80), HOST_ID,
+            slot_number, 0x00,
+            cable_part_number[0], cable_part_number[1]
+            };
+            usb_write(bytesToSend, 6 + 4);
+            Thread.Sleep(100);
+        }
+
+        private void Set_cable_board_type_Click(object sender, RoutedEventArgs e)
+        {
+
+            Button clickedButton = (Button)sender;
+            string button_name = clickedButton.Name;
+            string slot = button_name.Substring(button_name.Length - 1, 1);
+            Byte slot_number = Convert.ToByte(slot);
+            slot_number -= 1;   // slot starts on 0
+            Byte slot_id = (Byte)(slot_number | 0x21);
+
+            int cable_type = 0;
+
+            switch (slot_number)
+            {
+                case SLOT1:
+                    cable_type = Int32.Parse(tbcable_part_num_board_1.Text);
+                    break;
+                case SLOT2:
+                    cable_type = Int32.Parse(tbcable_part_num_board_2.Text);
+                    break;
+                case SLOT3:
+                    cable_type = Int32.Parse(tbcable_part_num_board_3.Text);
+                    break;
+                case SLOT4:
+                    cable_type = Int32.Parse(tbcable_part_num_board_4.Text);
+                    break;
+                case SLOT5:
+                    cable_type = Int32.Parse(tbcable_part_num_board_5.Text);
+                    break;
+                case SLOT6:
+                    cable_type = Int32.Parse(tbcable_part_num_board_6.Text);
+                    break;
+                case SLOT7:
+                    cable_type = Int32.Parse(tbcable_part_num_board_7.Text);
+                    break;
+            }
+
+
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_SET_CABLE_BOARD));
+            byte[] cable_part_number = BitConverter.GetBytes(cable_type);
+
+            byte[] bytesToSend = new byte[6 + 4] { command[0], command[1], 4, 0x00, Convert.ToByte(MOTHERBOARD_ID | 0x80), HOST_ID,
+            slot_number, 0x00,
+            cable_part_number[0], cable_part_number[1]
+            };
+            usb_write(bytesToSend, 6 + 4);
+            Thread.Sleep(100);
+        }
+
+        private void Resart_processor_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_RESTART_PROCESSOR));
+            byte[] bytesToSend = new byte[6] { command[0], command[1], 1, 0x00, MOTHERBOARD_ID, HOST_ID };
+            usb_write(bytesToSend, 6);
+
+            //Thread.Sleep(2500);
+            // restart the application and close this window
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
+        }
+
+        private void SuspendTask_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_TASK_CONTROL));
+            byte[] bytesToSend = new byte[6] { command[0], command[1], 1, 0x00, MOTHERBOARD_ID, HOST_ID };
+            usb_write(bytesToSend, 6);
+        }
+
+        private void ResumeTask_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_TASK_CONTROL));
+            byte[] bytesToSend = new byte[6] { command[0], command[1], 0, 0x00, MOTHERBOARD_ID, HOST_ID };
+            usb_write(bytesToSend, 6);
+        }
+
+        private void erase_eeprom_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_ERASE_EEPROM));
+            byte[] bytesToSend = new byte[6] { command[0], command[1], 0, 0x00, MOTHERBOARD_ID, HOST_ID };
+            usb_write(bytesToSend, 6);
+        }
+
+        /* Board update request info on _timer1_Elapsed*/
+        public void board_update_request()
+        {
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_BOARD_REQ_STATUSUPDATE));
+
+            byte[] bytesToSend = new byte[6] { command[0], command[1], 0x00, 0x00, MOTHERBOARD_ID, HOST_ID };
+            usb_write(bytesToSend, 6);
+        }
+
+        /* Board update response info on _timer1_Elapsed*/
+
+        const int TEMP_SAMPLES = 15;
+        double[] temperatures = new double[TEMP_SAMPLES];
+        int temperatures_index = 0;
+        bool temperature_ready = false;
+        double sum_temperatures = 0;
+
+        const double B = 3930.0;
+        const double T0 = 298.0;
+        const double R2 = 10000.0;
+        const double R0 = 10000.0;
+        const double VCC = 3.287;
+        const double MAX_VAL = 4096;    // 12 bit
+        const double volts_per_counts = VCC / MAX_VAL;
+        const double vin_resistor_div = 0.083170; // R2/(R1+r2) // rev 004 has different resistor
+
+        double adc1;
+        
+        public void board_update()
+        {
+            // temperature
+            UInt16 temperature = (UInt16)(ext_data[0] + (ext_data[1] << 8));
+            // Vin monitor
+            UInt16 vin_monitor = (UInt16)(ext_data[2] + (ext_data[3] << 8));
+            // CPU Temperature
+            double cpu_temperature = (UInt16)(ext_data[4] + (ext_data[5] << 8));
+
+
+            double temperature_c_avg = 0;
+
+            if (temperatures_index < TEMP_SAMPLES)
+            {
+                temperatures[temperatures_index++] = temperature;
+            }
+            else
+            {
+                temperatures_index = 0;
+                temperature_ready = true;
+            }
+
+            // get the average
+            if (temperature_ready)
+            {
+                sum_temperatures = 0;
+                for (int i = 0; i < TEMP_SAMPLES; i++)
+                {
+                    sum_temperatures += temperatures[i];
+                }
+                temperature_c_avg = sum_temperatures / TEMP_SAMPLES;
+            }
+            else
+            {
+                temperature_c_avg = temperature;
+            }
+
+            adc1 = (temperature_c_avg * VCC) / 4096.0;
+
+            // in Fahrenheit 
+            double temperature_f = (((T0 * B) / (Math.Log(R2 * (VCC - adc1) / (R0 * adc1)) * T0 + B)) - 273) * 1.8 + 32;
+            double temperature_c = (temperature_f - 32) * 5 / 9;
+
+            double temperature_v = temperature * volts_per_counts; // voltage at resistor divider 
+
+            // Vin monitor
+            double vm = vin_monitor * volts_per_counts;
+
+            double vin = (double)vm / 0.0668; // rev004 and up have a 976 Ohm resistor 
+            if (board_type_t < (int)BoardTypes.MCM6000_REV_004)
+                vin = (double)vm / 0.083170;  // rev003 and before have a 1270 Ohm resistor 
+
+            // CPU Temperature
+            // The output voltage VT = 0.72V at 27C and the temperature slope dVT/dT = 2.33 mV/C
+            double cpu_temp1 = ((cpu_temperature * 3.3) / 4095) * 1000;
+            double cpu_temp_c = ((cpu_temp1 - 720.00) * (100.00 / 233)) + 27.000;
+            double cpu_temp_f = (cpu_temp_c * 1.8) + 32;
+
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                // temperature
+                lbl_tem_status.Content = "Temperature:  ";
+                lbl_tem_status.Content += temperature_f.ToString("###.");
+                lbl_tem_status.Content += " F   ";
+                lbl_tem_status.Content += temperature_c.ToString("###.");
+                lbl_tem_status.Content += " C   ";
+
+                // Vin monitor
+                lbl_tem_status.Content += "             Vin (Volts): ";
+                lbl_tem_status.Content += vin.ToString("##.0");
+
+                // CPU Temerature
+                lbl_tem_status.Content += "             CPU Temperature:  ";
+                lbl_tem_status.Content += cpu_temp_f.ToString("###.");
+                lbl_tem_status.Content += " F   ";
+                lbl_tem_status.Content += cpu_temp_c.ToString("###.");
+                lbl_tem_status.Content += " C   ";
+
+            }));
+        }
+
+        private void cbDefault_type_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            byte system_num = 0;
+/*
+            byte set_default_type_index = Convert.ToByte(cbDefault_type.SelectedIndex);
+            Int32 set_default_type_i = (Int32)SetSystemTypes.Mesoscope;
+            string[] set_default_types = Enum.GetNames(typeof(SetSystemTypes));
+            string selected;
+
+            foreach (int i in Enum.GetValues(typeof(SetSystemTypes)))
+            {
+                if (system_num == set_default_type_index)
+                {
+                    set_default_type_i = i;
+                    break;
+                }
+                system_num++;
+            }
+
+            selected = set_default_types[system_num];
+
+            switch (selected)
+            {
+                case "Mesoscope":
+                    SetMesoscope_params();
+                    break;
+
+                case "EMB1":
+                case "EMB2":
+                case "EMB3":
+                case "EMB4":
+                    Set_B_scope_params(system_num);
+                    break;
+
+                case "Hexapod":
+                    SetNema8_Hexapod_params();
+                    break;
+
+                case "OTM":
+                    Set_OTM_params();
+                    break;
+
+                case "Cerna_XYR":
+                    Set_cerna_xyr_params();
+                    break;
+
+                case "Inverted_Light_Path":
+                    Set_inverted_params();
+                    break;
+
+                default:
+                    break;
+            }*/
+        }
+
+        private void cb_js_type_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            /*            byte j = 0;
+
+                        ComboBox cb = (ComboBox)sender;
+                        string cb_name = cb.Name;
+                        string port = cb_name.Substring(cb_name.Length - 1, 1);
+                        Byte port_number = Convert.ToByte(port);
+
+                        byte set_joystick_type_type_index = Convert.ToByte(cb.SelectedIndex);
+                        Int32 set_type_i;
+                        string[] set_types = Enum.GetNames(typeof(JoystickTypes));
+                        string selected;
+
+                        foreach (int i in Enum.GetValues(typeof(JoystickTypes)))
+                        {
+                            if (j == set_joystick_type_type_index)
+                            {
+                                set_type_i = i;
+                                break;
+                            }
+                            j++;
+                        }
+                        selected = set_types[j];
+
+                        switch (selected)
+                        {
+                            case "Clear":
+                                clear_js_in_map(port_number);
+                                clear_js_out_map(port_number);
+                                break;
+                
+                            case "Thor_4_knob":
+                                Set_4_knob_map_Click(port_number);
+                                break;
+
+                            case "Thor_1_knob":
+                                break;
+
+                            case "Thor_JS_knob":
+                                Set_JS_knob_map_Click(port_number);
+                                break;
+
+                            case "ShuttleExpress":
+                                break;
+
+                            default:
+                                break;
+                        }
+            */
+
+        }
+#if false
+
+        private void Load_XML_Click_1(object sender, RoutedEventArgs e)
+        {
+            //Pop a dialog to get the XML file location
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.Title = "Select system level XML file";
+            dlg.DefaultExt = ".xml";
+            dlg.Filter = "XML Files|*.xml";
+            Nullable<bool> result = dlg.ShowDialog();
+            string top_level_xml = dlg.FileName;
+            string slot_xml_path;
+
+
+            //Create an XMLreadersettings object so we can configure it to ignore comments
+            XmlReaderSettings readerSettings = new XmlReaderSettings();
+            readerSettings.IgnoreComments = true;
+            XmlReader system_xml_reader = XmlReader.Create(top_level_xml, readerSettings);
+
+            //Open the top level XML document
+            XmlDocument system_xml = new XmlDocument();
+            XmlDocument slot_xml = new XmlDocument();
+            try
+            {
+                system_xml.Load(system_xml_reader);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            XmlNode system_settings = system_xml.DocumentElement.SelectSingleNode("/System/SystemSettings");
+            foreach (XmlNode system_setting in system_settings.ChildNodes)
+            {
+                Send_XML_APT_Command(system_setting, MOTHERBOARD_ID);
+            }
+            
+
+            XmlNode slots = system_xml.DocumentElement.SelectSingleNode("/System/Slots");
+            foreach(XmlNode slot in slots.ChildNodes)
+            {
+                int slot_num = Convert.ToInt32(slot.Attributes["slot_num"].InnerText) + 0x21;
+                if (slot.Attributes["type"].InnerText == "Stage")
+                {
+                    XmlNode stage = slot.SelectSingleNode("Stage");
+                    slot_xml_path = System.IO.Path.GetDirectoryName(top_level_xml);
+                    slot_xml_path = System.IO.Path.Combine(slot_xml_path, "stage");
+                    slot_xml_path = System.IO.Path.Combine(slot_xml_path, (stage.Attributes["name"].InnerText + ".xml"));
+                    XmlReader slot_xml_reader = XmlReader.Create(slot_xml_path, readerSettings);
+                    try
+                    {
+                        slot_xml.Load(slot_xml_reader);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                    XmlNode stage_parameters = slot_xml.DocumentElement.SelectSingleNode("/StageParameters");
+                    //loop through each type of parameter, each one is a separate command
+                    foreach (XmlNode parameter_type in stage_parameters.ChildNodes)
+                    {
+                        Send_XML_APT_Command(parameter_type, slot_num);
+                    }
+                }
+            }
+
+            //TODO send Joysticks XML section . . . 
+            Thread.Sleep(500);
+            Resart_processor_Click(null, null);
+            return;
+        }
+#endif
+
+
+    }
+}

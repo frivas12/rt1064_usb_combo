@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<OneWire>
+
+	<DeviceSignature>
+		<SlotType value="ST_Card_type" />
+		<DeviceID value="0x0000" />
+	</DeviceSignature>
+	
+	<!--Optional-->
+	<AlternateConfig>
+		<SlotType value="33" />
+		<SubDevice value="0">
+			<ConfigID value="0" />
+			<ConfigID value="0x0000" />
+		</SubDevice>
+		<SubDevice value="1">
+			<ConfigID value="0" />
+			<ConfigID value="0x0000" />
+		</SubDevice>
+	</AlternateConfig>
+	
+	<!--Optional-->
+	<RawSaveStruct href="base/but/now/here" />
+
+</OneWire>

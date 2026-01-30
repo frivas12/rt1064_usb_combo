@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!-- 
+(0 - 1900) 0 = Stop, 1900 = ,max voltage 24V
+driver can handle 600mA per channel, 1.2A peak
+ * Shutter we use:
+ *     Name				Type						Voltage		Pulse Width 	Hz		Ohm
+ * UNIBLITZ DSS20 		Pulse						10.7V			35ms		5		7.5
+ * Thorlabs SHB025(T)	Pulse/hold					7V/5V			20ms/hold	50		8.2
+ * Thorlabs SHB05(T)	Pulse/hold					7V/5V			20ms/hold	25		8.2
+ * Thorlabs SHB1(T)		Pulse/hold					7V/5V			20ms/hold	15		8.5
+ * Thorlabs SH1			Pulse/hold/no reverse		24V/10.7V		10ms/hold	25		31.84
+ * Thorlabs SH05		Pulse/hold					24V/10.7V		10ms/hold	25		28
+ */-->
+<ShutterParameters>
+	
+<!-- ch 1 PMT Shutter --> 
+	<Shutter_Parameters command="0x4064" data_length="20">
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="0" />
+		<Parameter name="shutter_initial_state" type="Byte" length="1" offset="8" value="1" />
+		<Parameter name="shutter_mode" type="Byte" length="1" offset="9" value="1" />
+		<Parameter name="external_trigger_mode" type="Byte" length="1" offset="10" value="2" />
+		<Parameter name="on_time" type="Byte" length="1" offset="11" value="4" />
+		<Parameter name="duty_cycle_pulse" type="UInt32" length="4" offset="12" value="700" />
+		<Parameter name="duty_cycle_hold" type="UInt32" length="4" offset="16" value="0" />
+	</Shutter_Parameters>
+
+<!-- ch 2 disabled --> 
+	<Shutter_Parameters command="0x4064" data_length="20">
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="1" />
+		<Parameter name="shutter_initial_state" type="Byte" length="1" offset="8" value="1" />
+		<Parameter name="shutter_mode" type="Byte" length="1" offset="9" value="0" />
+		<Parameter name="external_trigger_mode" type="Byte" length="1" offset="10" value="0" />
+		<Parameter name="on_time" type="Byte" length="1" offset="11" value="0" />
+		<Parameter name="duty_cycle_pulse" type="UInt32" length="4" offset="12" value="0" />
+		<Parameter name="duty_cycle_hold" type="UInt32" length="4" offset="16" value="0" />
+	</Shutter_Parameters>
+
+<!-- ch 3 primary scan path --> 
+	<Shutter_Parameters command="0x4064" data_length="20">
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="2" />
+		<Parameter name="shutter_initial_state" type="Byte" length="1" offset="8" value="1" />
+		<Parameter name="shutter_mode" type="Byte" length="1" offset="9" value="3" />
+		<Parameter name="external_trigger_mode" type="Byte" length="1" offset="10" value="2" />
+		<Parameter name="on_time" type="Byte" length="1" offset="11" value="10" />
+		<Parameter name="duty_cycle_pulse" type="UInt32" length="4" offset="12" value="1600" />
+		<Parameter name="duty_cycle_hold" type="UInt32" length="4" offset="16" value="850" />
+	</Shutter_Parameters>
+
+<!-- ch 4 disabled --> 
+	<Shutter_Parameters command="0x4064" data_length="20">
+		<Parameter name="chan_id" type="Byte" length="2" offset="6" value="3" />
+		<Parameter name="shutter_initial_state" type="Byte" length="1" offset="8" value="1" />
+		<Parameter name="shutter_mode" type="Byte" length="1" offset="9" value="0" />
+		<Parameter name="external_trigger_mode" type="Byte" length="1" offset="10" value="0" />
+		<Parameter name="on_time" type="Byte" length="1" offset="11" value="0" />
+		<Parameter name="duty_cycle_pulse" type="UInt32" length="4" offset="12" value="0" />
+		<Parameter name="duty_cycle_hold" type="UInt32" length="4" offset="16" value="0" />
+	</Shutter_Parameters>
+
+
+</ShutterParameters>
+
+
+<!-- <Parameter name="" type="" length="" offset="" value="" /> -->

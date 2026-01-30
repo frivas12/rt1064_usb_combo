@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+
+<OneWire>
+    <Signature>
+        <DefaultSlotType value="{u16}"/>
+        <DeviceID value="{u16}"/>
+    </Signature>
+
+    <!--The part number is typically left empty so an application-->
+    <!--can customize it before flashing to the device.-->
+    <PartNumber value="{'':str}" />
+
+    <!--This feature has been disabled for the time being.-->
+    <DeviceConfigurations />
+
+    <ConfigEntries>
+        <!--This contains 0 to 16 config entries.-->
+        <!--Each entry is stored on the device's tiny database.-->
+        <Struct>
+            <Signature>
+                <StructID value="{u16}"/>
+                <ConfigID value="{[0xFFF0,0xFFFF]}"/>
+            </Signature>
+            <Data>
+                <!--Depednent on the struct type.-->
+            </Data>
+        </Struct>
+    </ConfigEntries>
+</OneWire>

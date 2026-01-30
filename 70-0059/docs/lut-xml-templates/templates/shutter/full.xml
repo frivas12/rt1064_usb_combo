@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<ShutterParams>
+
+    <!--Both Hex and Decimal are accepted.-->
+    <ConfigID value="0x0000" />
+
+    <Shutter>
+        <InitialState value="0" />
+        <Mode value="0" />
+        <TriggerMode value="0" />
+        <OnTime value="0" />
+        <DutyCycle pulse="0" hold="0" />
+    </Shutter>
+
+</ShutterParams>

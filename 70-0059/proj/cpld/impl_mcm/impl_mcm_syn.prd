@@ -1,0 +1,13 @@
+#--  Synopsys, Inc.
+#--  Version Q-2020.03L-SP1
+#--  Project file C:\Users\sbenish\repositories\70-0059\cpld\impl_mcm\impl_mcm_syn.prd
+#--  Written on Wed Feb 16 10:58:30 2022
+
+#
+### Watch Implementation type ###
+#
+watch_impl -all
+#
+### Watch Implementation properties ###
+#
+watch_prop -clear

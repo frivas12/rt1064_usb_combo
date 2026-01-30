@@ -1,0 +1,13 @@
+<? xml version="1.0" ?>
+
+<Ordering>
+    <!--Between 0 and 14 (inclusive) items can be declared.-->
+    <!---->
+    <Item index="0">
+        <!--Choose at least one of the following:-->
+        <!--The file to include must have all criteria.-->
+        <StructID value="0" />          <!--Filter on struct ID-->
+        <NameRegex value=".+" />        <!--Filter on file name-->
+        <ContentRegex value=".+"/>      <!--Filter on file content-->
+    </Item>
+</Ordering>

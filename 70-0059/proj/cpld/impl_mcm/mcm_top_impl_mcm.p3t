@@ -1,0 +1,5 @@
+-rem
+-distrce
+-log "mcm_top_impl_mcm.log"
+-o "mcm_top_impl_mcm.csv"
+-pr "mcm_top_impl_mcm.prf"

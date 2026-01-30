@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!--Stepper Home-->
+<Struct>
+    <Signature>
+        <StructID value="0x0005"/>
+        <ConfigID value="0x0000"/>
+    </Signature>
+    <Data>
+        <Mode value="1" />
+        <Direction value="1" />
+        <Velocity value="1" />
+        <LimitSwitch value="1" />
+        <OffsetDistance value="1" />
+    </Data>
+</Struct>

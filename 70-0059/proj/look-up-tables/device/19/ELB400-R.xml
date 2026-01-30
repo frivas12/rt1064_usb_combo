@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<Device>
+    <Signature>
+        <RunningSlotType value="19" />
+        <DefaultSlotType value="19" />
+        <DeviceID value="7" />
+    </Signature>
+    <Configs>
+        <Signature>
+            <StructID value="2"/>
+            <ConfigID value="0xFFF0"/>
+        </Signature>
+        <Signature>
+            <StructID value="3"/>
+            <ConfigID value="5"/>
+        </Signature>
+        <Signature>
+            <StructID value="4"/>
+            <ConfigID value="0xFFF1"/>
+        </Signature>
+        <Signature>
+            <StructID value="1"/>
+            <ConfigID value="0xFFF4"/>
+        </Signature>
+        <Signature>
+            <StructID value="5"/>
+            <ConfigID value="0xFFF3"/>
+        </Signature>
+        <Signature>
+            <StructID value="6"/>
+            <ConfigID value="0"/>
+        </Signature>
+        <Signature>
+            <StructID value="0"/>
+            <ConfigID value="5"/>
+        </Signature>
+        <Signature>
+            <StructID value="7"/>
+            <ConfigID value="0xFFF2"/>
+        </Signature>
+        <Signature>
+            <StructID value="8"/>
+            <ConfigID value="0"/>
+        </Signature>
+    </Configs>
+</Device>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<!--Limits-->
+<Struct>
+    <Signature>
+        <StructID value="0x0001"/>
+        <ConfigID value="0x0000"/>
+    </Signature>
+    <Data>
+        <HardLimit cw="0" ccw="0" />
+        <SoftLimit cw="0" ccw="0" />
+        <AbsLimit low="0" high="0" />
+        <Mode value="0" />
+    </Data>
+</Struct>

@@ -1,0 +1,13 @@
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\bin\Release\connection-testbench.exe.config
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\bin\Release\connection-testbench.exe
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\bin\Release\connection-testbench.pdb
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\bin\Release\apt_mediator.dll
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\bin\Release\NLog.dll
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\bin\Release\apt_mediator.pdb
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\bin\Release\NLog.xml
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\obj\Release\connection-testbench.csproj.AssemblyReference.cache
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\obj\Release\connection-testbench.csproj.SuggestedBindingRedirects.cache
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\obj\Release\connection-testbench.csproj.CoreCompileInputs.cache
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\obj\Release\connection-testbench.csproj.CopyComplete
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\obj\Release\connection-testbench.exe
+C:\Users\sbenish\repositories\70-0059\connection-testbench\connection-testbench\obj\Release\connection-testbench.pdb

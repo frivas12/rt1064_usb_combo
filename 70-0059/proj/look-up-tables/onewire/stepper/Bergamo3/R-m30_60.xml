@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+
+<OneWire>
+    <Signature>
+        <DefaultSlotType value="19"/>
+        <DeviceID value="7"/>
+    </Signature>
+    <PartNumber value="" />
+    <!--The part number will be overwritten in the application-->
+    <DeviceConfigurations/>
+    <ConfigEntries>
+        <Struct index="0">
+            <Signature>
+                <StructID value="2"/>
+                <ConfigID value="0xFFF0"/>
+            </Signature>
+            <Data>
+                <StageID value="0" />
+                <AxisID value="0" />
+                <AxisSerial value="0" />
+                <CountsPerUnit value="39.5" />
+                <Position min="-27051" max="54103" />
+                <CollisionThreshold value="0" />
+            </Data>
+        </Struct>
+        <Struct index="1">
+            <Signature>
+                <StructID value="4"/>
+                <ConfigID value="0xFFF1"/>
+            </Signature>
+            <Data>
+                <Flags value="55"/>
+            </Data>
+        </Struct>
+        <Struct index="2">
+            <Signature>
+                <StructID value="7"/>
+                <ConfigID value="0xFFF2"/>
+            </Signature>
+            <Data>
+                <Kp value="5000" />
+                <Ki value="0" />
+                <Kd value="0" />
+                <IMax value="0" />
+                <FilterControl value="0" />
+            </Data>
+        </Struct>
+        <Struct index="3">
+            <Signature>
+                <StructID value="5"/>
+                <ConfigID value="0xFFF3"/>
+            </Signature>
+            <Data>
+                <Mode value="0" />
+                <Direction value="1" />
+                <LimitSwitch value="1" />
+                <Velocity value="80" />
+                <OffsetDistance value="-27051" />
+            </Data>
+        </Struct>
+        <Struct index="4">
+            <Signature>
+                <StructID value="1"/>
+                <ConfigID value="0xFFF4"/>
+            </Signature>
+            <Data>
+                <HardLimit cw="1" ccw="1" />
+                <SoftLimit cw="2147483647" ccw="-2147483648" />
+                <AbsLimit high="2147483647" low="-2147483648" />
+                <Mode value="1" />
+            </Data>
+        </Struct>
+    </ConfigEntries>
+</OneWire>

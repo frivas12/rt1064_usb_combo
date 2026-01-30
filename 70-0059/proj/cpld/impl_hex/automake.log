@@ -1,0 +1,1776 @@
+
+synthesis -f "mcm_top_impl_hex_lattice.synproj"
+synthesis:  version Diamond (64-bit) 3.11.0.396.4
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2019 Lattice Semiconductor Corporation,  All rights reserved.
+Thu Aug 13 13:05:52 2020
+
+
+Command Line:  synthesis -f mcm_top_impl_hex_lattice.synproj -gui -msgset C:/s_links/promote.xml 
+
+    <postMsg mid="35002000" type="Info"    dynamic="0" navigation="0"  />
+Synthesis options:
+The -a option is MachXO2.
+The -s option is 4.
+The -t option is CSBGA132.
+The -d option is LCMXO2-4000HC.
+Using package CSBGA132.
+Using performance grade 4.
+                                                          
+
+##########################################################
+
+### Lattice Family : MachXO2
+
+### Device  : LCMXO2-4000HC
+
+### Package : CSBGA132
+
+### Speed   : 4
+
+##########################################################
+
+                                                          
+
+    <postMsg mid="35001781" type="Info"    dynamic="0" navigation="0"  />
+Optimization goal = Timing
+Top-level module name = mcm_top.
+Target frequency = 200.000000 MHz.
+Maximum fanout = 1000.
+Timing path count = 3
+BRAM utilization = 100.000000 %
+DSP usage = true
+DSP utilization = 100.000000 %
+fsm_encoding_style = auto
+resolve_mixed_drivers = 0
+fix_gated_clocks = 1
+
+Mux style = Auto
+Use Carry Chain = true
+carry_chain_length = 0
+Loop Limit = 1950.
+Use IO Insertion = TRUE
+Use IO Reg = AUTO
+
+Resource Sharing = TRUE
+Propagate Constants = TRUE
+Remove Duplicate Registers = TRUE
+force_gsr = auto
+ROM style = auto
+RAM style = auto
+The -comp option is FALSE.
+The -syn option is FALSE.
+-p C:/s_links (searchpath added)
+-p C:/lscc/diamond/3.11_x64/ispfpga/xo2c00/data (searchpath added)
+-p C:/s_links/impl_hex (searchpath added)
+-p C:/s_links (searchpath added)
+Verilog design file = C:/s_links/sources/mcm_top.v
+Verilog design file = C:/s_links/sources/spi_slave_top.v
+Verilog design file = C:/s_links/sources/wb_ctrl.v
+Verilog design file = C:/s_links/sources/commands.v
+Verilog design file = C:/s_links/sources/spi_ctrl.v
+Verilog design file = C:/s_links/sources/status_led.v
+Verilog design file = C:/s_links/sources/quad_decoder.v
+Verilog design file = C:/s_links/sources/pwm_controller.v
+Verilog design file = C:/s_links/sources/cs_decoder.v
+Verilog design file = C:/s_links/sources/intrpt_ctrl.v
+Verilog design file = C:/s_links/sources/otm_dac.v
+Verilog design file = C:/s_links/sources/uart_controller.v
+Verilog design file = C:/s_links/sources/rs232.v
+Verilog design file = C:/s_links/sources/config_hex/config.v
+Verilog design file = C:/s_links/sources/slot_cards/servo.v
+Verilog design file = C:/s_links/sources/slot_cards/shutter_4.v
+Verilog design file = C:/s_links/sources/slot_cards/slider_io.v
+Verilog design file = C:/s_links/sources/slot_cards/stepper.v
+Verilog design file = C:/s_links/sources/slot_cards/peizo_elliptec.v
+Verilog design file = C:/s_links/sources/config_hex/ip/spi_slave_efb.v
+Verilog design file = C:/s_links/sources/config_hex/ip/pll.v
+NGD file = mcm_top_impl_hex.ngd
+-sdc option: SDC file input not used.
+-lpf option: Output file option is ON.
+Hardtimer checking is enabled (default). The -dt option is not used.
+The -r option is OFF. [ Remove LOC Properties is OFF. ]
+Technology check ok...
+
+Analyzing Verilog file C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v. VERI-1482
+Compile design.
+Compile Design Begin
+Analyzing Verilog file c:/s_links/sources/mcm_top.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/mcm_top.v(1): " arg1="C:/s_links/sources/config_hex/config.v" arg2="c:/s_links/sources/mcm_top.v" arg3="1"  />
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/mcm_top.v(2): " arg1="c:/s_links/sources/commands.v" arg2="c:/s_links/sources/mcm_top.v" arg3="2"  />
+Analyzing Verilog file c:/s_links/sources/spi_slave_top.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/spi_slave_top.v(1): " arg1="c:/s_links/sources/commands.v" arg2="c:/s_links/sources/spi_slave_top.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/wb_ctrl.v. VERI-1482
+Analyzing Verilog file c:/s_links/sources/commands.v. VERI-1482
+Analyzing Verilog file c:/s_links/sources/spi_ctrl.v. VERI-1482
+Analyzing Verilog file c:/s_links/sources/status_led.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/status_led.v(1): " arg1="c:/s_links/sources/commands.v" arg2="c:/s_links/sources/status_led.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/quad_decoder.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/quad_decoder.v(1): " arg1="c:/s_links/sources/commands.v" arg2="c:/s_links/sources/quad_decoder.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/pwm_controller.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/pwm_controller.v(1): " arg1="c:/s_links/sources/commands.v" arg2="c:/s_links/sources/pwm_controller.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/cs_decoder.v. VERI-1482
+Analyzing Verilog file c:/s_links/sources/intrpt_ctrl.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/intrpt_ctrl.v(1): " arg1="c:/s_links/sources/commands.v" arg2="c:/s_links/sources/intrpt_ctrl.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/otm_dac.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/otm_dac.v(1): " arg1="c:/s_links/sources/commands.v" arg2="c:/s_links/sources/otm_dac.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/uart_controller.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/uart_controller.v(1): " arg1="c:/s_links/sources/commands.v" arg2="c:/s_links/sources/uart_controller.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/rs232.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/rs232.v(1): " arg1="c:/s_links/sources/commands.v" arg2="c:/s_links/sources/rs232.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/config_hex/config.v. VERI-1482
+Analyzing Verilog file c:/s_links/sources/slot_cards/servo.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/servo.v(1): " arg1="C:/s_links/sources/commands.v" arg2="c:/s_links/sources/slot_cards/servo.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/slot_cards/shutter_4.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(1): " arg1="C:/s_links/sources/commands.v" arg2="c:/s_links/sources/slot_cards/shutter_4.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/slot_cards/slider_io.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/slider_io.v(1): " arg1="C:/s_links/sources/commands.v" arg2="c:/s_links/sources/slot_cards/slider_io.v" arg3="1"  />
+Analyzing Verilog file c:/s_links/sources/slot_cards/stepper.v. VERI-1482
+    <postMsg mid="35901328" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(2): " arg1="C:/s_links/sources/commands.v" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="2"  />
+Analyzing Verilog file c:/s_links/sources/slot_cards/peizo_elliptec.v. VERI-1482
+Analyzing Verilog file c:/s_links/sources/config_hex/ip/spi_slave_efb.v. VERI-1482
+Analyzing Verilog file c:/s_links/sources/config_hex/ip/pll.v. VERI-1482
+Analyzing Verilog file C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v. VERI-1482
+Top module name (Verilog): mcm_top
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/mcm_top.v(9): " arg1="mcm_top" arg2="c:/s_links/sources/mcm_top.v" arg3="9"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v(1793): " arg1="OSCH(NOM_FREQ=&quot;38.00&quot;)" arg2="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v" arg3="1793"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/config_hex/ip/pll.v(8): " arg1="pll" arg2="c:/s_links/sources/config_hex/ip/pll.v" arg3="8"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v(1124): " arg1="VLO" arg2="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v" arg3="1124"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v(1730): " arg1="EHXPLLJ_renamed_due_excessive_length_1" arg2="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v" arg3="1730"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/spi_slave_top.v(9): " arg1="spi_slave_top" arg2="c:/s_links/sources/spi_slave_top.v" arg3="9"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/config_hex/ip/spi_slave_efb.v(8): " arg1="spi_slave_efb" arg2="c:/s_links/sources/config_hex/ip/spi_slave_efb.v" arg3="8"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v(1120): " arg1="VHI" arg2="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v" arg3="1120"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v(82): " arg1="BB" arg2="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v" arg3="82"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v(1800): " arg1="EFB(EFB_SPI=&quot;ENABLED&quot;,EFB_TC_PORTMODE=&quot;WB&quot;,EFB_WB_CLK_FREQ=&quot;100.0&quot;,DEV_DENSITY=&quot;4000L&quot;,SPI_CLK_DIVIDER=2,TC_TOP_SEL=&quot;OFF&quot;,TC_OVERFLOW=&quot;DISABLED&quot;)" arg2="C:/lscc/diamond/3.11_x64/ispfpga/userware/NT/SYNTHESIS_HEADERS/machxo2.v" arg3="1800"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/wb_ctrl.v(53): " arg1="wb_ctrl" arg2="c:/s_links/sources/wb_ctrl.v" arg3="53"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/spi_ctrl.v(9): " arg1="spi_ctrl" arg2="c:/s_links/sources/spi_ctrl.v" arg3="9"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/spi_ctrl.v(300): " arg1="32" arg2="8" arg3="c:/s_links/sources/spi_ctrl.v" arg4="300"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/spi_ctrl.v(301): " arg1="32" arg2="4" arg3="c:/s_links/sources/spi_ctrl.v" arg4="301"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/spi_ctrl.v(303): " arg1="32" arg2="8" arg3="c:/s_links/sources/spi_ctrl.v" arg4="303"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/spi_ctrl.v(382): " arg1="32" arg2="8" arg3="c:/s_links/sources/spi_ctrl.v" arg4="382"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/spi_ctrl.v(383): " arg1="32" arg2="4" arg3="c:/s_links/sources/spi_ctrl.v" arg4="383"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/spi_ctrl.v(385): " arg1="32" arg2="8" arg3="c:/s_links/sources/spi_ctrl.v" arg4="385"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/cs_decoder.v(7): " arg1="cs_decoder" arg2="c:/s_links/sources/cs_decoder.v" arg3="7"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/status_led.v(7): " arg1="status_led(DEV_ID=9)" arg2="c:/s_links/sources/status_led.v" arg3="7"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/status_led.v(59): " arg1="32" arg2="13" arg3="c:/s_links/sources/status_led.v" arg4="59"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/uart_controller.v(3): " arg1="uart_controller(DEV_ID=10,UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/uart_controller.v" arg3="3"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/quad_decoder.v(8): " arg1="quad_decoder" arg2="c:/s_links/sources/quad_decoder.v" arg3="8"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/quad_decoder.v(8): " arg1="quad_decoder(DEV_ID=1)" arg2="c:/s_links/sources/quad_decoder.v" arg3="8"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/quad_decoder.v(8): " arg1="quad_decoder(DEV_ID=2)" arg2="c:/s_links/sources/quad_decoder.v" arg3="8"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/quad_decoder.v(8): " arg1="quad_decoder(DEV_ID=3)" arg2="c:/s_links/sources/quad_decoder.v" arg3="8"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/quad_decoder.v(8): " arg1="quad_decoder(DEV_ID=4)" arg2="c:/s_links/sources/quad_decoder.v" arg3="8"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/quad_decoder.v(8): " arg1="quad_decoder(DEV_ID=5)" arg2="c:/s_links/sources/quad_decoder.v" arg3="8"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/quad_decoder.v(8): " arg1="quad_decoder(DEV_ID=6)" arg2="c:/s_links/sources/quad_decoder.v" arg3="8"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/intrpt_ctrl.v(6): " arg1="intrpt_ctrl" arg2="c:/s_links/sources/intrpt_ctrl.v" arg3="6"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/intrpt_ctrl.v(6): " arg1="intrpt_ctrl(DEV_ID=1)" arg2="c:/s_links/sources/intrpt_ctrl.v" arg3="6"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/intrpt_ctrl.v(6): " arg1="intrpt_ctrl(DEV_ID=2)" arg2="c:/s_links/sources/intrpt_ctrl.v" arg3="6"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/intrpt_ctrl.v(6): " arg1="intrpt_ctrl(DEV_ID=3)" arg2="c:/s_links/sources/intrpt_ctrl.v" arg3="6"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/intrpt_ctrl.v(6): " arg1="intrpt_ctrl(DEV_ID=4)" arg2="c:/s_links/sources/intrpt_ctrl.v" arg3="6"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/intrpt_ctrl.v(6): " arg1="intrpt_ctrl(DEV_ID=5)" arg2="c:/s_links/sources/intrpt_ctrl.v" arg3="6"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/intrpt_ctrl.v(6): " arg1="intrpt_ctrl(DEV_ID=6)" arg2="c:/s_links/sources/intrpt_ctrl.v" arg3="6"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/pwm_controller.v(11): " arg1="pwm_controller" arg2="c:/s_links/sources/pwm_controller.v" arg3="11"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/pwm_controller.v(11): " arg1="pwm_controller(DEV_ID=1)" arg2="c:/s_links/sources/pwm_controller.v" arg3="11"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/pwm_controller.v(11): " arg1="pwm_controller(DEV_ID=2)" arg2="c:/s_links/sources/pwm_controller.v" arg3="11"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/pwm_controller.v(11): " arg1="pwm_controller(DEV_ID=3)" arg2="c:/s_links/sources/pwm_controller.v" arg3="11"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/pwm_controller.v(11): " arg1="pwm_controller(DEV_ID=4)" arg2="c:/s_links/sources/pwm_controller.v" arg3="11"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/pwm_controller.v(11): " arg1="pwm_controller(DEV_ID=5)" arg2="c:/s_links/sources/pwm_controller.v" arg3="11"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/pwm_controller.v(11): " arg1="pwm_controller(DEV_ID=6)" arg2="c:/s_links/sources/pwm_controller.v" arg3="11"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(4): " arg1="stepper(UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="4"  />
+    <postMsg mid="35901220" type="Warning" dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(55): " arg1="OPTO_PWR" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="55"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(100): " arg1="32" arg2="12" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="100"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(102): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="102"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(108): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="108"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(4): " arg1="stepper(DEV_ID=1,UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="4"  />
+    <postMsg mid="35901220" type="Warning" dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(55): " arg1="OPTO_PWR" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="55"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(100): " arg1="32" arg2="12" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="100"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(102): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="102"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(108): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="108"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(4): " arg1="stepper(DEV_ID=2,UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="4"  />
+    <postMsg mid="35901220" type="Warning" dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(55): " arg1="OPTO_PWR" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="55"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(100): " arg1="32" arg2="12" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="100"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(102): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="102"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(108): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="108"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(4): " arg1="stepper(DEV_ID=3,UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="4"  />
+    <postMsg mid="35901220" type="Warning" dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(55): " arg1="OPTO_PWR" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="55"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(100): " arg1="32" arg2="12" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="100"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(102): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="102"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(108): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="108"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(4): " arg1="stepper(DEV_ID=4,UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="4"  />
+    <postMsg mid="35901220" type="Warning" dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(55): " arg1="OPTO_PWR" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="55"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(100): " arg1="32" arg2="12" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="100"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(102): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="102"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(108): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="108"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(4): " arg1="stepper(DEV_ID=5,UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="4"  />
+    <postMsg mid="35901220" type="Warning" dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(55): " arg1="OPTO_PWR" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="55"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(100): " arg1="32" arg2="12" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="100"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(102): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="102"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(108): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="108"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(4): " arg1="stepper(DEV_ID=6,UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="4"  />
+    <postMsg mid="35901220" type="Warning" dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(55): " arg1="OPTO_PWR" arg2="c:/s_links/sources/slot_cards/stepper.v" arg3="55"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(100): " arg1="32" arg2="12" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="100"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(102): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="102"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/stepper.v(108): " arg1="32" arg2="8" arg3="c:/s_links/sources/slot_cards/stepper.v" arg4="108"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/servo.v(3): " arg1="servo(UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/servo.v" arg3="3"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/servo.v(51): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/servo.v" arg4="51"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/servo.v(52): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/servo.v" arg4="52"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/slider_io.v(5): " arg1="io(UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/slider_io.v" arg3="5"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(3): " arg1="shutter(UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/shutter_4.v" arg3="3"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(67): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/shutter_4.v" arg4="67"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(68): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/shutter_4.v" arg4="68"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(69): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/shutter_4.v" arg4="69"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(70): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/shutter_4.v" arg4="70"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(71): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/shutter_4.v" arg4="71"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(72): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/shutter_4.v" arg4="72"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(73): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/shutter_4.v" arg4="73"  />
+    <postMsg mid="35901209" type="Warning" dynamic="3" navigation="2" arg0="c:/s_links/sources/slot_cards/shutter_4.v(74): " arg1="32" arg2="1" arg3="c:/s_links/sources/slot_cards/shutter_4.v" arg4="74"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/rs232.v(3): " arg1="rs232(DEV_ID=4,UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/rs232.v" arg3="3"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/otm_dac.v(3): " arg1="otm_dac(DEV_ID=3)" arg2="c:/s_links/sources/otm_dac.v" arg3="3"  />
+    <postMsg mid="35901018" type="Info"    dynamic="2" navigation="2" arg0="c:/s_links/sources/slot_cards/peizo_elliptec.v(5): " arg1="peizo_elliptec(DEV_ID=7,UART_ADDRESS_WIDTH=4)" arg2="c:/s_links/sources/slot_cards/peizo_elliptec.v" arg3="5"  />
+Last elaborated design is mcm_top()
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/xo2c00a/data/xo2alib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/xo2c00/data/xo2clib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/mg5g00/data/mg5glib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/or5g00/data/orc5glib.ngl'...
+Loading device for application map from file 'xo2c4000.nph' in environment: C:/lscc/diamond/3.11_x64/ispfpga.
+Package Status:                     Final          Version 1.44.
+Top-level module name = mcm_top.
+    <postMsg mid="35935034" type="Warning" dynamic="2" navigation="2" arg0="c:/s_links/sources/mcm_top.v(339): " arg1="pwm_ins[1].pwm_controller_ins" arg2="c:/s_links/sources/mcm_top.v" arg3="339"  />
+    <postMsg mid="35001771" type="Warning" dynamic="1" navigation="0" arg0="n873"  />
+    <postMsg mid="35001771" type="Warning" dynamic="1" navigation="0" arg0="n873"  />
+    <postMsg mid="35001771" type="Warning" dynamic="1" navigation="0" arg0="n873"  />
+    <postMsg mid="35001771" type="Warning" dynamic="1" navigation="0" arg0="n873"  />
+    <postMsg mid="35001771" type="Warning" dynamic="1" navigation="0" arg0="n873"  />
+    <postMsg mid="35001771" type="Warning" dynamic="1" navigation="0" arg0="n873"  />
+    <postMsg mid="35001771" type="Warning" dynamic="1" navigation="0" arg0="n873"  />
+######## Converting I/O port pin_io[68] to input.
+######## Converting I/O port pin_io[67] to output.
+######## Converting I/O port pin_io[66] to output.
+######## Converting I/O port pin_io[64] to input.
+######## Converting I/O port pin_io[63] to input.
+######## Converting I/O port pin_io[62] to input.
+######## Converting I/O port pin_io[61] to output.
+######## Converting I/O port pin_io[60] to output.
+######## Converting I/O port pin_io[58] to input.
+######## Converting I/O port pin_io[57] to output.
+######## Converting I/O port pin_io[56] to output.
+######## Converting I/O port pin_io[54] to input.
+######## Converting I/O port pin_io[53] to input.
+######## Converting I/O port pin_io[52] to input.
+######## Converting I/O port pin_io[51] to output.
+######## Converting I/O port pin_io[50] to output.
+######## Converting I/O port pin_io[48] to input.
+######## Converting I/O port pin_io[47] to output.
+######## Converting I/O port pin_io[46] to output.
+######## Converting I/O port pin_io[44] to input.
+######## Converting I/O port pin_io[43] to input.
+######## Converting I/O port pin_io[42] to input.
+######## Converting I/O port pin_io[41] to output.
+######## Converting I/O port pin_io[38] to input.
+######## Converting I/O port pin_io[36] to output.
+######## Converting I/O port pin_io[34] to input.
+######## Converting I/O port pin_io[33] to input.
+######## Converting I/O port pin_io[32] to input.
+######## Converting I/O port pin_io[31] to output.
+######## Converting I/O port pin_io[28] to input.
+######## Converting I/O port pin_io[27] to output.
+######## Converting I/O port pin_io[26] to output.
+######## Converting I/O port pin_io[24] to input.
+######## Converting I/O port pin_io[23] to input.
+######## Converting I/O port pin_io[22] to input.
+######## Converting I/O port pin_io[21] to output.
+######## Converting I/O port pin_io[20] to output.
+######## Converting I/O port pin_io[18] to input.
+######## Converting I/O port pin_io[17] to output.
+######## Converting I/O port pin_io[16] to output.
+######## Converting I/O port pin_io[14] to input.
+######## Converting I/O port pin_io[13] to input.
+######## Converting I/O port pin_io[12] to input.
+######## Converting I/O port pin_io[11] to output.
+######## Converting I/O port pin_io[10] to output.
+######## Converting I/O port C_1 to input.
+######## Converting I/O port C_2 to input.
+######## Converting I/O port C_3 to input.
+######## Converting I/O port C_4 to input.
+######## Converting I/O port C_5 to input.
+######## Converting I/O port C_6 to input.
+######## Converting I/O port C_7 to output.
+######## Converting I/O port C_8 to input.
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="8" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="9" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="10" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="11" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="12" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="13" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="14" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="15" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="16" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="17" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="18" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="19" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="20" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="21" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="22" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="23" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="24" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="25" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="26" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="27" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="28" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="29" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="30" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="31" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="32" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="33" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="34" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="35" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="36" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="37" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="38" arg1="\u_status_led/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="8" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="9" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="10" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="11" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="12" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="13" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="14" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="15" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="16" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="17" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="18" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="19" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="20" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="21" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="22" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="23" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="24" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="25" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="26" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="27" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="28" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="29" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="30" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="31" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="32" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="33" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="34" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="35" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="36" arg1="\intrpt_ins[0].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="8" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="9" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="10" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="11" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="12" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="13" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="14" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="15" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="16" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="17" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="18" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="19" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="20" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="21" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="22" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="23" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="24" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="25" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="26" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="27" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="28" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="29" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="30" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="31" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="32" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="33" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="34" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="35" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="36" arg1="\intrpt_ins[1].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="8" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="9" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="10" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="11" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="12" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="13" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="14" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="15" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="16" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="17" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="18" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="19" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="20" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="21" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="22" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="23" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="24" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="25" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="26" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="27" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="28" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="29" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="30" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="31" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="32" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="33" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="34" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="35" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="36" arg1="\intrpt_ins[2].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="8" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="9" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="10" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="11" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="12" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="13" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="14" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="15" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="16" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="17" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="18" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="19" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="20" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="21" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="22" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="23" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="24" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="25" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="26" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="27" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="28" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="29" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="30" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="31" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="32" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="33" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="34" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="35" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="36" arg1="\intrpt_ins[3].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="8" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="9" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="10" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="11" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="12" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="13" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="14" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="15" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="16" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="17" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="18" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="19" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="20" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="21" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="22" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="23" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="24" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="25" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="26" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="27" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="28" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="29" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="30" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="31" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="32" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="33" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="34" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="35" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="36" arg1="\intrpt_ins[4].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="8" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="9" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="10" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="11" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="12" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="13" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="14" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="15" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="16" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="17" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="18" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="19" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="20" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="21" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="22" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="23" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="24" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="25" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="26" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="27" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="28" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="29" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="30" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="31" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="32" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="33" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="34" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="35" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="36" arg1="\intrpt_ins[5].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="8" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="9" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="10" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="11" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="12" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="13" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="14" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="15" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="16" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="17" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="18" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="19" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="20" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="21" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="22" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="23" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="24" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="25" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="26" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="27" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="28" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="29" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="30" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="31" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="32" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="33" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="34" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="35" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="36" arg1="\intrpt_ins[6].u_intrpt_ctrl/spi_data_out_r"  />
+    <postMsg mid="35001774" type="Info"    dynamic="2" navigation="0" arg0="\spi_slave_top_inst/spi_ctrl_inst/main_sm" arg1="one-hot"  />
+State machine has 13 reachable states with original encodings of:
+
+ 0000 
+
+ 0001 
+
+ 0010 
+
+ 0011 
+
+ 0100 
+
+ 0101 
+
+ 0110 
+
+ 0111 
+
+ 1000 
+
+ 1001 
+
+ 1010 
+
+ 1011 
+
+ 1100 
+
+original encoding -> new encoding (one-hot encoding)
+
+ 0000 -> 0000000000001
+
+ 0001 -> 0000000000010
+
+ 0010 -> 0000000000100
+
+ 0011 -> 0000000001000
+
+ 0100 -> 0000000010000
+
+ 0101 -> 0000000100000
+
+ 0110 -> 0000001000000
+
+ 0111 -> 0000010000000
+
+ 1000 -> 0000100000000
+
+ 1001 -> 0001000000000
+
+ 1010 -> 0010000000000
+
+ 1011 -> 0100000000000
+
+ 1100 -> 1000000000000
+
+
+
+
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\quad_ins[0].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\quad_ins[0].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\quad_ins[0].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\quad_ins[0].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\quad_ins[0].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\quad_ins[0].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\quad_ins[0].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\quad_ins[0].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\quad_ins[1].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\quad_ins[1].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\quad_ins[1].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\quad_ins[1].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\quad_ins[1].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\quad_ins[1].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\quad_ins[1].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\quad_ins[1].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\quad_ins[2].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\quad_ins[2].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\quad_ins[2].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\quad_ins[2].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\quad_ins[2].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\quad_ins[2].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\quad_ins[2].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\quad_ins[2].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\quad_ins[3].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\quad_ins[3].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\quad_ins[3].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\quad_ins[3].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\quad_ins[3].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\quad_ins[3].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\quad_ins[3].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\quad_ins[3].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\quad_ins[4].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\quad_ins[4].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\quad_ins[4].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\quad_ins[4].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\quad_ins[4].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\quad_ins[4].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\quad_ins[4].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\quad_ins[4].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\quad_ins[5].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\quad_ins[5].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\quad_ins[5].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\quad_ins[5].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\quad_ins[5].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\quad_ins[5].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\quad_ins[5].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\quad_ins[5].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\quad_ins[6].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\quad_ins[6].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\quad_ins[6].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\quad_ins[6].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\quad_ins[6].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\quad_ins[6].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="6" arg1="\quad_ins[6].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="7" arg1="\quad_ins[6].u_quad_decoder/spi_data_out_r"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\spi_slave_top_inst/spi_ctrl_inst/main_sm_FSM"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\spi_slave_top_inst/spi_ctrl_inst/main_sm_FSM"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\spi_slave_top_inst/spi_ctrl_inst/main_sm_FSM"  />
+######## Converting I/O port pin_io[37] to output.
+######## Converting I/O port pin_io[30] to output.
+######## Converting I/O port pin_io[7] to output.
+######## Converting I/O port pin_io[0] to output.
+    <postMsg mid="35002005" type="Warning" dynamic="1" navigation="0" arg0="C_1"  />
+    <postMsg mid="35002005" type="Warning" dynamic="1" navigation="0" arg0="C_2"  />
+    <postMsg mid="35002005" type="Warning" dynamic="1" navigation="0" arg0="C_3"  />
+    <postMsg mid="35002005" type="Warning" dynamic="1" navigation="0" arg0="C_4"  />
+    <postMsg mid="35002005" type="Warning" dynamic="1" navigation="0" arg0="C_5"  />
+    <postMsg mid="35002005" type="Warning" dynamic="1" navigation="0" arg0="C_6"  />
+    <postMsg mid="35001263" type="Warning" dynamic="1" navigation="0" arg0="spi_miso"  />
+    <postMsg mid="35001263" type="Warning" dynamic="1" navigation="0" arg0="spi_clk"  />
+    <postMsg mid="35001263" type="Warning" dynamic="1" navigation="0" arg0="spi_mosi"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="0" arg1="\spi_slave_top_inst/spi_ctrl_inst/address"  />
+    <postMsg mid="35001748" type="Warning" dynamic="2" navigation="0" arg0="1" arg1="\spi_slave_top_inst/spi_ctrl_inst/address"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="2" arg1="\spi_slave_top_inst/spi_ctrl_inst/address"  />
+    <postMsg mid="35001748" type="Warning" dynamic="2" navigation="0" arg0="3" arg1="\spi_slave_top_inst/spi_ctrl_inst/address"  />
+    <postMsg mid="35001748" type="Warning" dynamic="2" navigation="0" arg0="4" arg1="\spi_slave_top_inst/spi_ctrl_inst/address"  />
+    <postMsg mid="35001747" type="Warning" dynamic="2" navigation="0" arg0="5" arg1="\spi_slave_top_inst/spi_ctrl_inst/address"  />
+    <postMsg mid="35935013" type="Warning" dynamic="2" navigation="2" arg0="c:/s_links/sources/wb_ctrl.v(125): " arg1="\spi_slave_top_inst/wb_ctrl_inst/wb_adr_i_i2" arg2="c:/s_links/sources/wb_ctrl.v" arg3="125"  />
+GSR instance connected to net resetn_c.
+Duplicate register/latch removal. \spi_slave_top_inst/wb_ctrl_inst/wb_cyc_i_36 is a one-to-one match with \spi_slave_top_inst/wb_ctrl_inst/wb_stb_i_37.
+Duplicate register/latch removal. \spi_slave_top_inst/wb_ctrl_inst/wb_adr_i_i3 is a one-to-one match with \spi_slave_top_inst/wb_ctrl_inst/wb_adr_i_i4.
+Duplicate register/latch removal. \spi_slave_top_inst/wb_ctrl_inst/wb_adr_i_i6 is a one-to-one match with \spi_slave_top_inst/wb_ctrl_inst/wb_adr_i_i3.
+Applying 200.000000 MHz constraint to all clocks
+
+    <postMsg mid="35001611" type="Warning" dynamic="0" navigation="0"  />
+Results of NGD DRC are available in mcm_top_drc.log.
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/xo2c00a/data/xo2alib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/xo2c00/data/xo2clib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/mg5g00/data/mg5glib.ngl'...
+Loading NGL library 'C:/lscc/diamond/3.11_x64/ispfpga/or5g00/data/orc5glib.ngl'...
+    <postMsg mid="50001000" type="Warning" dynamic="3" navigation="0" arg0="CLKOS2" arg1="FREQUENCY_PIN_CLKOS2" arg2="PLLInst_0"  />
+    <postMsg mid="50001000" type="Warning" dynamic="3" navigation="0" arg0="CLKOP" arg1="FREQUENCY_PIN_CLKOP" arg2="PLLInst_0"  />
+
+
+Running DRC...
+
+    <postMsg mid="1166052" type="Warning" dynamic="2" navigation="1" arg0="logical" arg1="C_1" arg2="C_1"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_1"  />
+    <postMsg mid="1166052" type="Warning" dynamic="2" navigation="1" arg0="logical" arg1="C_2" arg2="C_2"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_2"  />
+    <postMsg mid="1166052" type="Warning" dynamic="2" navigation="1" arg0="logical" arg1="C_3" arg2="C_3"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_3"  />
+    <postMsg mid="1166052" type="Warning" dynamic="2" navigation="1" arg0="logical" arg1="C_4" arg2="C_4"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_4"  />
+    <postMsg mid="1166052" type="Warning" dynamic="2" navigation="1" arg0="logical" arg1="C_5" arg2="C_5"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_5"  />
+    <postMsg mid="1166052" type="Warning" dynamic="2" navigation="1" arg0="logical" arg1="C_6" arg2="C_6"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_6"  />
+    <postMsg mid="1163101" type="Warning" dynamic="1" navigation="0" arg0="12"  />
+
+Design Results:
+   5238 blocks expanded
+completed the first expansion
+All blocks are expanded and NGD expansion is successful.
+Writing NGD file mcm_top_impl_hex.ngd.
+
+################### Begin Area Report (mcm_top)######################
+Number of register bits => 2636 of 4635 (56 % )
+BB => 24
+CCU2D => 344
+EFB => 1
+EHXPLLJ => 1
+FD1P3AX => 696
+FD1P3AY => 12
+FD1P3IX => 969
+FD1P3JX => 9
+FD1S3AX => 643
+FD1S3AY => 5
+FD1S3IX => 301
+FD1S3JX => 1
+GSR => 1
+IB => 35
+L6MUX21 => 1
+LUT4 => 2132
+OB => 10
+OBZ => 27
+OSCH => 1
+PFUMX => 22
+################### End Area Report ##################
+
+################### Begin BlackBox Report ######################
+TSALL => 1
+################### End BlackBox Report ##################
+
+################### Begin Clock Report ######################
+Clock Nets
+Number of Clocks: 13
+  Net : clk, loads : 2237
+  Net : __/clk_1MHz, loads : 172
+  Net : stepper_ins_3..u_stepper/pin_intrpt_11, loads : 34
+  Net : stepper_ins_2..u_stepper/pin_intrpt_8, loads : 34
+  Net : stepper_ins_1..u_stepper/pin_intrpt_5, loads : 34
+  Net : stepper_ins_5..u_stepper/pin_intrpt_17, loads : 34
+  Net : stepper_ins_0..u_stepper/pin_intrpt_2, loads : 34
+  Net : stepper_ins_4..u_stepper/pin_intrpt_14, loads : 34
+  Net : stepper_ins_6..u_stepper/pin_intrpt_20, loads : 34
+  Net : __/clk_100k, loads : 13
+  Net : CS_READY_c, loads : 9
+  Net : clk_in_c, loads : 1
+  Net : spi_clk_i, loads : 1
+Clock Enable Nets
+Number of Clock Enables: 139
+Top 10 highest fanout Clock Enables:
+  Net : stepper_ins_6..u_stepper/clk_enable_1114, loads : 46
+  Net : stepper_ins_6..u_stepper/SLO_buf_51__N_6073, loads : 46
+  Net : stepper_ins_3..u_stepper/clk_enable_1134, loads : 46
+  Net : stepper_ins_2..u_stepper/SLO_buf_51__N_4701, loads : 46
+  Net : stepper_ins_3..u_stepper/SLO_buf_51__N_5044, loads : 46
+  Net : stepper_ins_5..u_stepper/clk_enable_1057, loads : 46
+  Net : stepper_ins_4..u_stepper/SLO_buf_51__N_5387, loads : 46
+  Net : stepper_ins_0..u_stepper/SLO_buf_51__N_4015, loads : 46
+  Net : stepper_ins_4..u_stepper/clk_enable_1103, loads : 46
+  Net : stepper_ins_5..u_stepper/SLO_buf_51__N_5730, loads : 46
+Highest fanout non-clock nets
+Top 10 highest fanout non-clock nets:
+  Net : spi_slave_top_inst/spi_ctrl_inst/n30185, loads : 604
+  Net : resetn_c, loads : 250
+  Net : stepper_ins_2..u_stepper/clk_enable_1135, loads : 92
+  Net : stepper_ins_0..u_stepper/clk_enable_1132, loads : 92
+  Net : stepper_ins_1..u_stepper/clk_enable_1120, loads : 92
+  Net : stepper_ins_1..u_stepper/SLO_buf_51__N_4358, loads : 92
+  Net : spi_slave_top_inst/spi_sdo_valid_N_296, loads : 82
+  Net : spi_slave_top_inst/spi_ctrl_inst/n30159, loads : 66
+  Net : spi_slave_top_inst/spi_ctrl_inst/n30200, loads : 66
+  Net : spi_slave_top_inst/spi_ctrl_inst/n16815, loads : 65
+################### End Clock Report ##################
+
+Timing Report Summary
+--------------
+--------------------------------------------------------------------------------
+Constraint                              |   Constraint|       Actual|Levels
+--------------------------------------------------------------------------------
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk10 [get_nets pin_intrpt[2]]          |            -|            -|     0  
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk9 [get_nets clk_100k]                |  200.000 MHz|  115.101 MHz|     5 *
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk8 [get_nets CS_READY_c]              |  200.000 MHz|  298.240 MHz|     2  
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk7 [get_nets pin_intrpt[11]]          |            -|            -|     0  
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk6 [get_nets pin_intrpt[8]]           |            -|            -|     0  
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk5 [get_nets pin_intrpt[5]]           |            -|            -|     0  
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk4 [get_nets pin_intrpt[20]]          |            -|            -|     0  
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk3 [get_nets pin_intrpt[14]]          |            -|            -|     0  
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk2 [get_nets pin_intrpt[17]]          |            -|            -|     0  
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk1 [get_nets clk_1MHz]                |  200.000 MHz|   97.723 MHz|     7 *
+                                        |             |             |
+create_clock -period 5.000000 -name     |             |             |
+clk0 [get_nets clk]                     |  200.000 MHz|   75.301 MHz|     7 *
+                                        |             |             |
+--------------------------------------------------------------------------------
+
+
+3 constraints not met.
+
+
+Peak Memory Usage: 118.992  MB
+
+--------------------------------------------------------------
+Elapsed CPU time for LSE flow : 30.828  secs
+--------------------------------------------------------------
+
+map -a "MachXO2" -p LCMXO2-4000HC -t CSBGA132 -s 4 -oc Commercial   "mcm_top_impl_hex.ngd" -o "mcm_top_impl_hex_map.ncd" -pr "mcm_top_impl_hex.prf" -mp "mcm_top_impl_hex.mrp" -lpf "C:/s_links/impl_hex/mcm_top_impl_hex.lpf" -lpf "C:/s_links/hex_top.lpf" -c 0           
+map:  version Diamond (64-bit) 3.11.0.396.4
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2019 Lattice Semiconductor Corporation,  All rights reserved.
+   Process the file: mcm_top_impl_hex.ngd
+   Picdevice="LCMXO2-4000HC"
+
+   Pictype="CSBGA132"
+
+   Picspeed=4
+
+   Remove unused logic
+
+   Do not produce over sized NCDs.
+
+Part used: LCMXO2-4000HCCSBGA132, Performance used: 4.
+
+Loading device for application baspr from file 'xo2c4000.nph' in environment: C:/lscc/diamond/3.11_x64/ispfpga.
+Package Status:                     Final          Version 1.44.
+
+Running general design DRC...
+
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_1"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_2"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_3"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_4"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_5"  />
+    <postMsg mid="1166064" type="Warning" dynamic="2" navigation="0" arg0="input" arg1="C_6"  />
+Removing unused logic...
+
+Optimizing...
+
+    <postMsg mid="51001046" type="Warning" dynamic="1" navigation="0" arg0="C_1"  />
+    <postMsg mid="51001046" type="Warning" dynamic="1" navigation="0" arg0="C_2"  />
+    <postMsg mid="51001046" type="Warning" dynamic="1" navigation="0" arg0="C_3"  />
+    <postMsg mid="51001046" type="Warning" dynamic="1" navigation="0" arg0="C_4"  />
+    <postMsg mid="51001046" type="Warning" dynamic="1" navigation="0" arg0="C_5"  />
+    <postMsg mid="51001046" type="Warning" dynamic="1" navigation="0" arg0="C_6"  />
+
+
+
+Design Summary:
+   Number of registers:   2636 out of  4635 (57%)
+      PFU registers:         2636 out of  4320 (61%)
+      PIO registers:            0 out of   315 (0%)
+   Number of SLICEs:      1479 out of  2160 (68%)
+      SLICEs as Logic/ROM:   1479 out of  2160 (68%)
+      SLICEs as RAM:            0 out of  1620 (0%)
+      SLICEs as Carry:        344 out of  2160 (16%)
+   Number of LUT4s:        2825 out of  4320 (65%)
+      Number used as logic LUTs:        2137
+      Number used as distributed RAM:     0
+      Number used as ripple logic:      688
+      Number used as shift registers:     0
+   Number of PIO sites used: 96 + 4(JTAG) out of 105 (95%)
+   Number of block RAMs:  0 out of 10 (0%)
+   Number of GSRs:        1 out of 1 (100%)
+   EFB used :        Yes
+   JTAG used :       No
+   Readback used :   No
+   Oscillator used : Yes
+   Startup used :    No
+   POR :             On
+   Bandgap :         On
+   Number of Power Controller:  0 out of 1 (0%)
+   Number of Dynamic Bank Controller (BCINRD):  0 out of 6 (0%)
+   Number of Dynamic Bank Controller (BCLVDSO):  0 out of 1 (0%)
+   Number of DCCA:  0 out of 8 (0%)
+   Number of DCMA:  0 out of 2 (0%)
+   Number of PLLs:  1 out of 2 (50%)
+   Number of DQSDLLs:  0 out of 2 (0%)
+   Number of CLKDIVC:  0 out of 4 (0%)
+   Number of ECLKSYNCA:  0 out of 4 (0%)
+   Number of ECLKBRIDGECS:  0 out of 2 (0%)
+   Notes:-
+      1. Total number of LUT4s = (Number of logic LUT4s) + 2*(Number of distributed RAMs) + 2*(Number of ripple logic)
+      2. Number of logic LUT4s does not include count of distributed RAM and ripple logic.
+   Number of clocks:  13
+     Net clk: 1226 loads, 1226 rising, 0 falling (Driver: OSCH_inst )
+     Net spi_clk_i: 1 loads, 1 rising, 0 falling (Driver: PIO spi_clk )
+     Net CS_READY_c: 6 loads, 6 rising, 0 falling (Driver: PIO CS_READY )
+     Net clk_in_c: 1 loads, 1 rising, 0 falling (Driver: PIO clk_in )
+     Net pin_intrpt[5]: 16 loads, 16 rising, 0 falling (Driver: stepper_ins_1..u_stepper/i2971_2_lut_3_lut_4_lut )
+     Net pin_intrpt[8]: 16 loads, 16 rising, 0 falling (Driver: stepper_ins_2..u_stepper/i2976_2_lut_3_lut_4_lut )
+     Net pin_intrpt[2]: 16 loads, 16 rising, 0 falling (Driver: stepper_ins_0..u_stepper/i2968_2_lut_3_lut_4_lut )
+     Net pin_intrpt[17]: 16 loads, 16 rising, 0 falling (Driver: stepper_ins_5..u_stepper/i2991_2_lut_3_lut_4_lut )
+     Net pin_intrpt[11]: 16 loads, 16 rising, 0 falling (Driver: stepper_ins_3..u_stepper/i2981_2_lut_3_lut_4_lut )
+     Net pin_intrpt[20]: 16 loads, 16 rising, 0 falling (Driver: stepper_ins_6..u_stepper/i2996_2_lut_3_lut_4_lut )
+     Net pin_intrpt[14]: 16 loads, 16 rising, 0 falling (Driver: stepper_ins_4..u_stepper/i2986_2_lut_3_lut_4_lut )
+     Net clk_100k: 8 loads, 8 rising, 0 falling (Driver: __/PLLInst_0 )
+     Net clk_1MHz: 91 loads, 91 rising, 0 falling (Driver: __/PLLInst_0 )
+   Number of Clock Enables:  139
+     Net clk_enable_22: 1 loads, 1 LSLICEs
+     Net clk_enable_244: 4 loads, 4 LSLICEs
+     Net clk_enable_695: 5 loads, 5 LSLICEs
+     Net clk_enable_226: 6 loads, 6 LSLICEs
+     Net clk_enable_652: 6 loads, 6 LSLICEs
+     Net clk_enable_738: 6 loads, 6 LSLICEs
+     Net clk_enable_749: 6 loads, 6 LSLICEs
+     Net clk_enable_245: 1 loads, 1 LSLICEs
+     Net clk_enable_613: 1 loads, 1 LSLICEs
+     Net clk_enable_1105: 1 loads, 1 LSLICEs
+     Net clk_enable_1107: 1 loads, 1 LSLICEs
+     Net cs_c_1: 1 loads, 1 LSLICEs
+     Net resetn_c: 57 loads, 57 LSLICEs
+     Net clk_enable_161: 16 loads, 16 LSLICEs
+     Net intrpt_ins_1..u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net intrpt_ins_2..u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net intrpt_ins_0..u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net intrpt_ins_5..u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net intrpt_ins_3..u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_8: 3 loads, 3 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_3: 1 loads, 1 LSLICEs
+     Net u_cs_decoder/CS_READY_c_enable_9: 1 loads, 1 LSLICEs
+     Net clk_enable_520: 1 loads, 1 LSLICEs
+     Net quad_ins_1..u_quad_decoder/clk_enable_519: 16 loads, 16 LSLICEs
+     Net clk_enable_842: 16 loads, 16 LSLICEs
+     Net quad_ins_6..u_quad_decoder/clk_enable_353: 32 loads, 32 LSLICEs
+     Net clk_enable_639: 1 loads, 1 LSLICEs
+     Net clk_enable_898: 16 loads, 16 LSLICEs
+     Net clk_enable_32: 1 loads, 1 LSLICEs
+     Net intrpt_ins_4..u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net intrpt_ins_6..u_intrpt_ctrl/assert_intrpt: 1 loads, 1 LSLICEs
+     Net clk_enable_595: 6 loads, 6 LSLICEs
+     Net u_status_led/clk_enable_927: 8 loads, 8 LSLICEs
+     Net clk_enable_227: 1 loads, 1 LSLICEs
+     Net clk_enable_15: 1 loads, 1 LSLICEs
+     Net clk_enable_263: 6 loads, 6 LSLICEs
+     Net clk_enable_638: 6 loads, 6 LSLICEs
+     Net quad_ins_4..u_quad_decoder/clk_enable_420: 32 loads, 32 LSLICEs
+     Net clk_enable_683: 16 loads, 16 LSLICEs
+     Net clk_enable_684: 1 loads, 1 LSLICEs
+     Net clk_enable_253: 1 loads, 1 LSLICEs
+     Net stepper_ins_2..u_stepper/clk_enable_1135: 23 loads, 23 LSLICEs
+     Net stepper_ins_2..u_stepper/clk_1MHz_enable_1: 1 loads, 1 LSLICEs
+     Net clk_enable_23: 1 loads, 1 LSLICEs
+     Net stepper_ins_2..u_stepper/clk_1MHz_enable_66: 1 loads, 1 LSLICEs
+     Net clk_enable_686: 2 loads, 2 LSLICEs
+     Net stepper_ins_2..u_stepper/clk_1MHz_enable_64: 4 loads, 4 LSLICEs
+     Net stepper_ins_2..u_stepper/SLO_buf_51__N_4701: 23 loads, 23 LSLICEs
+     Net clk_enable_259: 1 loads, 1 LSLICEs
+     Net clk_enable_388: 1 loads, 1 LSLICEs
+     Net quad_ins_5..u_quad_decoder/clk_enable_385: 32 loads, 32 LSLICEs
+     Net clk_enable_315: 16 loads, 16 LSLICEs
+     Net clk_enable_232: 1 loads, 1 LSLICEs
+     Net clk_enable_234: 1 loads, 1 LSLICEs
+     Net clk_enable_255: 1 loads, 1 LSLICEs
+     Net clk_enable_260: 1 loads, 1 LSLICEs
+     Net stepper_ins_5..u_stepper/clk_1MHz_enable_3: 1 loads, 1 LSLICEs
+     Net stepper_ins_5..u_stepper/SLO_buf_51__N_5730: 23 loads, 23 LSLICEs
+     Net stepper_ins_5..u_stepper/clk_1MHz_enable_34: 4 loads, 4 LSLICEs
+     Net clk_enable_38: 1 loads, 1 LSLICEs
+     Net clk_enable_627: 2 loads, 2 LSLICEs
+     Net stepper_ins_5..u_stepper/clk_enable_1057: 23 loads, 23 LSLICEs
+     Net clk_enable_242: 1 loads, 1 LSLICEs
+     Net stepper_ins_5..u_stepper/clk_1MHz_enable_69: 1 loads, 1 LSLICEs
+     Net clk_100k_enable_1: 1 loads, 1 LSLICEs
+     Net clk_enable_235: 1 loads, 1 LSLICEs
+     Net clk_enable_959: 2 loads, 2 LSLICEs
+     Net stepper_ins_0..u_stepper/clk_enable_1132: 23 loads, 23 LSLICEs
+     Net stepper_ins_0..u_stepper/SLO_buf_51__N_4015: 23 loads, 23 LSLICEs
+     Net stepper_ins_0..u_stepper/clk_1MHz_enable_7: 1 loads, 1 LSLICEs
+     Net stepper_ins_0..u_stepper/clk_1MHz_enable_56: 4 loads, 4 LSLICEs
+     Net clk_enable_761: 2 loads, 2 LSLICEs
+     Net stepper_ins_0..u_stepper/clk_enable_212: 1 loads, 1 LSLICEs
+     Net clk_enable_222: 1 loads, 1 LSLICEs
+     Net stepper_ins_0..u_stepper/clk_enable_1104: 1 loads, 1 LSLICEs
+     Net stepper_ins_0..u_stepper/clk_1MHz_enable_65: 1 loads, 1 LSLICEs
+     Net clk_enable_256: 1 loads, 1 LSLICEs
+     Net quad_ins_3..u_quad_decoder/clk_enable_453: 16 loads, 16 LSLICEs
+     Net clk_enable_687: 1 loads, 1 LSLICEs
+     Net clk_enable_727: 16 loads, 16 LSLICEs
+     Net stepper_ins_3..u_stepper/clk_enable_1134: 23 loads, 23 LSLICEs
+     Net clk_enable_28: 1 loads, 1 LSLICEs
+     Net stepper_ins_3..u_stepper/clk_1MHz_enable_27: 4 loads, 4 LSLICEs
+     Net clk_enable_178: 2 loads, 2 LSLICEs
+     Net stepper_ins_3..u_stepper/SLO_buf_51__N_5044: 23 loads, 23 LSLICEs
+     Net clk_enable_254: 1 loads, 1 LSLICEs
+     Net stepper_ins_3..u_stepper/clk_1MHz_enable_13: 1 loads, 1 LSLICEs
+     Net stepper_ins_3..u_stepper/clk_1MHz_enable_67: 1 loads, 1 LSLICEs
+     Net stepper_ins_4..u_stepper/clk_enable_36: 1 loads, 1 LSLICEs
+     Net stepper_ins_4..u_stepper/SLO_buf_51__N_5387: 23 loads, 23 LSLICEs
+     Net stepper_ins_4..u_stepper/clk_1MHz_enable_20: 4 loads, 4 LSLICEs
+     Net stepper_ins_4..u_stepper/clk_1MHz_enable_8: 1 loads, 1 LSLICEs
+     Net clk_enable_641: 2 loads, 2 LSLICEs
+     Net stepper_ins_4..u_stepper/clk_enable_221: 1 loads, 1 LSLICEs
+     Net stepper_ins_4..u_stepper/clk_enable_1103: 23 loads, 23 LSLICEs
+     Net stepper_ins_4..u_stepper/clk_1MHz_enable_68: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/clk_enable_624: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_sdo_valid_N_296: 19 loads, 19 LSLICEs
+     Net spi_slave_top_inst/clk_enable_48: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/clk_enable_776: 8 loads, 8 LSLICEs
+     Net spi_slave_top_inst/clk_enable_228: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/clk_enable_963: 20 loads, 20 LSLICEs
+     Net spi_slave_top_inst/clk_enable_961: 2 loads, 2 LSLICEs
+     Net spi_slave_top_inst/wb_ctrl_inst/clk_enable_844: 2 loads, 2 LSLICEs
+     Net spi_slave_top_inst/clk_enable_172: 2 loads, 2 LSLICEs
+     Net spi_slave_top_inst/wb_we_i_N_344: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_915: 6 loads, 6 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_584: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_756: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_859: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_321: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_561: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_569: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_577: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_867: 4 loads, 4 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_1128: 5 loads, 5 LSLICEs
+     Net clk_enable_807: 16 loads, 16 LSLICEs
+     Net clk_enable_320: 2 loads, 2 LSLICEs
+     Net clk_enable_759: 2 loads, 2 LSLICEs
+     Net clk_enable_757: 1 loads, 1 LSLICEs
+     Net clk_enable_488: 1 loads, 1 LSLICEs
+     Net clk_enable_211: 16 loads, 16 LSLICEs
+     Net clk_enable_12: 1 loads, 1 LSLICEs
+     Net clk_enable_180: 2 loads, 2 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_1110: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/clk_enable_1106: 1 loads, 1 LSLICEs
+     Net stepper_ins_1..u_stepper/clk_1MHz_enable_41: 4 loads, 4 LSLICEs
+     Net stepper_ins_1..u_stepper/clk_enable_1120: 23 loads, 23 LSLICEs
+     Net stepper_ins_1..u_stepper/clk_1MHz_enable_70: 1 loads, 1 LSLICEs
+     Net stepper_ins_1..u_stepper/SLO_buf_51__N_4358: 23 loads, 23 LSLICEs
+     Net stepper_ins_1..u_stepper/clk_1MHz_enable_42: 1 loads, 1 LSLICEs
+     Net quad_ins_2..u_quad_decoder/clk_enable_485: 32 loads, 32 LSLICEs
+     Net quad_ins_0..u_quad_decoder/clk_enable_551: 16 loads, 16 LSLICEs
+     Net stepper_ins_6..u_stepper/SLO_buf_51__N_6073: 23 loads, 23 LSLICEs
+     Net stepper_ins_6..u_stepper/clk_enable_46: 1 loads, 1 LSLICEs
+     Net stepper_ins_6..u_stepper/clk_1MHz_enable_9: 1 loads, 1 LSLICEs
+     Net stepper_ins_6..u_stepper/clk_1MHz_enable_49: 4 loads, 4 LSLICEs
+     Net stepper_ins_6..u_stepper/clk_1MHz_enable_57: 1 loads, 1 LSLICEs
+     Net stepper_ins_6..u_stepper/clk_enable_1114: 23 loads, 23 LSLICEs
+   Number of LSRs:  38
+     Net n29998: 7 loads, 7 LSLICEs
+     Net resetn_c: 326 loads, 325 LSLICEs
+     Net n30080: 30 loads, 30 LSLICEs
+     Net intrpt_out_N_2713: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2784: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2642: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2997: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2855: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_2926: 1 loads, 1 LSLICEs
+     Net intrpt_out_N_3068: 1 loads, 1 LSLICEs
+     Net n30039: 2 loads, 2 LSLICEs
+     Net n12435: 5 loads, 5 LSLICEs
+     Net u_status_led/n12670: 7 loads, 7 LSLICEs
+     Net n30020: 3 loads, 3 LSLICEs
+     Net n2109: 7 loads, 7 LSLICEs
+     Net stepper_ins_2..u_stepper/n12391: 13 loads, 13 LSLICEs
+     Net n47_adj_7731: 10 loads, 10 LSLICEs
+     Net stepper_ins_5..u_stepper/n12542: 13 loads, 13 LSLICEs
+     Net n47_adj_7716: 10 loads, 10 LSLICEs
+     Net n2193: 7 loads, 7 LSLICEs
+     Net stepper_ins_0..u_stepper/n12235: 13 loads, 13 LSLICEs
+     Net n47_adj_7732: 10 loads, 10 LSLICEs
+     Net stepper_ins_3..u_stepper/n12344: 13 loads, 13 LSLICEs
+     Net n29991: 10 loads, 10 LSLICEs
+     Net n47: 10 loads, 10 LSLICEs
+     Net stepper_ins_4..u_stepper/n12496: 13 loads, 13 LSLICEs
+     Net spi_slave_top_inst/n8400: 19 loads, 19 LSLICEs
+     Net spi_slave_top_inst/wr_en: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/n12446: 2 loads, 2 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/n6196: 16 loads, 16 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/n11068: 1 loads, 1 LSLICEs
+     Net n47_adj_7730: 10 loads, 10 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/n12460: 5 loads, 5 LSLICEs
+     Net n29992: 10 loads, 10 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/n18232: 1 loads, 1 LSLICEs
+     Net spi_slave_top_inst/spi_ctrl_inst/n18231: 1 loads, 1 LSLICEs
+     Net stepper_ins_1..u_stepper/n12287: 13 loads, 13 LSLICEs
+     Net stepper_ins_6..u_stepper/n12588: 13 loads, 13 LSLICEs
+   Number of nets driven by tri-state buffers:  0
+   Top 10 highest fanout non-clock nets:
+     Net resetn_c: 515 loads
+     Net spi_slave_top_inst/spi_ctrl_inst/n30159: 66 loads
+     Net spi_slave_top_inst/spi_ctrl_inst/n30200: 66 loads
+     Net spi_slave_top_inst/spi_ctrl_inst/n16815: 65 loads
+     Net spi_slave_top_inst/spi_ctrl_inst/n23623: 64 loads
+     Net spi_slave_top_inst/address_7_N_549_1: 54 loads
+     Net spi_data_r_0: 49 loads
+     Net n23916: 47 loads
+     Net spi_slave_top_inst/spi_ctrl_inst/n16817: 42 loads
+     Net spi_slave_top_inst/spi_sdo_valid: 41 loads
+    <postMsg mid="1103805" type="Warning" dynamic="2" navigation="0" arg0="In &quot;LOCATE COMP &quot;spi_mosi&quot; SITE &quot;P13&quot; ;&quot;: " arg1="P13"  />
+    <postMsg mid="1103805" type="Warning" dynamic="2" navigation="0" arg0="In &quot;LOCATE COMP &quot;spi_miso&quot; SITE &quot;N4&quot; ;&quot;: " arg1="N4"  />
+    <postMsg mid="1103805" type="Warning" dynamic="2" navigation="0" arg0="In &quot;LOCATE COMP &quot;spi_clk&quot; SITE &quot;M4&quot; ;&quot;: " arg1="M4"  />
+ 
+
+   Number of warnings:  15
+   Number of errors:    0
+
+
+
+Total CPU Time: 6 secs  
+Total REAL Time: 7 secs  
+Peak Memory Usage: 82 MB
+
+Dumping design to file mcm_top_impl_hex_map.ncd.
+
+ncd2vdb "mcm_top_impl_hex_map.ncd" ".vdbs/mcm_top_impl_hex_map.vdb"
+
+Loading device for application ncd2vdb from file 'xo2c4000.nph' in environment: C:/lscc/diamond/3.11_x64/ispfpga.
+
+mpartrce -p "mcm_top_impl_hex.p2t" -f "mcm_top_impl_hex.p3t" -tf "mcm_top_impl_hex.pt" "mcm_top_impl_hex_map.ncd" "mcm_top_impl_hex.ncd"
+
+---- MParTrce Tool ----
+Removing old design directory at request of -rem command line option to this program.
+Running par. Please wait . . .
+
+Lattice Place and Route Report for Design "mcm_top_impl_hex_map.ncd"
+Thu Aug 13 13:06:38 2020
+
+PAR: Place And Route Diamond (64-bit) 3.11.0.396.4.
+Command Line: par -w -l 5 -i 6 -t 1 -c 0 -e 0 -gui -msgset C:/s_links/promote.xml -exp parUseNBR=1:parCDP=0:parCDR=0:parPathBased=OFF mcm_top_impl_hex_map.ncd mcm_top_impl_hex.dir/5_1.ncd mcm_top_impl_hex.prf
+Preference file: mcm_top_impl_hex.prf.
+Placement level-cost: 5-1.
+Routing Iterations: 6
+
+Loading design for application par from file mcm_top_impl_hex_map.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-4000HC
+Package:     CSBGA132
+Performance: 4
+Loading device for application par from file 'xo2c4000.nph' in environment: C:/lscc/diamond/3.11_x64/ispfpga.
+Package Status:                     Final          Version 1.44.
+Performance Hardware Data Status:   Final          Version 34.4.
+License checked out.
+
+
+Ignore Preference Error(s):  True
+Device utilization summary:
+
+   PIO (prelim)   96+4(JTAG)/280     36% used
+                  96+4(JTAG)/105     95% bonded
+
+   SLICE           1479/2160         68% used
+
+   GSR                1/1           100% used
+   OSC                1/1           100% used
+   PLL                1/2            50% used
+   EFB                1/1           100% used
+
+
+Number of Signals: 5683
+Number of Connections: 14916
+    <postMsg mid="61061045" type="Warning" dynamic="0" navigation="0"  />
+
+Pin Constraint Summary:
+   82 out of 96 pins locked (85% locked).
+
+    <postMsg mid="61091062" type="Warning" dynamic="0" navigation="0"  />
+    <postMsg mid="61091050" type="Warning" dynamic="4" navigation="0" arg0="clk_in" arg1="__/PLLInst_0" arg2="C11" arg3="PT24B"  />
+The following 8 signals are selected to use the primary clock routing resources:
+    clk_100k (driver: __/PLLInst_0, clk load #: 8)
+    clk (driver: OSCH_inst, clk load #: 1226)
+    clk_1MHz (driver: __/PLLInst_0, clk load #: 91)
+    pin_intrpt[5] (driver: SLICE_428, clk load #: 16)
+    pin_intrpt[8] (driver: SLICE_433, clk load #: 16)
+    pin_intrpt[2] (driver: SLICE_423, clk load #: 16)
+    pin_intrpt[17] (driver: SLICE_448, clk load #: 16)
+    pin_intrpt[11] (driver: SLICE_438, clk load #: 16)
+
+
+The following 8 signals are selected to use the secondary clock routing resources:
+    resetn_c (driver: resetn, clk load #: 0, sr load #: 326, ce load #: 57)
+    quad_ins_6..u_quad_decoder/clk_enable_353 (driver: SLICE_1348, clk load #: 0, sr load #: 0, ce load #: 32)
+    pin_intrpt[20] (driver: SLICE_453, clk load #: 16, sr load #: 0, ce load #: 0)
+    pin_intrpt[14] (driver: SLICE_443, clk load #: 16, sr load #: 0, ce load #: 0)
+    quad_ins_4..u_quad_decoder/clk_enable_420 (driver: SLICE_2297, clk load #: 0, sr load #: 0, ce load #: 32)
+    quad_ins_5..u_quad_decoder/clk_enable_385 (driver: SLICE_2302, clk load #: 0, sr load #: 0, ce load #: 32)
+    quad_ins_2..u_quad_decoder/clk_enable_485 (driver: SLICE_2297, clk load #: 0, sr load #: 0, ce load #: 32)
+    n30080 (driver: SLICE_1867, clk load #: 0, sr load #: 30, ce load #: 0)
+
+    <postMsg mid="61061008" type="Warning" dynamic="5" navigation="0" arg0="resetn_c" arg1="Secondary" arg2="resetn" arg3="N2" arg4="Secondary"  />
+Signal resetn_c is selected as Global Set/Reset.
+.
+Starting Placer Phase 0.
+...........
+Finished Placer Phase 0.  REAL time: 9 secs 
+
+Starting Placer Phase 1.
+.....................
+Placer score = 1385709.
+Finished Placer Phase 1.  REAL time: 38 secs 
+
+Starting Placer Phase 2.
+.
+Placer score =  1373039
+Finished Placer Phase 2.  REAL time: 41 secs 
+
+
+------------------ Clock Report ------------------
+
+Global Clock Resources:
+  CLK_PIN    : 0 out of 8 (0%)
+  General PIO: 1 out of 280 (0%)
+  PLL        : 1 out of 2 (50%)
+  DCM        : 0 out of 2 (0%)
+  DCC        : 0 out of 8 (0%)
+
+Global Clocks:
+  PRIMARY "clk_100k" from CLKOS on comp "__/PLLInst_0" on PLL site "RPLL", clk load = 8
+  PRIMARY "clk" from OSC on comp "OSCH_inst" on site "OSC", clk load = 1226
+  PRIMARY "clk_1MHz" from CLKOS3 on comp "__/PLLInst_0" on PLL site "RPLL", clk load = 91
+  PRIMARY "pin_intrpt[5]" from F0 on comp "SLICE_428" on site "R12C31D", clk load = 16
+  PRIMARY "pin_intrpt[8]" from F0 on comp "SLICE_433" on site "R2C16B", clk load = 16
+  PRIMARY "pin_intrpt[2]" from F0 on comp "SLICE_423" on site "R12C2C", clk load = 16
+  PRIMARY "pin_intrpt[17]" from F0 on comp "SLICE_448" on site "R2C16A", clk load = 16
+  PRIMARY "pin_intrpt[11]" from F0 on comp "SLICE_438" on site "R12C31A", clk load = 16
+  SECONDARY "resetn_c" from comp "resetn" on PIO site "N2 (PB3B)", clk load = 0, ce load = 57, sr load = 326
+  SECONDARY "quad_ins_6..u_quad_decoder/clk_enable_353" from F1 on comp "SLICE_1348" on site "R12C17B", clk load = 0, ce load = 32, sr load = 0
+  SECONDARY "pin_intrpt[20]" from F0 on comp "SLICE_453" on site "R12C17D", clk load = 16, ce load = 0, sr load = 0
+  SECONDARY "pin_intrpt[14]" from F0 on comp "SLICE_443" on site "R12C17C", clk load = 16, ce load = 0, sr load = 0
+  SECONDARY "quad_ins_4..u_quad_decoder/clk_enable_420" from F0 on comp "SLICE_2297" on site "R12C15D", clk load = 0, ce load = 32, sr load = 0
+  SECONDARY "quad_ins_5..u_quad_decoder/clk_enable_385" from F0 on comp "SLICE_2302" on site "R12C15B", clk load = 0, ce load = 32, sr load = 0
+  SECONDARY "quad_ins_2..u_quad_decoder/clk_enable_485" from F1 on comp "SLICE_2297" on site "R12C15D", clk load = 0, ce load = 32, sr load = 0
+  SECONDARY "n30080" from F1 on comp "SLICE_1867" on site "R20C10D", clk load = 0, ce load = 0, sr load = 30
+
+  PRIMARY  : 8 out of 8 (100%)
+  SECONDARY: 8 out of 8 (100%)
+
+Edge Clocks:
+  No edge clock selected.
+
+--------------- End of Clock Report ---------------
+
+
+I/O Usage Summary (final):
+   96 + 4(JTAG) out of 280 (35.7%) PIO sites used.
+   96 + 4(JTAG) out of 105 (95.2%) bonded PIO sites used.
+   Number of PIO comps: 96; differential: 0.
+   Number of Vref pins used: 0.
+
+I/O Bank Usage Summary:
++----------+----------------+------------+-----------+
+| I/O Bank | Usage          | Bank Vccio | Bank Vref |
++----------+----------------+------------+-----------+
+| 0        | 22 / 26 ( 84%) | 3.3V       | -         |
+| 1        | 26 / 26 (100%) | 3.3V       | -         |
+| 2        | 25 / 28 ( 89%) | 3.3V       | -         |
+| 3        | 6 / 7 ( 85%)   | 3.3V       | -         |
+| 4        | 7 / 8 ( 87%)   | 3.3V       | -         |
+| 5        | 10 / 10 (100%) | 3.3V       | -         |
++----------+----------------+------------+-----------+
+
+Total placer CPU time: 38 secs 
+
+Dumping design to file mcm_top_impl_hex.dir/5_1.ncd.
+
+0 connections routed; 14916 unrouted.
+Starting router resource preassignment
+    <postMsg mid="62061005" type="Warning" dynamic="2" navigation="0" arg0="CLKI" arg1="clk_in_c"  />
+
+    <postMsg mid="66011008" type="Warning" dynamic="1" navigation="0" arg0="&#xA;   Signal=CS_READY_c loads=6 clock_loads=6"  />
+
+Completed router resource preassignment. Real time: 46 secs 
+
+Start NBR router at 13:07:25 08/13/20
+
+*****************************************************************
+Info: NBR allows conflicts(one node used by more than one signal)
+      in the earlier iterations. In each iteration, it tries to  
+      solve the conflicts while keeping the critical connections 
+      routed as short as possible. The routing process is said to
+      be completed when no conflicts exist and all connections   
+      are routed.                                                
+Note: NBR uses a different method to calculate timing slacks. The
+      worst slack and total negative slack may not be the same as
+      that in TRCE report. You should always run TRCE to verify  
+      your design.                                               
+*****************************************************************
+
+Start NBR special constraint process at 13:07:25 08/13/20
+
+Start NBR section for initial routing at 13:07:28 08/13/20
+Level 4, iteration 1
+1195(0.50%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 10.045ns/0.000ns; real time: 55 secs 
+
+Info: Initial congestion level at 75% usage is 10
+Info: Initial congestion area  at 75% usage is 141 (22.74%)
+
+Start NBR section for normal routing at 13:07:33 08/13/20
+Level 4, iteration 1
+445(0.19%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 9.312ns/0.000ns; real time: 1 mins 6 secs 
+Level 4, iteration 2
+226(0.09%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 9.312ns/0.000ns; real time: 1 mins 12 secs 
+Level 4, iteration 3
+144(0.06%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 9.312ns/0.000ns; real time: 1 mins 15 secs 
+Level 4, iteration 4
+98(0.04%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 9.312ns/0.000ns; real time: 1 mins 18 secs 
+Level 4, iteration 5
+55(0.02%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 9.312ns/0.000ns; real time: 1 mins 20 secs 
+Level 4, iteration 6
+41(0.02%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 9.312ns/0.000ns; real time: 1 mins 22 secs 
+Level 4, iteration 7
+34(0.01%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 8.391ns/0.000ns; real time: 1 mins 23 secs 
+Level 4, iteration 8
+27(0.01%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 8.391ns/0.000ns; real time: 1 mins 24 secs 
+Level 4, iteration 9
+17(0.01%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 8.556ns/0.000ns; real time: 1 mins 26 secs 
+Level 4, iteration 10
+11(0.00%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 8.556ns/0.000ns; real time: 1 mins 27 secs 
+Level 4, iteration 11
+9(0.00%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 8.556ns/0.000ns; real time: 1 mins 28 secs 
+Level 4, iteration 12
+4(0.00%) conflicts; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 8.556ns/0.000ns; real time: 1 mins 28 secs 
+Level 4, iteration 13
+1(0.00%) conflict; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 8.556ns/0.000ns; real time: 1 mins 29 secs 
+Level 4, iteration 14
+0(0.00%) conflict; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 8.556ns/0.000ns; real time: 1 mins 29 secs 
+
+Start NBR section for setup/hold timing optimization with effort level 3 at 13:08:07 08/13/20
+
+Start NBR section for re-routing at 13:08:09 08/13/20
+Level 4, iteration 1
+0(0.00%) conflict; 0(0.00%) untouched conn; 0 (nbr) score; 
+Estimated worst slack/total negative slack<setup>: 8.556ns/0.000ns; real time: 1 mins 31 secs 
+
+Start NBR section for post-routing at 13:08:09 08/13/20
+
+End NBR router with 0 unrouted connection
+
+NBR Summary
+-----------
+  Number of unrouted connections : 0 (0.00%)
+  Number of connections with timing violations : 0 (0.00%)
+  Estimated worst slack<setup> : 8.556ns
+  Timing score<setup> : 0
+-----------
+Notes: The timing info is calculated for SETUP only and all PAR_ADJs are ignored.
+
+
+
+    <postMsg mid="66011008" type="Warning" dynamic="1" navigation="0" arg0="&#xA;   Signal=CS_READY_c loads=6 clock_loads=6"  />
+
+Total CPU time 1 mins 31 secs 
+Total REAL time: 1 mins 36 secs 
+Completely routed.
+End of route.  14916 routed (100.00%); 0 unrouted.
+
+Hold time timing score: 0, hold timing errors: 0
+
+Timing score: 0 
+
+Dumping design to file mcm_top_impl_hex.dir/5_1.ncd.
+
+
+PAR_SUMMARY::Run status = Completed
+PAR_SUMMARY::Number of unrouted conns = 0
+PAR_SUMMARY::Worst  slack<setup/<ns>> = 8.556
+PAR_SUMMARY::Timing score<setup/<ns>> = 0.000
+PAR_SUMMARY::Worst  slack<hold /<ns>> = 0.300
+PAR_SUMMARY::Timing score<hold /<ns>> = 0.000
+PAR_SUMMARY::Number of errors = 0
+
+Total CPU  time to completion: 1 mins 32 secs 
+Total REAL time to completion: 1 mins 37 secs 
+
+par done!
+
+Note: user must run 'Trace' for timing closure signoff.
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2019 Lattice Semiconductor Corporation,  All rights reserved.
+Exiting par with exit code 0
+Exiting mpartrce with exit code 0
+
+trce -f "mcm_top_impl_hex.pt" -o "mcm_top_impl_hex.twr" "mcm_top_impl_hex.ncd" "mcm_top_impl_hex.prf"
+trce:  version Diamond (64-bit) 3.11.0.396.4
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2019 Lattice Semiconductor Corporation,  All rights reserved.
+
+Loading design for application trce from file mcm_top_impl_hex.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-4000HC
+Package:     CSBGA132
+Performance: 4
+Loading device for application trce from file 'xo2c4000.nph' in environment: C:/lscc/diamond/3.11_x64/ispfpga.
+Package Status:                     Final          Version 1.44.
+Performance Hardware Data Status:   Final          Version 34.4.
+Setup and Hold Report
+
+--------------------------------------------------------------------------------
+Lattice TRACE Report - Setup, Version Diamond (64-bit) 3.11.0.396.4
+Thu Aug 13 13:08:18 2020
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2019 Lattice Semiconductor Corporation,  All rights reserved.
+
+Report Information
+------------------
+Command line:    trce -v 10 -gt -sethld -sp 4 -sphld m -o mcm_top_impl_hex.twr -gui -msgset C:/s_links/promote.xml mcm_top_impl_hex.ncd mcm_top_impl_hex.prf 
+Design file:     mcm_top_impl_hex.ncd
+Preference file: mcm_top_impl_hex.prf
+Device,speed:    LCMXO2-4000HC,4
+Report level:    verbose report, limited to 10 items per preference
+--------------------------------------------------------------------------------
+
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+BLOCK JTAG PATHS
+--------------------------------------------------------------------------------
+
+
+Derating parameters
+-------------------
+VCCIO Voltage:
+                   3.300 V (Bank 0, defined by PAR)
+                   3.300 V (Bank 1, defined by PAR)
+                   3.300 V (Bank 2, defined by PAR)
+                   3.300 V (Bank 3, defined by PAR)
+                   3.300 V (Bank 4, defined by PAR)
+                   3.300 V (Bank 5, defined by PAR)
+
+
+
+Timing summary (Setup):
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 52562 paths, 35 nets, and 14013 connections (93.95% coverage)
+
+--------------------------------------------------------------------------------
+Lattice TRACE Report - Hold, Version Diamond (64-bit) 3.11.0.396.4
+Thu Aug 13 13:08:19 2020
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2019 Lattice Semiconductor Corporation,  All rights reserved.
+
+Report Information
+------------------
+Command line:    trce -v 10 -gt -sethld -sp 4 -sphld m -o mcm_top_impl_hex.twr -gui -msgset C:/s_links/promote.xml mcm_top_impl_hex.ncd mcm_top_impl_hex.prf 
+Design file:     mcm_top_impl_hex.ncd
+Preference file: mcm_top_impl_hex.prf
+Device,speed:    LCMXO2-4000HC,m
+Report level:    verbose report, limited to 10 items per preference
+--------------------------------------------------------------------------------
+
+BLOCK ASYNCPATHS
+BLOCK RESETPATHS
+BLOCK JTAG PATHS
+--------------------------------------------------------------------------------
+
+
+Derating parameters
+-------------------
+VCCIO Voltage:
+                   3.300 V (Bank 0, defined by PAR)
+                   3.300 V (Bank 1, defined by PAR)
+                   3.300 V (Bank 2, defined by PAR)
+                   3.300 V (Bank 3, defined by PAR)
+                   3.300 V (Bank 4, defined by PAR)
+                   3.300 V (Bank 5, defined by PAR)
+
+
+
+Timing summary (Hold):
+---------------
+
+Timing errors: 0  Score: 0
+Cumulative negative slack: 0
+
+Constraints cover 52562 paths, 35 nets, and 14013 connections (93.95% coverage)
+
+
+
+Timing summary (Setup and Hold):
+---------------
+
+Timing errors: 0 (setup), 0 (hold)
+Score: 0 (setup), 0 (hold)
+Cumulative negative slack: 0 (0+0)
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+
+Total CPU Time: 3 secs 
+Total REAL Time: 4 secs 
+Peak Memory Usage: 83 MB
+
+
+iotiming  "mcm_top_impl_hex.ncd" "mcm_top_impl_hex.prf"
+I/O Timing Report:
+:  version Diamond (64-bit) 3.11.0.396.4
+
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2019 Lattice Semiconductor Corporation,  All rights reserved.
+
+Loading design for application iotiming from file mcm_top_impl_hex.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-4000HC
+Package:     CSBGA132
+Performance: 4
+Loading device for application iotiming from file 'xo2c4000.nph' in environment: C:/lscc/diamond/3.11_x64/ispfpga.
+Package Status:                     Final          Version 1.44.
+Performance Hardware Data Status:   Final          Version 34.4.
+Running Performance Grade: 4
+Computing Setup Time ...
+Computing Max Clock to Output Delay ...
+Computing Hold Time ...
+Computing Min Clock to Output Delay ...
+
+Loading design for application iotiming from file mcm_top_impl_hex.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-4000HC
+Package:     CSBGA132
+Performance: 5
+Package Status:                     Final          Version 1.44.
+Performance Hardware Data Status:   Final          Version 34.4.
+Running Performance Grade: 5
+Computing Setup Time ...
+Computing Max Clock to Output Delay ...
+Computing Hold Time ...
+Computing Min Clock to Output Delay ...
+
+Loading design for application iotiming from file mcm_top_impl_hex.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-4000HC
+Package:     CSBGA132
+Performance: 6
+Package Status:                     Final          Version 1.44.
+Performance Hardware Data Status:   Final          Version 34.4.
+Running Performance Grade: 6
+Computing Setup Time ...
+Computing Max Clock to Output Delay ...
+Computing Hold Time ...
+Computing Min Clock to Output Delay ...
+
+Loading design for application iotiming from file mcm_top_impl_hex.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-4000HC
+Package:     CSBGA132
+Performance: M
+Package Status:                     Final          Version 1.44.
+Performance Hardware Data Status:   Final          Version 34.4.
+Running Performance Grade: M
+Computing Setup Time ...
+Computing Max Clock to Output Delay ...
+Computing Hold Time ...
+Computing Min Clock to Output Delay ...
+Done.
+
+tmcheck -par "mcm_top_impl_hex.par" 
+
+bitgen -f "mcm_top_impl_hex.t2b" -w "mcm_top_impl_hex.ncd"  -jedec "mcm_top_impl_hex.prf"
+
+
+BITGEN: Bitstream Generator Diamond (64-bit) 3.11.0.396.4
+Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
+Copyright (c) 1995 AT&T Corp.   All rights reserved.
+Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
+Copyright (c) 2001 Agere Systems   All rights reserved.
+Copyright (c) 2002-2019 Lattice Semiconductor Corporation,  All rights reserved.
+
+
+Loading design for application Bitgen from file mcm_top_impl_hex.ncd.
+Design name: mcm_top
+NCD version: 3.3
+Vendor:      LATTICE
+Device:      LCMXO2-4000HC
+Package:     CSBGA132
+Performance: 4
+Loading device for application Bitgen from file 'xo2c4000.nph' in environment: C:/lscc/diamond/3.11_x64/ispfpga.
+Package Status:                     Final          Version 1.44.
+Performance Hardware Data Status:   Final          Version 34.4.
+
+Running DRC.
+DRC detected 0 errors and 0 warnings.
+Reading Preference File from mcm_top_impl_hex.prf.
+
+Preference Summary:
++---------------------------------+---------------------------------+
+|  Preference                     |  Current Setting                |
++---------------------------------+---------------------------------+
+|                         RamCfg  |                        Reset**  |
++---------------------------------+---------------------------------+
+|                     MCCLK_FREQ  |                         2.08**  |
++---------------------------------+---------------------------------+
+|                  CONFIG_SECURE  |                          OFF**  |
++---------------------------------+---------------------------------+
+|                          INBUF  |                           ON**  |
++---------------------------------+---------------------------------+
+|                      JTAG_PORT  |                       ENABLE**  |
++---------------------------------+---------------------------------+
+|                       SDM_PORT  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|                 SLAVE_SPI_PORT  |                         ENABLE  |
++---------------------------------+---------------------------------+
+|                MASTER_SPI_PORT  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|                       I2C_PORT  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|        MUX_CONFIGURATION_PORTS  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|                  CONFIGURATION  |                          CFG**  |
++---------------------------------+---------------------------------+
+|                COMPRESS_CONFIG  |                           ON**  |
++---------------------------------+---------------------------------+
+|                        MY_ASSP  |                          OFF**  |
++---------------------------------+---------------------------------+
+|               ONE_TIME_PROGRAM  |                          OFF**  |
++---------------------------------+---------------------------------+
+|                 ENABLE_TRANSFR  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|                  SHAREDEBRINIT  |                      DISABLE**  |
++---------------------------------+---------------------------------+
+|            BACKGROUND_RECONFIG  |                          OFF**  |
++---------------------------------+---------------------------------+
+ *  Default setting.
+ ** The specified setting matches the default setting.
+
+
+Creating bit map...
+ 
+Bitstream Status: Final           Version 1.95.
+ 
+Saving bit stream in "mcm_top_impl_hex.jed".
+ 
+===========
+UFM Summary.
+===========
+UFM Size:        767 Pages (128*767 Bits).
+UFM Utilization: General Purpose Flash Memory.
+ 
+Available General Purpose Flash Memory:  767 Pages (Page 0 to Page 766).
+Initialized UFM Pages:                     0 Page.
+ 
+Total CPU Time: 7 secs 
+Total REAL Time: 8 secs 
+Peak Memory Usage: 286 MB

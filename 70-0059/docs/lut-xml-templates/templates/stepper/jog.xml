@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!--Stepper Jog-->
+<Struct>
+    <Signature>
+        <StructID value="0x0006"/>
+        <ConfigID value="0x0000"/>
+    </Signature>
+    <Data>
+        <Mode value="0" />
+        <StepSize value="0" />
+        <Velocity min="0" max="0" />
+        <Accel value="0" />
+        <StopMode value="0" />
+    </Data>
+</Struct>

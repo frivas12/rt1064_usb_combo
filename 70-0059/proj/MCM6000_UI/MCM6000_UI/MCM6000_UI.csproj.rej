@@ -1,0 +1,8 @@
+diff a/MCM6000_UI/MCM6000_UI/MCM6000_UI.csproj b/MCM6000_UI/MCM6000_UI/MCM6000_UI.csproj	(rejected hunks)
+@@ -192,6 +192,10 @@
+   </ItemGroup>
+   <ItemGroup>
+     <Resource Include="bin\Release\xml\Stage\NEMA8Hexapod.xml" />
+     <Resource Include="bin\Release\xml\Stage\NEMA_17_GB_1_1.xml">
+       <SubType>Designer</SubType>
+     </Resource>

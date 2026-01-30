@@ -1,0 +1,9 @@
+build/*
+bin/*
+!.vscode
+thirdparty/tinyxml2-9.0.0/**
+!thirdparty/tinyxml2-9.0.0/tinyxml2.*
+!thirdparty/**/.github
+!thirdparty/**/.git
+
+*.o

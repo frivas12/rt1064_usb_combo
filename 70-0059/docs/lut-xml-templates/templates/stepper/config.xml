@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<!--Stepper Config-->
+<Struct>
+    <Signature>
+        <StructID value="0x0002"/>
+        <ConfigID value="0x0000"/>
+    </Signature>
+    <Data>
+        <StageID value="1" />
+        <AxisID value="1" />
+        <AxisName value="Y Axis" />
+        <AxisSerial value="0" />
+        <CountsPerUnit value="0" />
+        <Position min="0" max="0" />
+    </Data>
+</Struct>

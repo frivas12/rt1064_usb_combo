@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!-- 
+** Future cards to add **
+* Piezo for focus
+* XY brushless drive for MLS stage
+-->
+
+<System>
+
+
+<SystemSettings>
+
+<!-- set the card types 
+
+            NO_CARD_IN_SLOT = 0,
+            CARD_IN_SLOT_NOT_PROGRAMMED = 1,
+            ST_Stepper_type,                // 2  (obsolete)
+            High_Current_Stepper_Card,      // 3  (41-0093-004)
+            Servo_type,                     // 4  (41-0098-001)
+            Shutter_type,                   // 5  (obsolete)
+            OTM_Dac_type,                   // 6  (on OTM board)
+            OTM_RS232_type,                 // 7  (on OTM board)
+            High_Current_Stepper_Card_HD,   // 8  (41-0107)
+            Slider_IO_type,                 // 9  (41-0104)
+            Shutter_4_type,                 // 10 (41-0108)
+            Piezo_Elliptec_type,            // 11 (connected to slot 8)
+            ST_Invert_Stepper_BISS_type,    // 12 (41-0113)
+            ST_Invert_Stepper_SSI_type      // 13 (41-0113)
+            Piezo_type					    // 14 (41-0123)
+			
+-->
+<!-- Set the card types for each slot -->
+
+<!-- Slot 1
+Slot 1 Focus stage BISS mode (stepper card 41-0113-005)
+ -->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="0"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="12"/>
+</CardType>
+
+<!-- Slot 2 
+Slot 2 4 Ch Shutter card (41-0108-003)	
+-->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="1"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="10"/>
+</CardType>
+
+<!-- Slot 3 
+Slot 3 Light Path stage SSI mode (stepper card 41-0113-005)
+-->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="2"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="13"/>
+</CardType>
+
+<!-- Slot 4 
+Slot 4 EPI stage SSI mode (stepper card 41-0113-005)	(haddle here so no slot cards with external connectors)
+-->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="3"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="13"/>
+</CardType>
+
+<!-- Slot 5 
+Slot 5 AF/PMT Switcher stage SSI mode (stepper card 41-0113-005)	
+-->
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="4"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="13"/>
+</CardType>
+
+<!-- Slot 7 
+Piezo Card (stepper card 41-0123-002)	
+-->
+<!--
+<CardType command="0x4004" data_length="10">
+<Parameter name="slot" type="Byte" length="1" offset="6" value="6"/>	
+<Parameter name="b_type" type="UInt16" length="2" offset="8" value="14"/>
+</CardType> -->
+
+</SystemSettings>
+
+<Slots>
+
+<Slot type="Stage" name="SLOT_1" slot_num="0">
+<Stage name="NEMA_17_Inverted_Z_Axis Direct Drive"/>
+</Slot>
+
+<Slot type="Shutter_4" name="SLOT_2" slot_num="1">
+<Shutter_4 name="inverted_shutters"/>
+</Slot>
+
+<Slot type="Stage" name="SLOT_3" slot_num="2">
+<Stage name="NEMA_17_Inverted_Lightpath"/>
+</Slot>
+
+<Slot type="Stage" name="SLOT_4" slot_num="3">
+<Stage name="NEMA_14_Inverted_EPI"/>
+</Slot>
+
+<Slot type="Stage" name="SLOT_5" slot_num="4">
+<Stage name="NEMA_8_Inverted_AF_switcher"/>
+</Slot>
+
+</Slots>
+
+<Joysticks>
+
+<Joystick type="Port" name="PORT_1" port_num="1">
+<Joystick_type name="1 Knob with speed button slot 1" />
+</Joystick>
+
+<Joystick type="Port" name="PORT_2" port_num="2">
+<Joystick_type name="Push buttons inverted" />
+</Joystick>
+
+</Joysticks>
+
+</System>

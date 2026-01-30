@@ -1,0 +1,2 @@
+status:
+modified wishbone working. 1 byte command, 1 byte address, 6 bytes data

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- All device id's for the MCM6000 -->
+<Devices>
+    <Device><ID>0</ID> <Description>No_ID</Description></Device>
+	<Device><ID>1</ID> <Description>Bergamo_X_GB1_1</Description></Device>
+	<Device><ID>2</ID> <Description>Bergamo_Y_GB1_1</Description></Device>
+    <Device><ID>3</ID> <Description>Bergamo_Z_GB1_1</Description>></Device>
+    <Device><ID>4</ID> <Description>Bergamo_R_GB5_1</Description>></Device>
+    <Device><ID>5</ID> <Description>Bergamo_E_GB1_1</Description>></Device>
+    <Device><ID>6</ID> <Description>Inverted Focus (30-0XX-00X)</Description>></Device>
+    <Device><ID>7</ID> <Description>Inverted Shutter (30-0XX-00X)</Description>></Device>
+</Devices>

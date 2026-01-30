@@ -1,0 +1,117 @@
+<Project ModBy="Inserter" SigType="0" Name="C:/Users/ashahi/Documents/Git/70-0059/cpld/reveal_prj/rv1.rvl" Date="2020-02-17">
+    <IP Version="1_6_042617"/>
+    <Design DesignEntry="Schematic/Verilog HDL" Synthesis="lse" DeviceFamily="MachXO2" DesignName="mcm_top"/>
+    <Core InsertDataset="0" Insert="1" Reveal_sig="279110681" Name="mcm_top_LA0" ID="0">
+        <Setting>
+            <Clock SampleClk="clk_in" SampleEnable="0" EnableClk="" EnableClk_Pri="0"/>
+            <TraceBuffer Implementation="0" BitTimeStamp="0" hasTimeStamp="0" IncTrigSig="0" BufferDepth="2048"/>
+            <Capture Mode="0" MinSamplesPerTrig="256"/>
+            <Event CntEnable="0" MaxEventCnt="8"/>
+            <TrigOut Polarity="0" MinPulseWidth="0" TrigOutNetType="1" EnableTrigOut="0" TrigOutNet="reveal_debug_mcm_top_LA0_net"/>
+            <DistRAM Disable="0"/>
+        </Setting>
+        <Dataset Name="Base">
+            <Trace>
+                <Sig Type="SIG" Name="clk_1MHz"/>
+                <Sig Type="SIG" Name="stepper_ins[1].u_stepper/MA_Temp"/>
+                <Sig Type="SIG" Name="stepper_ins[1].u_stepper/MA"/>
+                <Bus Name="stepper_ins[1].u_stepper/SLO">
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:0"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:1"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:2"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:3"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:4"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:5"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:6"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:7"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:8"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:9"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:10"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:11"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:12"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:13"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:14"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:15"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:16"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:17"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:18"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:19"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:20"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:21"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:22"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:23"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:24"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:25"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:26"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:27"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:28"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:29"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:30"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:31"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:32"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:33"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:34"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:35"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:36"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:37"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:38"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:39"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:40"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:41"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:42"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:43"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:44"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:45"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO:46"/>
+                </Bus>
+                <Bus Name="stepper_ins[1].u_stepper/SLO_buf">
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:0"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:1"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:2"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:3"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:4"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:5"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:6"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:7"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:8"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:9"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:10"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:11"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:12"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:13"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:14"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:15"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:16"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:17"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:18"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:19"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:20"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:21"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:22"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:23"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:24"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:25"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:26"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:27"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:28"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:29"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:30"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:31"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:32"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:33"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:34"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:35"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:36"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:37"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:38"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:39"/>
+                    <Sig Type="SIG" Name="stepper_ins[1].u_stepper/SLO_buf:40"/>
+                </Bus>
+            </Trace>
+            <Trigger>
+                <TU Serialbits="0" Type="0" ID="1" Sig="clk_1MHz,"/>
+                <TE MaxSequence="1" MaxEvnCnt="1" ID="1" Resource="1"/>
+            </Trigger>
+        </Dataset>
+    </Core>
+</Project>

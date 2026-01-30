@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<SliderIOParameters>
+
+    <!--Both Hex and Decimal are accepted.-->
+    <ConfigID value="0x0000" />
+
+    <Mirror>
+        <InitialState value="0" />
+        <Mode value="0" />
+        <PWM low="0" high="0" />
+    </Mirror>
+
+</SliderIOParameters>

@@ -1,0 +1,102 @@
+/**
+ * \file TEMPLATE.hh
+ * \author Sean Benish (sbenish@thorlabs.com)
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ * This is a template file to quickly create APT commands.
+ * 
+ * Steps:
+ * 1.   Replace the "TEMPLATE" text in the file with the file name
+ *      (which should be an APT command).
+ * 2.   Update the "\author" field with name an e-mail.
+ * 3.   Add the "\date" field in the format YYYY-MM-DD under "\author".
+ * 4.   Create a ".cc" file using the "TEMPLATE.cc.ignore" file.
+ * 5.   Update the COMMAND_REQ and COMMAND_GET values.
+ * 6.   If a specialization of request is needed...
+ * 6.1.     Uncomment the "req" method.
+ * 6.2.     Specify the return type.
+ * 6.3.     Add any additional parameters after the command.
+ * 7.   If a specialization of get is needed...
+ * 7.1.     Uncomment the "get" method.
+ * 7.2.     Specify the parameters of the command.
+ * 8.   Select the "request_type" struct that corresponds to the
+ *      type of APT REQ command.
+ *      Both may be removed depending on specialization.
+ * 9.   Add fields to the "request_type" struct.
+ * 10.  If using the "extended" data struct, specify the length
+ *      of the extended data in "APT_SIZE".
+ * 10.  Select the "payload_type" struct that corresponds to the
+ *      type of APT GET command.
+ *      Both may be removed depending on specialization.
+ * 11.  Add fields to the "payload_type" struct.
+ * 12.  If using the "extended" data struct, specify the length
+ *      of the extended data in "APT_SIZE".
+ * 13.  If a SET command is available...
+ * 13.1.    Update the COMMAND_SET value.
+ * 13.2.    If a specialization of set is needed...
+ * 13.2.1.      Uncomment the "set" method.
+ * 13.2.2.      Specify the return type.
+ * 13.2.3.      Add any additional parameters after the command.
+ * 14.  Otherwise...
+ * 14.1     Remove the COMMAND_SET line.
+ * 14.2     Remove the "deserialize" method of the "payload_type".
+ * 15.  Remove unnecessary template comments (including these steps).
+ * 16.  Move to the ".cc" template.
+ */
+#pragma once
+
+#include <cstdint>
+#include <span>
+
+#include "./apt-command.hh"
+#include "./apt-types.hh"
+
+#include "apt.h"
+
+
+namespace drivers::apt
+{
+
+struct TEMPLATE {
+    static constexpr uint16_t COMMAND_SET = ?;
+    static constexpr uint16_t COMMAND_REQ = ?;
+    static constexpr uint16_t COMMAND_GET = ?;
+
+    // Header-Only
+    struct request_type {
+        static request_type deserialize(uint8_t param1, uint8_t param2);
+    };
+
+    // Extended Data
+    struct request_type {
+        static constexpr std::size_t APT_SIZE = ?;
+
+        static request_type
+        deserialize(std::span<const std::byte, APT_SIZE> src);
+    };
+
+    // Header-Only
+    struct payload_type {
+        static payload_type deserialize(uint8_t param1, uint8_t param2);
+        drivers::usb::apt_response::parameters serialize() const;
+    };
+
+    // Extended Data
+    struct payload_type {
+        static constexpr std::size_t APT_SIZE = ?;
+
+        static payload_type
+        deserialize(std::span<const std::byte, APT_SIZE> src);
+        void serialize(std::span<std::byte, APT_SIZE> dest) const;
+    };
+
+    // Optional Specializations
+    // static payload_type set(const drivers::usb::apt_basic_command&,...);
+    // static request_type req(const drivers::usb::apt_basic_command&,...);
+    // static void get(drivers::usb::apt_response_builder& builder, const payload_type& payload);
+};
+
+}
+
+// EOF

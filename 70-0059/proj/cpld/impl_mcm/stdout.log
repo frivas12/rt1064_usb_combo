@@ -1,0 +1,42 @@
+Running in Lattice mode
+
+Starting:    C:\lscc\diamond\3.12\synpbase\bin64\mbin\synplify.exe
+Install:     C:\lscc\diamond\3.12\synpbase
+Hostname:    STL-SBENISH-NB
+Date:        Thu Feb 17 12:28:46 2022
+Version:     Q-2020.03L-SP1
+
+Arguments:   -product synplify_pro -tcl C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm/launch_synplify.tcl
+ProductType: synplify_pro
+
+
+
+
+
+No project opened.
+auto_infer_blackbox is not supported in current product.
+Removed file: C:\s_links\sources\mcm_top.v
+Removed file: C:\s_links\sources\spi_slave_top.v
+Removed file: C:\s_links\sources\wb_ctrl.v
+Removed file: C:\s_links\sources\commands.v
+Removed file: C:\s_links\sources\spi_ctrl.v
+Removed file: C:\s_links\sources\status_led.v
+Removed file: C:\s_links\sources\quad_decoder.v
+Removed file: C:\s_links\sources\pwm_controller.v
+Removed file: C:\s_links\sources\cs_decoder.v
+Removed file: C:\s_links\sources\intrpt_ctrl.v
+Removed file: C:\s_links\sources\otm_dac.v
+Removed file: C:\s_links\sources\uart_controller.v
+Removed file: C:\s_links\sources\rs232.v
+Removed file: C:\s_links\sources\config_mcm\config.v
+Removed file: C:\s_links\sources\slot_cards\servo.v
+Removed file: C:\s_links\sources\slot_cards\shutter_4.v
+Removed file: C:\s_links\sources\slot_cards\slider_io.v
+Removed file: C:\s_links\sources\slot_cards\stepper.v
+Removed file: C:\s_links\sources\slot_cards\peizo_elliptec.v
+Removed file: C:\s_links\sources\config_mcm\ip\spi_slave_efb.v
+Removed file: C:\s_links\sources\config_mcm\ip\pll.v
+Removed file: C:\s_links\sources\slot_cards\piezo.v
+Copied C:\Users\sbenish\repositories\70-0059\cpld\impl_mcm\impl_mcm.srr to C:\Users\sbenish\repositories\70-0059\cpld\impl_mcm\backup\impl_mcm.srr
+TCL script complete: "C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm/launch_synplify.tcl"
+exit status=0

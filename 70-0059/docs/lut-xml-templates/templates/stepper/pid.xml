@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!--Stepper PID-->
+<Struct>
+    <Signature>
+        <StructID value="0x0007"/>
+        <ConfigID value="0x0000"/>
+    </Signature>
+    <Data>
+        <Kp value="0" />
+        <Ki value="0" />
+        <Kd value="0" />
+        <IMax value="0" />
+        <FilterControl value="0" />
+    </Data>
+</Struct>

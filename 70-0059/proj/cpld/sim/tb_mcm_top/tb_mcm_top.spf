@@ -1,0 +1,18 @@
+<BaliSimProject version="1.3" path="sim" stage="0" language="-1" name="tb_mcm_top" simType="Active-HDL">
+    <Source worklib="work" path="sources/intrpt_ctrl.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/quad_decoder.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/pwm_controller.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/cs_decoder.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/set_pins.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/spi_ctrl.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/wb_ctrl.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/ip/spi_slave_efb.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/spi_slave_top.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/mcm_top.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sim/tb_mcm_top.v" type="VERILOG" include="none"/>
+    <Source worklib="work" path="sources/commands.v" type="VERILOG" include="none"/>
+    <SimLib value="pmi_work ovi_machxo2"/>
+    <GlbInc value=""/>
+    <Macro value=""/>
+    <TopModule instance="" language="VERILOG" name="tb_mcm_top"/>
+</BaliSimProject>

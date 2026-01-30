@@ -1,0 +1,1085 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.IO.Ports;
+using System.IO;
+using System.Timers;
+using Microsoft.Win32;
+using System.Threading;
+using System.Windows.Threading;
+using System.ComponentModel;
+using System.Text.RegularExpressions;
+
+
+using Abt.Controls.SciChart;
+using Abt.Controls.SciChart.Model.DataSeries;
+using Abt.Controls.SciChart.Utility;
+using Abt.Controls.SciChart.Visuals;
+using Abt.Controls.SciChart.Visuals.Annotations;
+
+namespace MCM6000_UI
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        static string software_version = "4.2";
+        const byte HOST_ID = 0x01;
+        byte MOTHERBOARD_ID = 0x11; // 0x11 => MCM 1, 0x12 => MCM2 ...
+        static byte[] header;
+        static byte[] ext_data;
+
+        StackPanel[,] cp_subpanels = new StackPanel[8, 5];
+        Label[,] cp_labels = new Label[8, 20];
+        RadioButton[,] cp_radio = new RadioButton[8, 20];
+        Button[,] cp_button = new Button[8, 20];
+        TextBox[,] cp_textbox = new TextBox[8, 20];
+
+        static SerialPort _serialPort;
+        static System.Timers.Timer _timer1;
+        static string address;
+
+        TabItem current_main_tab;
+
+        const byte SLOT1 = 0;
+        const byte SLOT2 = 1;
+        const byte SLOT3 = 2;
+        const byte SLOT4 = 3;
+        const byte SLOT5 = 4;
+        const byte SLOT6 = 5;
+        const byte SLOT7 = 6;
+        const byte SLOT8 = 7;
+
+        const byte NUMBER_OF_BOARD_SLOTS = 8;
+        bool ftdi_flag = false;
+
+        #region APT
+        const int MGMSG_HW_REQ_INFO = 0x0005;
+        const int MGMSG_HW_GET_INFO = 0x0006;
+        const int MGMSG_MOD_SET_CHANENABLESTATE = 0x0210;
+        const int MGMSG_MOD_REQ_CHANENABLESTATE = 0x0211;
+        const int MGMSG_MOD_GET_CHANENABLESTATE = 0x0212;
+        const int MGMSG_MOT_SET_POSCOUNTER = 0x0410;
+        const int MGMSG_MOT_REQ_POSCOUNTER = 0x0411;
+        const int MGMSG_MOT_GET_POSCOUNTER = 0x0412;
+        const int MGMSG_MOT_SET_ENCCOUNTER = 0x0409;
+        const int MGMSG_MOT_REQ_ENCCOUNTER = 0x040A;
+        const int MGMSG_MOT_GET_ENCCOUNTER = 0x040B;
+        const int MGMSG_MOT_SET_JOGPARAMS = 0x0416;
+        const int MGMSG_MOT_REQ_JOGPARAMS = 0x0417;
+        const int MGMSG_MOT_GET_JOGPARAMS = 0x0418;
+        const int MGMSG_MOT_SET_HOMEPARAMS = 0x0440;
+        const int MGMSG_MOT_REQ_HOMEPARAMS = 0x0441;
+        const int MGMSG_MOT_GET_HOMEPARAMS = 0x0442;
+        const int MGMSG_MOT_SET_LIMSWITCHPARAMS = 0x0423;
+        const int MGMSG_MOT_REQ_LIMSWITCHPARAMS = 0x0424;
+        const int MGMSG_MOT_GET_LIMSWITCHPARAMS = 0x0425;
+        const int MGMSG_MOT_SET_POWERPARAMS = 0x0426;
+        const int MGMSG_MOT_REQ_POWERPARAMS = 0x0427;
+        const int MGMSG_MOT_GET_POWERPARAMS = 0x0428;
+        const int MGMSG_MOT_SET_GENMOVEPARAMS = 0x043A;
+        const int MGMSG_MOT_REQ_GENMOVEPARAMS = 0x043B;
+        const int MGMSG_MOT_GET_GENMOVEPARAMS = 0x043C;
+        const int MGMSG_MOT_MOVE_HOME = 0x0443;
+        const int MGMSG_MOT_MOVE_RELATIVE = 0x0448;
+        const int MGMSG_MOT_MOVE_ABSOLUTE = 0x0453;
+        const int MGMSG_MOT_MOVE_JOG = 0x046A;
+        const int MGMSG_MOT_MOVE_VELOCITY = 0x0457;
+        const int MGMSG_MOT_MOVE_STOP = 0x0465;
+        const int MGMSG_MOT_REQ_STATUSUPDATE = 0x0480;
+        const int MGMSG_MOT_GET_STATUSUPDATE = 0x0481;
+        const int MGMSG_MOT_SET_DCPIDPARAMS = 0x04A0;
+        const int MGMSG_MOT_REQ_DCPIDPARAMS = 0x04A1;
+        const int MGMSG_MOT_GET_DCPIDPARAMS = 0x04A2;
+
+
+
+        const int MGMSG_MOT_SET_BUTTONPARAMS = 0x04B6;
+        const int MGMSG_MOT_REQ_BUTTONPARAMS = 0x04B7;
+        const int MGMSG_MOT_GET_BUTTONPARAMS = 0x04B8;
+
+        const int MGMSG_MOT_SET_EEPROMPARAMS = 0x04B9;
+        const int MGMSG_MOT_REQ_EEPROMPARAMS = 0x04BA;
+        const int MGMSG_MOT_GET_EEPROMPARAMS = 0x04BB;
+
+        const int MGMSG_MOT_SET_SOL_CYCLEPARAMS = 0x04C3;
+        const int MGMSG_MOT_REQ_SOL_CYCLEPARAMS = 0x04C4;
+        const int MGMSG_MOT_GET_SOL_CYCLEPARAMS = 0x04C5;
+
+        const int MGMSG_MOT_SET_SOL_STATE = 0x04CB;
+        const int MGMSG_MOT_REQ_SOL_STATE = 0x04CC;
+        const int MGMSG_MOT_GET_SOL_STATE = 0x04CD;
+
+
+        const int MGMSG_MOT_SET_PMDJOYSTICKPARAMS = 0x04E6;
+        const int MGMSG_MOT_REQ_PMDJOYSTICKPARAMS = 0x04E7;
+        const int MGMSG_MOT_GET_PMDJOYSTICKPARAMS = 0x04E8;
+
+        const int MGMSG_MOT_SET_PMDSTAGEAXISPARAMS = 0x04F0;
+        const int MGMSG_MOT_REQ_PMDSTAGEAXISPARAMS = 0x04F1;
+        const int MGMSG_MOT_GET_PMDSTAGEAXISPARAMS = 0x04F2;
+        const int MGMSG_LA_SET_MAGNIFICATION = 0x0840;
+        const int MGMSG_LA_REQ_MAGNIFICATION = 0x0841;
+        const int MGMSG_LA_GET_MAGNIFICATION = 0x0842;
+        const int MGMSG_HS_GET_STATUSUPDATE = 0x0483;
+
+        const int MGMSG_MOT_SET_MFF_OPERPARAMS = 0x0510;
+        const int MGMSG_MOT_REQ_MFF_OPERPARAMS = 0x0511;
+        const int MGMSG_MOT_GET_MFF_OPERPARAMS = 0x0512;
+
+
+        // Laser Control Messages
+        const int MGMSG_LA_SET_PARAMS = 0x0800;
+        const int MGMSG_LA_REQ_PARAMS = 0x0801;
+        const int MGMSG_LA_GET_PARAMS = 0x0802;
+        const int MGMSG_LA_ENABLEOUTPUT = 0x0811;
+        const int MGMSG_LA_DISABLEOUTPUT = 0x0812;
+
+
+
+
+        //Firmware update command
+        const int MGMSG_GET_UPDATE_FIRMWARE = 0x00A6;
+
+
+        //*****************************************************************
+        // APT
+        // 0x4000 to 0x4fff range are reserved for Sterling VA
+        //*****************************************************************
+        // System        
+        const int MGMSG_MCM_HW_REQ_INFO	= 0x4000;
+        const int MGMSG_MCM_HW_GET_INFO	= 0x4001;
+        const int MGMSG_CPLD_UPDATE	= 0x4002;		
+        const int MGMSG_SET_HW_REV = 0x4003;
+        const int MGMSG_SET_CARD_TYPE = 0x4004;
+        const int MGMSG_SET_CABLE = 0x4005;
+        const int MGMSG_REQ_CABLE = 0x4006;
+        const int MGMSG_GET_CABLE = 0x4007;
+        const int MGMSG_SET_CABLE_BOARD = 0x4008;
+        const int MGMSG_REQ_CABLE_BOARD = 0x4009;
+        const int MGMSG_GET_CABLE_BOARD = 0x400A;
+        const int MGMSG_RESTART_PROCESSOR = 0x400B;
+        const int MGMSG_ERASE_EEPROM = 0x400C;
+        const int MGMSG_REQ_CPLD_WR = 0x400D;
+        const int MGMSG_GET_CPLD_WR = 0x400E;
+        const int MGMSG_TASK_CONTROL = 0x400F;
+        const int MGMSG_BOARD_REQ_STATUSUPDATE = 0x4010;
+        const int MGMSG_BOARD_GET_STATUSUPDATE = 0x4011;
+        const int MGMSG_MOD_REQ_JOYSTICK_INFO = 0x4012;
+        const int MGMSG_MOD_GET_JOYSTICK_INFO = 0x4013;
+        const int MGMSG_MOD_SET_JOYSTICK_MAP_IN = 0x4014;
+        const int MGMSG_MOD_REQ_JOYSTICK_MAP_IN = 0x4015;
+        const int MGMSG_MOD_GET_JOYSTICKS_MAP_IN = 0x4016;
+        const int MGMSG_MOD_SET_JOYSTICK_MAP_OUT = 0x4017;
+        const int MGMSG_MOD_REQ_JOYSTICK_MAP_OUT = 0x4018;
+        const int MGMSG_MOD_GET_JOYSTICKS_MAP_OUT = 0x4019;
+        const int MGMSG_MOD_SET_SYSTEM_DIM = 0x401A;
+        const int MGMSG_MOD_REQ_SYSTEM_DIM = 0x401B;
+        const int MGMSG_MOD_GET_SYSTEM_DIM = 0x401C;
+        const int MGMSG_SET_STORE_POSITION = 0x4021;
+        const int MGMSG_REQ_STORE_POSITION = 0x4022;
+        const int MGMSG_GET_STORE_POSITION = 0x4023;
+        const int MGMSG_SET_GOTO_STORE_POSITION = 0x4024;
+
+        // Stepper
+        const int MGMSG_MCM_SET_SOFT_LIMITS = 0x403D;
+        const int MGMSG_MCM_SET_HOMEPARAMS = 0x403E;
+        const int MGMSG_MCM_REQ_HOMEPARAMS = 0x403F;
+        const int MGMSG_MCM_GET_HOMEPARAMS = 0x4040;
+        const int MGMSG_MCM_SET_STAGEPARAMS = 0x4041;
+        const int MGMSG_MCM_REQ_STAGEPARAMS = 0x4042;
+        const int MGMSG_MCM_GET_STAGEPARAMS = 0x4043;
+        const int MGMSG_MCM_REQ_STATUSUPDATE = 0x4044;
+        const int MGMSG_MCM_GET_STATUSUPDATE = 0x4045;
+        const int MGMSG_MCM_SET_ABS_LIMITS = 0x4046;
+        const int MGMSG_MCM_MOT_SET_LIMSWITCHPARAMS = 0x4047;
+        const int MGMSG_MCM_MOT_REQ_LIMSWITCHPARAMS	= 0x4048;
+        const int MGMSG_MCM_MOT_GET_LIMSWITCHPARAMS = 0x4049;
+        const int MGMSG_MCM_MOT_MOVE_BY = 0x4050;	// Added for Texas TIDE autofocus
+        const int MGMSG_MCM_REQ_STEPPER_LOG = 0x4051;
+        const int MGMSG_MCM_GET_STEPPER_LOG = 0x4052;
+
+        // Shutter
+        const int MGMSG_MCM_SET_SHUTTERPARAMS = 0x4064;
+        const int MGMSG_MCM_REQ_SHUTTERPARAMS = 0x4065;
+        const int MGMSG_MCM_GET_SHUTTERPARAMS = 0x4066;
+
+        // Slider IO
+        const int MGMSG_MCM_SET_MIRROR_STATE = 0x4087;
+        const int MGMSG_MCM_REQ_MIRROR_STATE = 0x4088;
+        const int MGMSG_MCM_GET_MIRROR_STATE = 0x4089;
+        const int MGMSG_MCM_SET_MIRROR_PARAMS = 0x408A;
+        const int MGMSG_MCM_REQ_MIRROR_PARAMS = 0x408B;
+        const int MGMSG_MCM_GET_MIRROR_PARAMS = 0x408C;
+        const int MGMSG_MCM_SET_MIRROR_PWM_DUTY = 0x408D;
+        const int MGMSG_MCM_REQ_MIRROR_PWM_DUTY = 0x408E;
+        const int MGMSG_MCM_GET_MIRROR_PWM_DUTY = 0x408F;
+
+        // Synchronized Motion   
+        const int MGMSG_MCM_SET_HEX_POSE = 0x40A0;
+        const int MGMSG_MCM_REQ_HEX_POSE = 0x40A1;
+        const int MGMSG_MCM_GET_HEX_POSE = 0x40A2;
+        const int MGMSG_MCM_SET_SYNC_MOTION_PARAM = 0x40A3;
+        const int MGMSG_MCM_REQ_SYNC_MOTION_PARAM = 0x40A4;
+        const int MGMSG_MCM_GET_SYNC_MOTION_PARAM = 0x40A5;
+        const int MGMSG_MCM_SET_SYNC_MOTION_POINT = 0x40A6;
+
+        // OTM Laser
+        const int MGMSG_LA_DISABLEAIMING = 0x40C7;
+        const int MGMSG_LA_ENABLEAIMING = 0x40C8;
+
+        //*****************************************************************
+
+
+        const string THORLABS_VID = "1313";
+        const string THORLABS_MCM_PID = "2003";
+
+        const string FTDI_VID = "0403";
+        const string FTDI_PID = "6015";
+        #endregion
+
+        public bool IsConnected { get; set; }
+
+        public MainWindow()
+        {
+            InitializeComponent();
+#if false
+            if (HasTouchInput())
+            {
+                this.WindowState = WindowState.Maximized;
+                this.WindowStyle = WindowStyle.None;
+                this.Topmost = true;
+            }
+#endif
+            lbl_con_status.Dispatcher.Invoke(new Action(() =>
+            { lbl_con_status.Content = "Disconnected"; }));
+
+           // system_tab_init();
+
+            this.Closed += MainWindow_Closed;
+            this.Loaded += MainWindow_Loaded;
+
+
+            //Attach stepper1EncData to the LineSeriesStepper1_EncCounts you have created
+            LineSeriesStepper1_EncCounts.DataSeries = stepper1EncData;
+            //LineSeriesStepper1_EncCounts.Stroke = Colors.Yellow;
+            stepper1EncData.SeriesName = "Stepper1 Encoder Counts";
+
+            //Attach stepper1StepData to the LineSeriesStepper1_StepCounts you have created
+            LineSeriesStepper1_StepCounts.DataSeries = stepper1StepData;
+            //LineSeriesStepper1_StepCounts.Stroke = Colors.Green;
+            stepper1StepData.SeriesName = "Stepper1 Step Counts";
+
+            //Attach stepper2EncData to the LineSeriesStepper1_EncCounts you have created
+            LineSeriesStepper2_EncCounts.DataSeries = stepper2EncData;
+            //LineSeriesStepper2_EncCounts.Stroke = Colors.BlueViolet;
+            stepper2EncData.SeriesName = "Stepper2 Encoder Counts";
+
+            //Attach stepper1StepData to the LineSeriesStepper1_StepCounts you have created
+            LineSeriesStepper2_StepCounts.DataSeries = stepper2StepData;
+            //LineSeriesStepper2_StepCounts.Stroke = Colors.Red;
+            stepper2StepData.SeriesName = "Stepper2 Step Counts";
+
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            IsConnected = false;
+            _serialPort = new SerialPort();
+
+      
+#if false
+            //read com port in from settings file
+            try
+            {
+                using (StreamReader sr = new StreamReader("settings.txt"))
+                {
+                    address = sr.ReadToEnd();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error with settings file.");
+            }
+#else
+        //    address = FindMCMPortNames();
+#endif
+            // Set the tab you want opened when UI starts
+
+            MCM6000_tabs.SelectedItem = ControlTab; // Steppers, USB_host system_tab;
+            current_main_tab = MCM6000_tabs.SelectedValue as TabItem;
+
+            _timer1 = new System.Timers.Timer(50);
+            _timer1.Elapsed += _timer1_Elapsed;
+            _timer1.AutoReset = true;
+            _timer1.Start();
+        }
+
+        private string FindMCMPortNames()
+        {
+            int index = 0, deviceCount = 0;
+            string nameData = string.Empty;
+            string portName = string.Empty;
+            string hashName = string.Empty;
+            string[] portNames;
+            String pattern = String.Format("VID_{0}.*&.*PID_{1}", THORLABS_VID, THORLABS_MCM_PID);
+
+            Regex _rx = new Regex(pattern, RegexOptions.IgnoreCase);
+
+            String ftdi_pattern = String.Format("VID_{0}.*PID_{1}", FTDI_VID, FTDI_PID);
+            Regex _rx1 = new Regex(ftdi_pattern, RegexOptions.IgnoreCase);
+
+            RegistryKey rk1 = Registry.LocalMachine;
+            RegistryKey rkftdi = Registry.LocalMachine;
+            RegistryKey usbserEnum;
+            RegistryKey ftdiEnum;
+            try
+            {
+                usbserEnum = rk1.OpenSubKey("SYSTEM\\CurrentControlSet\\services\\usbser\\Enum");
+
+                try
+                {
+                    ftdiEnum = rkftdi.OpenSubKey("SYSTEM\\CurrentControlSet\\services\\FTDIBUS\\Enum");
+                }
+                catch (Exception ex)
+                {
+                    ftdiEnum = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                //    MessageBox.Show("USB Device is not connected.", "Error");
+                return portName;
+            }
+
+
+            // Find how many MCM6000 devices in bootloader mode are connected and save the HID hashvalue for each one
+            if (usbserEnum != null)
+            {
+                while (null != usbserEnum.GetValue((string)index.ToString(), null))
+                {
+                    nameData = (string)usbserEnum.GetValue((string)index.ToString());
+                    if (_rx.Match(nameData).Success)
+                    {
+                        deviceCount++;
+                        portNames = _rx.Split(nameData);
+                        // Save the string after PID_###&VID###, this is the hashValue of the bootloader device, use substring to ignore the '\'
+                        if (1 < portNames.Length)
+                        {
+                            hashName = portNames[1].Substring(1);
+                        }
+                    }
+
+                    index++;
+                }
+            }
+
+            if(ftdiEnum != null)
+            {
+                while (null != ftdiEnum.GetValue((string)index.ToString(), null))
+                {
+                    nameData = (string)ftdiEnum.GetValue((string)index.ToString());
+                    if (_rx1.Match(nameData).Success)
+                    {
+                        deviceCount++;
+                        ftdi_flag = true;
+                        portNames = _rx1.Split(nameData);
+                        // Save the string after PID_###&VID###, this is the hashValue of the bootloader device, use substring to ignore the '\'
+                        if (1 < portNames.Length)
+                        {
+                            hashName = portNames[1].Substring(1);
+                        }
+                    }
+
+                    index++;
+                }
+            }
+
+            if (1 < deviceCount)
+            {
+              //  MessageBox.Show("Too many devices are connected, make sure only the device you want to update is connected.");
+                return portName;
+            }
+
+            if (1 > deviceCount)
+            {
+              //  MessageBox.Show("Could not find any connected device", "Error");
+                return portName;
+            }
+
+            //Grab the HID generated by Windows as a hashvalue and use it to find the correct COM port
+            RegistryKey rk2 = rk1.OpenSubKey("SYSTEM\\CurrentControlSet\\Enum");
+            foreach (String s3 in rk2.GetSubKeyNames())
+            {
+                if (!ftdi_flag)
+                {
+                    RegistryKey rk3 = rk2.OpenSubKey(s3);
+                    foreach (String s in rk3.GetSubKeyNames())
+                    {
+
+                        if (_rx.Match(s).Success)
+                        {
+                            RegistryKey rk4 = rk3.OpenSubKey(s);
+                            foreach (String s2 in rk4.GetSubKeyNames())
+                            {
+                                if (0 == s2.CompareTo(hashName))
+                                {
+                                    RegistryKey rk5 = rk4.OpenSubKey(s2);
+                                    RegistryKey rk6 = rk5.OpenSubKey("Device Parameters");
+                                    portName = (string)rk6.GetValue("PortName");
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    RegistryKey rk3 = rk2.OpenSubKey(s3);
+                    foreach (String s in rk3.GetSubKeyNames())
+                    {
+                        ftdi_pattern = String.Format("VID_{0}.*PID_{1}.*{2}.*", FTDI_VID, FTDI_PID, hashName);
+                        _rx1 = new Regex(ftdi_pattern, RegexOptions.IgnoreCase);
+
+                        if (_rx1.Match(s).Success)
+                        {
+                            RegistryKey rk4 = rk3.OpenSubKey(s);
+
+                            foreach (String s2 in rk4.GetSubKeyNames())
+                            {
+                                RegistryKey rk5 = rk4.OpenSubKey(s2);
+                                RegistryKey rk6 = rk5.OpenSubKey("Device Parameters");
+                                if (null != rk6)
+                                {
+                                    portName = (string)rk6.GetValue("PortName");
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+            if (0 == portName.CompareTo(string.Empty))
+            {
+             //   MessageBox.Show("Cannot retrieve COM port Number from device parameters: " + hashName, "Error");
+            }
+            return portName;
+        }
+
+        private void MainWindow_Closed(object sender, EventArgs e)
+        {
+            /*
+               IsConnected = false;
+               _timer1.Enabled = false;
+               _timer1.Stop();
+               // _serialPort.Close();
+               usb_disconnect();*/
+        }
+
+        private void usb_connect()
+        {
+
+            address = FindMCMPortNames();
+
+            byte[] hwinfo = new byte[256];
+            byte[] bytesToSend;
+            try
+            {
+                _serialPort.PortName = address;
+                _serialPort.BaudRate = 115200;// 115200;// needs to be set for tablet
+                _serialPort.Parity = System.IO.Ports.Parity.None;
+                _serialPort.DataBits = 8;
+                _serialPort.StopBits = System.IO.Ports.StopBits.One;
+
+                if (ftdi_flag)
+                {
+                    _serialPort.BaudRate = 921600;// 460800 500000 921600;
+                }
+                _serialPort.Open();
+
+                _serialPort.DiscardOutBuffer();
+                _serialPort.DiscardInBuffer();
+                Thread.Sleep(500);
+
+                byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_MCM_HW_REQ_INFO));
+                bytesToSend = new byte[6] { command[0], command[1], 0x00, 0x00, MOTHERBOARD_ID, HOST_ID };
+
+            send_again:
+                _serialPort.Write(bytesToSend, 0, 6);
+
+                int timeout = 0;
+                while (_serialPort.BytesToRead < 89)
+                {
+                    if (timeout > 500)
+                    {
+                        goto send_again;
+                    }
+                    timeout++;
+                    Thread.Sleep(1);
+                };  //block waiting for whole response
+                _serialPort.Read(hwinfo, 0, _serialPort.BytesToRead);
+
+                hardware_info(hwinfo);
+
+                //attach interrupt handler
+                _serialPort.DataReceived += _serialPort_DataReceived;
+
+
+                lbl_con_status.Dispatcher.Invoke(new Action(() =>
+                {
+                    lbl_con_status.Content = "Connected";
+                    lbl_con_status.Foreground = Brushes.White;
+                    MCM6000_tabs.IsEnabled = true;
+                }));
+                Thread.Sleep(50);
+
+                //setup and start timer
+                _timer1.Interval = 15;
+                IsConnected = true;
+
+                // Request the system dim value for tablet and joystick led's
+                byte[] command_2 = BitConverter.GetBytes(Convert.ToInt32(MGMSG_MOD_REQ_SYSTEM_DIM));
+                bytesToSend = new byte[6] { command_2[0], command_2[1], 0x00, 0x00, MOTHERBOARD_ID, HOST_ID };
+                usb_write(bytesToSend, 6);
+                Thread.Sleep(50);
+
+                // grab info needed for each card type
+                for (byte i = 0; i < NUMBER_OF_BOARD_SLOTS; i++)
+                {
+                    switch (card_type[i])
+                    {
+                        case (Int16)CardTypes.ST_Stepper_type:
+                        case (Int16)CardTypes.High_Current_Stepper_Card:
+                        case (Int16)CardTypes.High_Current_Stepper_Card_HD:
+                        case (Int16)CardTypes.ST_Invert_Stepper_BISS_type:
+                        case (Int16)CardTypes.ST_Invert_Stepper_SSI_type:
+                            //  we need the counts_per_unit &   nm_per_count  
+                            // request Stepper drive params
+                            build_stepper_control(i);
+                            byte slot = (byte)(Convert.ToByte(i) + 0x21);
+                            command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_MCM_REQ_STAGEPARAMS));
+                            bytesToSend = new byte[6] { command[0], command[1], 0x00, 0x00, slot, HOST_ID };
+                            Thread.Sleep(10);  // for some reason we need this delay here 
+                            usb_write(bytesToSend, 6);
+                            Thread.Sleep(50);
+
+                            // request Jog params
+                            command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_MOT_REQ_JOGPARAMS));
+                            bytesToSend = new byte[6] { command[0], command[1], 0x00, 0x00, slot, HOST_ID };
+                            usb_write(bytesToSend, 6);
+                            Thread.Sleep(50);
+
+                            // request Limit params
+                            command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_MCM_MOT_REQ_LIMSWITCHPARAMS));
+                            bytesToSend = new byte[6] { command[0], command[1], 0x00, 0x00, slot, HOST_ID };
+                            usb_write(bytesToSend, 6);
+                            Thread.Sleep(50);
+                            break;
+
+                        case (Int16)CardTypes.Servo_type:
+                            build_servo_control(i);
+                            request_postion(i);
+                            break;
+
+                        case (Int16)CardTypes.Shutter_type:
+                            build_shutter_controls(i);
+                            break;
+
+                        case (Int16)CardTypes.OTM_Dac_type:
+                            build_otm_dac_controls(i);
+                            break;
+
+                        case (Int16)CardTypes.OTM_RS232_type:
+                            build_otm_rs232_controls(i);
+                            request_laser_params(1, i);
+                            break;
+
+                        case (Int16)CardTypes.Slider_IO_type:
+                            build_io_control(i);
+                            request_mirror_postions(i, 0);
+                            request_mirror_postions(i, 1);
+                            request_mirror_postions(i, 2);
+                            break;
+
+                        case (Int16)CardTypes.Shutter_4_type:
+                            build_shutter_4_controls(i);
+                            request_shutter_4_state(i);
+                            break;
+
+                        case (Int16)CardTypes.Piezo_Elliptec_type:
+                            build_piezo_elliptec_control(i);
+                            break;
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                address = FindMCMPortNames();
+                Thread.Sleep(500);
+            }
+        }
+
+        private void usb_disconnect()
+        {
+            try
+            {
+                lbl_con_status.Dispatcher.Invoke(new Action(() =>
+                {
+                    lbl_con_status.Content = "Disconnected";
+                    lbl_con_status.Foreground = Brushes.Red;
+                    MCM6000_tabs.IsEnabled = false;
+                }));
+
+                _timer1.Interval = 1000;
+                _serialPort.DataReceived -= _serialPort_DataReceived;
+
+                if (_serialPort.IsOpen == true)
+                {
+                    _serialPort.Close();
+                }
+                IsConnected = false;
+
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    // clear all stach panels on Control tab
+                    brd_slot_1.Children.Clear();
+                    brd_slot_2.Children.Clear();
+                    brd_slot_3.Children.Clear();
+                    brd_slot_4.Children.Clear();
+                    brd_slot_5.Children.Clear();
+                    brd_slot_6.Children.Clear();
+                    brd_slot_7.Children.Clear();
+                    brd_slot_8.Children.Clear();
+                }));
+
+
+            }
+            catch (Exception ex)
+            {
+                // MessageBox.Show(ex.Message);
+            }
+        }
+
+        private bool HasTouchInput()
+        {
+            foreach (TabletDevice tabletDevice in Tablet.TabletDevices)
+            {
+                //Only detect if it is a touch Screen not how many touches (i.e. Single touch or Multi-touch)
+                if (tabletDevice.Type == TabletDeviceType.Touch)
+                    return true;
+            }
+
+            return false;
+        }
+
+        byte slot_num_to_update = 0;
+
+        private void _timer1_Elapsed(Object source, ElapsedEventArgs e)
+        {
+            bool card_detect = false;
+            _timer1.Enabled = false;
+
+
+            if (!IsConnected)
+            {
+                usb_connect();
+                Thread.Sleep(1000);
+            }
+
+#if false
+           // test
+            if (test == true)
+            {
+                bool update = false;
+                _timer1.Interval = test_interval;
+
+
+                if (test_state == 0)
+                    test_state = 1;
+                else
+                    test_state = 0;
+
+                Byte slot_number = 0;
+                Byte slot_id = (Byte)(slot_number | 0x21);
+                byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_MOT_MOVE_JOG));
+
+                byte[] bytesToSend = new byte[6] { command[0], command[1], 0, test_state, slot_id, HOST_ID };
+
+                usb_write(bytesToSend, 6);
+            }
+            else
+            {
+#endif
+            if (current_main_tab == ControlTab)
+            {
+                _timer1.Interval = 20;  
+
+                while (!card_detect)
+                {
+                    switch (card_type[slot_num_to_update])
+                    {
+                        case (Int16)CardTypes.ST_Stepper_type:
+                        case (Int16)CardTypes.High_Current_Stepper_Card:
+                        case (Int16)CardTypes.High_Current_Stepper_Card_HD:
+                        case (Int16)CardTypes.ST_Invert_Stepper_BISS_type:
+                        case (Int16)CardTypes.ST_Invert_Stepper_SSI_type:
+                            mcm_stepper_update(slot_num_to_update);
+                            card_detect = true;
+                            break;
+
+                        case (Int16)CardTypes.Servo_type:
+                            request_postion(slot_num_to_update);
+                            card_detect = true;
+                            break;
+
+                        case (Int16)CardTypes.Shutter_type:
+                            request_shutter_state(slot_num_to_update);
+                            card_detect = true;
+                            break;
+
+                        case (Int16)CardTypes.OTM_Dac_type:
+                            card_detect = true;
+                            break;
+
+                        case (Int16)CardTypes.OTM_RS232_type:
+                            request_laser_params(12, slot_num_to_update);
+                            card_detect = true;
+                            break;
+
+                        case (Int16)CardTypes.Slider_IO_type:
+                           // TODO PR request_mirror_postions(slot_num_to_update, ParallelLoopResult thru channels);
+                          //  card_detect = true;
+                            break;
+                            
+                        case (Int16)CardTypes.Shutter_4_type:
+                            request_shutter_4_state(slot_num_to_update);
+                            card_detect = true;
+                            break;
+
+                        case (Int16)CardTypes.Piezo_Elliptec_type:
+                            elliptec_update(slot_num_to_update);
+                            card_detect = true;
+                            break;
+
+                        default:
+                            card_detect = false;
+                            break;
+
+                    }
+                    slot_num_to_update++;
+                    if (slot_num_to_update >= NUMBER_OF_BOARD_SLOTS)
+                    {
+                        slot_num_to_update = 0;
+                        card_detect = true;
+                    }
+                }
+
+            }
+            else if (current_main_tab == system_tab)
+            {
+                _timer1.Interval = 500;
+                board_update_request();
+            }
+            else if (current_main_tab == hexapod_tab)
+            {
+                _timer1.Interval = 100;
+                hexapod_update_request();
+            }
+            else if (current_main_tab == log_tab)
+            {
+                _timer1.Interval = 10;
+                stepper_log_request(SLOT2);
+            }
+            //     }
+            _timer1.Enabled = true;
+        }
+
+        private void usb_write(byte[] bytesToSend, int length)
+        {
+            if (IsConnected)
+            {
+                try
+                {
+                    _serialPort.Write(bytesToSend, 0, length);
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show(ex.Message);
+
+                    usb_disconnect();
+                }
+            }
+            else
+            {
+                usb_connect();
+            }
+        }
+
+        private void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                header = new byte[6];
+
+                if (_serialPort.BytesToRead > 5)
+                {
+                    _serialPort.Read(header, 0, 6);
+                }
+                else
+                    return;
+
+                if ((header[4] & 0x80) != 0)
+                {
+                    int length = header[2] | header[3] << 8;
+                    if (length > 100)
+                        return;
+                    while (_serialPort.BytesToRead < length) { };
+                    ext_data = new byte[length];
+                    _serialPort.Read(ext_data, 0, length);
+                    parse_apt();
+                }
+                else
+                {
+                    ext_data = new byte[1] { 0 };
+                    parse_apt();
+                }
+         //       _timer1.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+               // _timer1.Enabled = true;
+            }
+        }
+
+        private void parse_apt()
+        {
+            int command = header[0] | header[1] << 8;
+            byte slot;
+            switch (command)
+            {
+                case MGMSG_MOT_GET_STATUSUPDATE:
+                    stepper_status_update();
+                    break;
+
+                case MGMSG_MCM_GET_STATUSUPDATE:
+                    mcm_stepper_status_update();
+                    break;
+
+                case MGMSG_MCM_GET_STEPPER_LOG:
+                    stepper_log_update();
+                    break;
+
+                case MGMSG_MOT_GET_ENCCOUNTER:
+                    if (card_type[ext_data[0]] == (Int16)CardTypes.Piezo_Elliptec_type)
+                        elliptec_status_update();
+                    else
+                        stepper_status_update();
+                    break;
+
+                case MGMSG_MOD_GET_JOYSTICK_INFO:
+                    usb_device_info();
+                    break;
+
+                case MGMSG_MOD_GET_JOYSTICKS_MAP_IN:
+                    usb_device_mapping_in();
+                    break;
+
+                case MGMSG_MOD_GET_JOYSTICKS_MAP_OUT:
+                    usb_device_mapping_out();
+                    break;
+
+                case MGMSG_GET_CPLD_WR:
+                    CPLD_return_read_data();
+                    break;
+
+                case MGMSG_MCM_MOT_GET_LIMSWITCHPARAMS:
+                    stepper_get_limits_params();
+                    break;
+
+                case MGMSG_MCM_GET_HOMEPARAMS:
+                    stepper_get_home_params();
+                    break;
+
+                case MGMSG_MCM_GET_STAGEPARAMS:
+                    stepper_get_drive_params();
+                    break;
+
+                case MGMSG_MOT_GET_JOGPARAMS:
+                    stepper_get_jog_params();
+                    break;
+
+                case MGMSG_MOT_GET_MFF_OPERPARAMS:
+                    servo_get_params();
+                    break;
+
+                case MGMSG_MOT_GET_BUTTONPARAMS:
+                    servo_status_update();
+                    break;
+
+                case MGMSG_BOARD_GET_STATUSUPDATE:
+                    board_update();
+                    break;
+
+                case MGMSG_MCM_GET_HEX_POSE:
+                    hexapod_update();
+                    break;
+
+                case MGMSG_MOT_GET_DCPIDPARAMS:
+                    //hexapod_update();
+                    stepper_get_pid_params();
+                    break;
+
+                case MGMSG_MOT_GET_SOL_STATE:
+                    slot = (byte)(Convert.ToByte(header[5]) - 0x21);
+                    if (card_type[slot] == (Int16)CardTypes.Shutter_4_type)
+                        shutter_4_get_state();
+                    else
+                        shutter_get_state();
+                    break;
+
+                case MGMSG_MCM_GET_SHUTTERPARAMS:
+                    if (card_type[ext_data[0]] == (Int16)CardTypes.Shutter_4_type)
+                        shutter_4_get_params();
+                    else
+                    shutter_get_params();
+                    break;
+
+                case MGMSG_LA_GET_PARAMS:
+                    get_laser_params();
+                    break;
+
+                case MGMSG_GET_CABLE:
+                    system_tab_get_cables();
+                    break;
+
+                case MGMSG_GET_CABLE_BOARD:
+                    system_tab_get_cables_board();
+                    break;
+
+                case MGMSG_MCM_GET_SYNC_MOTION_PARAM:
+                    synchonized_motion_get_state();
+                    break;
+
+                case MGMSG_MOD_GET_SYSTEM_DIM:
+                    system_dim_value_req();
+                    break;
+
+                case MGMSG_MCM_GET_MIRROR_STATE:
+                    mirror_position_get();
+                    break;
+
+                case MGMSG_MCM_GET_MIRROR_PARAMS:
+                    mirrors_get_params();
+                    break;
+
+                case MGMSG_GET_STORE_POSITION:
+                    if (card_type[ext_data[0]] == (Int16)CardTypes.Piezo_Elliptec_type)
+                        elliptec_get_saved_positions();
+                    else
+                    stepper_get_saved_positions();
+                    break;
+            }
+        }
+
+        private void MCM6000_tabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            TabItem current_main_tab_temp = MCM6000_tabs.SelectedValue as TabItem;
+            if (e.Source is TabControl) // This is a soultion of those problem.
+            {
+                if (current_main_tab_temp == current_main_tab)
+                    return;
+
+                else if (current_main_tab_temp.Name == "USB_host")
+                {
+                    usb_host_update();
+                }
+                else if (current_main_tab_temp.Name == "system_tab")
+                {
+                    system_tab_init();
+                }
+                else if (current_main_tab_temp.Name == "vritual_motion")
+                {
+                    motion_tab_init();
+                }
+                current_main_tab = MCM6000_tabs.SelectedValue as TabItem;
+            }
+        }
+
+        private void btUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("This will put the device in Bootloader Mode. Continue only if you have new firmware hex file. Do you want to continue?", "Firmware Update Question", MessageBoxButton.YesNoCancel);
+            if (result == MessageBoxResult.Yes)
+            {
+                byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_GET_UPDATE_FIRMWARE));
+                byte[] bytesToSend = new byte[6] { command[0], command[1], 1, 0x00, MOTHERBOARD_ID, HOST_ID };
+                usb_write(bytesToSend, 6);
+            }
+            else
+            {
+
+            }
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void system_dim_value_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+            byte dim_value = (byte) system_dim_value.Value;
+
+            // MGMSG_MOD_SET_JOYSTICK_MAP_IN
+            byte[] command = BitConverter.GetBytes(Convert.ToInt32(MGMSG_MOD_SET_SYSTEM_DIM));
+            byte[] bytesToSend = new byte[] { command[0], command[1], dim_value, 0, Convert.ToByte(MOTHERBOARD_ID), HOST_ID };
+
+            usb_write(bytesToSend, 6);
+            Thread.Sleep(25);
+        }
+
+        private void system_dim_value_req()
+        {
+            lbl_con_status.Dispatcher.Invoke(new Action(() =>
+            {
+                system_dim_value.Value = header[2];
+            }));
+
+        }
+
+        private void CartesianChart_Loaded_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+
+#if false
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            test = true;
+            test_interval = Convert.ToDouble(test_text.Text);
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            test = false;
+        }
+#endif
+
+    }
+}

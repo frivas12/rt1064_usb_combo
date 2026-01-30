@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+
+<StageParameters>
+    <Signature>
+        <DefaultSlotType value="19" />
+        <DeviceID value="1" />
+    </Signature>
+    <Encoder>
+        <NmPerCount value="212"/>
+        <EncoderType value="1"/>
+        <IndexDelta min="0" step="0"/>
+    </Encoder>
+    <Limit>
+        <HardLimit cw="130" ccw="130"/>
+        <SoftLimit cw="2147483647" ccw="-2147483648"/>
+        <AbsLimit high="2147483647" low="-2147483648"/>
+        <Mode value="1"/>
+    </Limit>
+    <Config>
+        <StageID value="19"/>
+        <AxisID value="2"/>
+        <AxisSerial value="0"/>
+        <CountsPerUnit value="8.88900"/>
+        <Position min="0" max=" 0"/>
+        <CollisionThreshold value="0"/>
+    </Config>
+    <Drive>
+        <KVal>
+            <Hold value="6"/>
+            <Run value="39"/>
+            <Accel value="39"/>
+            <Decel value="39"/>
+        </KVal>
+        <Slope>
+            <Start value="25"/>
+            <FinalAccel value="68"/>
+            <FinalDecel value="68"/>
+        </Slope>
+        <Acceleration max="500" min="500"/>
+        <Speed max="40" min="0"/>
+        <FullStepSpeed value="1023"/>
+        <IntersectSpeed value="2800"/>
+        <StallThreshold value="63"/>
+        <OCDThreshold value="15"/>
+        <StepMode value="7"/>
+        <ICConfig value="3720"/>
+        <GateDriverConfig value="0"/>
+        <ApproachVelocity value="500"/>
+        <Deadband value="1"/>
+        <Backlash value="0"/>
+        <KickoutTime value="50"/>
+    </Drive>
+    <Flags>
+        <Flags value="59"/>
+    </Flags>
+    <Homing>
+        <Mode value="0"/>
+        <Direction value="1"/>
+        <LimitSwitch value="1"/>
+        <Velocity value="80"/>
+        <OffsetDistance value="0"/>
+    </Homing>
+    <Jog>
+        <Mode value="0" />
+        <StepSize value="1000" />
+        <Velocity min="0" max="0" />
+        <Accel value="0" />
+        <StopMode value="0" />
+    </Jog>
+    <PID>
+        <Kp value="800"/>
+        <Ki value="0"/>
+        <Kd value="0"/>
+        <IMax value="0"/>
+        <FilterControl value="0"/>
+    </PID>
+    <Store>
+        <Position index="1"  value="2147483647"/>
+        <Position index="2"  value="2147483647"/>
+        <Position index="3"  value="2147483647"/>
+        <Position index="4"  value="2147483647"/>
+        <Position index="5"  value="2147483647"/>
+        <Position index="6"  value="2147483647"/>
+        <Position index="7"  value="2147483647"/>
+        <Position index="8"  value="2147483647"/>
+        <Position index="9"  value="2147483647"/>
+        <Position index="10" value="2147483647"/>
+        <Deadband value="0"/>
+    </Store>
+</StageParameters>
+
+

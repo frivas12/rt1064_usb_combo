@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+
+<OneWire>
+    <Signature>
+        <DefaultSlotType value="10"/>
+        <DeviceID value="0"/>
+    </Signature>
+    <PartNumber value="40-0321" />
+    <DeviceConfigurations/>
+    <ConfigEntries>
+    </ConfigEntries>
+</OneWire>

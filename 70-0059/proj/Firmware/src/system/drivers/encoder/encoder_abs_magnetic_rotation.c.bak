@@ -1,0 +1,114 @@
+/**
+ * @file encoder_abs_magnetic_rotation.c
+ *
+ * @brief Functions for ???
+ *
+ */
+
+#include <asf.h>
+#include <encoder.h>
+#include <encoder_abs_magnetic_rotation.h>
+#include <cpld.h>
+#include <pins.h>
+
+/****************************************************************************
+ * Private Data
+ ****************************************************************************/
+
+/****************************************************************************
+ * Function Prototypes
+ ****************************************************************************/
+
+/****************************************************************************
+ * Interrupt Handler
+ ****************************************************************************/
+
+/****************************************************************************
+ * Private Functions
+ ****************************************************************************/
+
+/****************************************************************************
+ * Public Functions
+ ****************************************************************************/
+void reset_abs_magnetic_rotation_encoder(uint8_t slot)
+{
+#if 1
+	switch ((uint8_t) slot)
+	{
+	case SLOT_1:
+		pin_high(PIN_ADC_1); // OFF
+		vTaskDelay(pdMS_TO_TICKS(10));
+		pin_low(PIN_ADC_1); // ON
+		break;
+
+	case SLOT_2:
+		pin_high(PIN_ADC_2); // OFF
+		vTaskDelay(pdMS_TO_TICKS(10));
+		pin_low(PIN_ADC_2); // ON
+		break;
+	case SLOT_3:
+		pin_high(PIN_ADC_3); // OFF
+		vTaskDelay(pdMS_TO_TICKS(10));
+		pin_low(PIN_ADC_3); // ON
+		break;
+	case SLOT_4:
+		pin_high(PIN_ADC_4); // OFF
+		vTaskDelay(pdMS_TO_TICKS(10));
+		pin_low(PIN_ADC_4); // ON
+		break;
+	case SLOT_5:
+		pin_high(PIN_ADC_5); // OFF
+		vTaskDelay(pdMS_TO_TICKS(10));
+		pin_low(PIN_ADC_5); // ON
+		break;
+	case SLOT_6:
+		pin_high(PIN_ADC_6); // OFF
+		vTaskDelay(pdMS_TO_TICKS(10));
+		pin_low(PIN_ADC_6); // ON
+		break;
+	case SLOT_7:
+		pin_high(PIN_ADC_7); // OFF
+		vTaskDelay(pdMS_TO_TICKS(10));
+		pin_low(PIN_ADC_7); // ON
+		break;
+	}
+	vTaskDelay(pdMS_TO_TICKS(10));
+#endif
+}
+
+void set_abs_magnetic_rotation_encoder_position(uint8_t slot, int32_t counts)
+{
+
+}
+
+int32_t get_abs_magnetic_rotation_encoder_counts(uint8_t slot, Encoder *enc)
+{
+	int32_t counts = 0;
+	uint8_t temp = 0;
+	uint8_t spi_tx_rx_data[3];
+
+	/*Set SSI high*/
+	set_reg(C_SET_STEPPER_ENC_NSL_DI, slot, 0, 1);
+
+	spi_tx_rx_data[0] = 0x00;
+	spi_tx_rx_data[1] = 0x00;
+	spi_tx_rx_data[2] = 0x00;
+
+	spi_transfer(SPI_MAG_SENSOR_READ, spi_tx_rx_data, 3);
+
+	/*Set SSI low*/
+	set_reg(C_SET_STEPPER_ENC_NSL_DI, slot, 0, 0);
+
+	counts = (spi_tx_rx_data[0] << 8) + (spi_tx_rx_data[1] << 0);
+
+	enc->mlo = Tst_bits(spi_tx_rx_data[2],32);	/*False ok, magnet too close*/
+	enc->mhi = Tst_bits(spi_tx_rx_data[2],64);	/*False ok, magnet too far or EPI turret is out*/
+	enc->m_ready = Tst_bits(spi_tx_rx_data[2],128);	/*true ok*/
+
+	if (!enc->m_ready)
+	{
+		counts = enc->enc_pos;
+	}
+
+	return counts;
+}

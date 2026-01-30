@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<Ordering>
+    <Item index="0">
+        <StructID value="2" />          <!--Filter on struct ID-->
+    </Item>
+    <Item index="1">
+        <StructID value="4" />          <!--Filter on struct ID-->
+    </Item>
+    <Item index="2">
+        <StructID value="7" />          <!--Filter on struct ID-->
+    </Item>
+    <Item index="3">
+        <StructID value="5" />          <!--Filter on struct ID-->
+    </Item>
+    <Item index="4">
+        <StructID value="1" />          <!--Filter on struct ID-->
+    </Item>
+</Ordering>

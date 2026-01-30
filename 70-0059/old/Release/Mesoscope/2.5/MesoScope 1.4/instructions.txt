@@ -1,0 +1,5 @@
+- Install NSIS 
+- In command prompt go to the current folder then execute the following commands in order:
+//Create unintstaller// 	"C:\Program Files (x86)\NSIS\makensis.exe" MesoScopeUI_Uninstaller_Script.nsi 
+//Create Installet//  		"C:\Program Files (x86)\NSIS\makensis.exe" MesoScopeUI_Installer_Script.nsi 
+//Sign Installer//		SignTool sign /f SignKey\key.pfx /p Shenzhen /t http://timestamp.verisign.com/scripts/timestamp.dll 70-0079-1.4_Installer.exe

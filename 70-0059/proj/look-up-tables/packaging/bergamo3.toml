@@ -1,0 +1,27 @@
+name = "bergamo3"
+version = "7.0.0"
+
+[[devices]]
+# X Stage
+slot_type = 19
+device_id = 4
+
+[[devices]]
+# Y Stage
+slot_type = 19
+device_id = 5
+
+[[devices]]
+# Z Stage
+slot_type = 19
+device_id = 6
+
+[[devices]]
+# R Stage
+slot_type = 19
+device_id = 7
+
+[[devices]]
+# E Stage
+slot_type = 19
+device_id = 8

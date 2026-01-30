@@ -1,0 +1,16 @@
+INSERT INTO StructTypes VALUES(0,'Encoder');
+INSERT INTO StructTypes VALUES(1,'Limit');
+INSERT INTO StructTypes VALUES(2,'Stepper Config');
+INSERT INTO StructTypes VALUES(3,'Stepper Drive');
+INSERT INTO StructTypes VALUES(4,'Stepper Flags');
+INSERT INTO StructTypes VALUES(5,'Stepper Home');
+INSERT INTO StructTypes VALUES(6,'Stepper Jog');
+INSERT INTO StructTypes VALUES(7,'Stepper PID');
+INSERT INTO StructTypes VALUES(8,'Stepper Store');
+INSERT INTO StructTypes VALUES(9,'Slider IO');
+INSERT INTO StructTypes VALUES(10,'Shutter 4');
+INSERT INTO StructTypes VALUES(11,'Servo');
+INSERT INTO StructTypes VALUES(12,'Servo-Shutter');
+INSERT INTO StructTypes VALUES(13,'Servo Store');
+INSERT INTO StructTypes VALUES(14,'Piezo');
+INSERT INTO StructTypes VALUES(65535,'Invalid');

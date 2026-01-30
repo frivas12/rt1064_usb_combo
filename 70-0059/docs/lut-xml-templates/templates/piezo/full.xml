@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<PiezoParameters>
+
+    <!--Both Hex and Decimal are accepted.-->
+    <ConfigID value="0x0000" />
+
+    <EncoderOn value="0" />
+    <GainFactor value="0" />
+
+    <PID>
+        <Kp value="0" />
+        <Ki value="0" />
+        <Kd value="0" />
+        <IMax value="0" />
+    </PID>
+
+</PiezoParameters>

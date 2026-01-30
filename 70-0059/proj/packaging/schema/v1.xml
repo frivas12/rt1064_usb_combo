@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <States>
+        <CDCState name="bootloader">
+            <Manufacturer>Thorlabs</Manufacturer>
+            <Product>Thorlabs MCM Bootloader</Product>
+            <Address>MOTHERBOARD</Address>
+            <MaximumCommandLength>544</MaximumCommandLength>
+        </CDCState>
+        <CDCState name="application">
+            <DisplayName>{{FGPN}}</DisplayName>
+            <Manufacturer>Thorlabs</Manufacturer>
+            <Product>{{FGPN}}</Product>
+            <Address>MOTHERBOARD</Address>
+            <Slots>8</Slots>
+            <MaximumCommandLength>0</MaximumCommandLength>
+        </CDCState>
+    </States>
+    <StateEdges>
+        <AptBlReset from="application" to="bootloader" />
+        <ApplicationJump from="bootloader" to="application" />
+    </StateEdges>
+    <Programmables>
+        <S70FirmwareTarget name="firmware" state="bootloader">
+            <Priority>4</Priority>
+        </S70FirmwareTarget>
+        <McmCpldTarget name="cpld" state="application">
+            <Priority>3</Priority>
+        </McmCpldTarget>
+        <McmLutTarget name="lut" state="application">
+            <Priority>2</Priority>
+            <FileNames>
+                <Name>lut.config</Name>
+                <Name>lut.device</Name>
+                <Name>lut.version</Name>
+            </FileNames>
+        </McmLutTarget>
+        <EfsFileTarget name="lut.device" state="application">
+            <Id>96</Id>
+            <Attributes>63</Attributes>
+            <Priority>2</Priority>
+        </EfsFileTarget>
+        <EfsFileTarget name="lut.config" state="application">
+            <Id>97</Id>
+            <Attributes>63</Attributes>
+            <Priority>2</Priority>
+        </EfsFileTarget>
+        <EfsFileTarget name="lut.version" state="application">
+            <Id>98</Id>
+            <Attributes>63</Attributes>
+            <Priority>1</Priority>
+        </EfsFileTarget>
+    </Programmables>
+    <VersionSources>
+        <McmHwInfo programmable="firmware" state="application">
+            <UsePrimary>true</UsePrimary>
+        </McmHwInfo>
+        <McmHwInfo programmable="cpld" state="application">
+            <UsePrimary>false</UsePrimary>
+        </McmHwInfo>
+        <LutVersionFile programmable="lut" state="application">
+            <Id>98</Id>
+        </LutVersionFile>
+    </VersionSources>
+    <PreferredState>application</PreferredState>
+</Device>

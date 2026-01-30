@@ -1,0 +1,74 @@
+<? xml version="1.0" ?>
+
+<!--Special Tags:  <Include href="path" /> & <Import href="path" xpath="xp" />-->
+<!--Include tag is short hand for <Import href="path" xpath="/" />-->
+<!--Import tag will replace itself with the element provided in the xpath setting.-->
+<!--All slots use 1 indexing.-->
+
+<System>
+
+    <!--For programming slot cards that have yet to be programmed.-->
+    <!--Slot IDs
+        2                   ST_Stepper_type
+        3       42-0093     ST_HC_Stepper_type
+        4       42-0098     Servo_type
+        5       42-0098     Shutter_type
+        6                   OTM_Dac_type
+        7                   OTM_RS232_type
+        8       42-0107     High_Current_Stepper_Card_HD
+        9       42-0104     Slider_IO_type
+        10      42-0108     Shutter_4_type
+        11                  Piezo_Elliptec_type
+        12      42-0113     ST_Invert_Stepper_BISS_type
+        13      42-0113     ST_Invert_Stepper_SSI_type
+        14      42-0123     Piezo_type
+        15      42-0128     MCM_Stepper_Internal_BISS_L6470
+        16      42-0128     MCM_Stepper_Internal_SSI_L6470
+        17      42-0129     MCM_Stepper_L6470_MicroDB15
+        18      42-0108     Shutter_4_type_REV6
+        19      42-0132     MCM_Stepper_LC_HD_DB15
+    -->
+    <Settings>
+        <!--Slot parameter starts at one.-->
+        <!--Value parameter accepts either the ID of the stage or the string of its enum-->
+        <!--If slot is not defined, it uses an auto-incremented value from the last defined slot.-->
+        <Card slot="1" type="15" static="1" />
+        <Card slot="2" type="18" />
+        <Card slot="3" type="16" device-detecton="false">
+            <!-- Allows a custom config to be loaded when the card is loaded.-->
+            <!-- Only available if device-detection is false.-->
+            <CustomConfig>
+                <Include path="path/to/config.xml" />
+            </CustomConfig>
+        </Card>
+        <!--All slot card not defined are NO_CARD_IN_SLOT, or NOT_PROGRAMMED.-->
+    </Settings>
+
+
+    <!--For specifing what devices are allowed to run on slots.-->
+    <AllowedDevices>
+        <!--Collision Resolution:  Union-->
+        <Device>
+            <Signature>                 <!--Identifier for the device.-->
+                <DefaultSlotType value="0" />
+                <DeviceID value="0" />
+            </Signature>
+            <!--Slot cards allowed to use this device.-->
+            <Allow slot="1" />         <!--Slot-Number allowing.-->
+            <Allow slot="3" />
+        </Device>
+        <Include href="path" />        <!--Imports an allowed-device list from the file (union with the provided set).-->
+    </AllowedDevices>
+
+    <!--For programming the joystick configurations.-->
+    <Joysticks>
+        <!--Port index starts at 0 and auto-increments.-->
+        <Port index="0">
+            <Name value="PORT_1" />     <!--Name of the Joystick-->
+            <Include href="path" />     <!--XML for the Joystick-->
+        </Port>
+    </Joysticks>
+    
+    
+
+</System>

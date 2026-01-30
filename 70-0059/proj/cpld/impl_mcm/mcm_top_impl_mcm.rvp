@@ -1,0 +1,56 @@
+#-- Lattice Semiconductor Corporation Ltd.
+#-- Bali Reveal project file
+
+#device options
+[Device]
+part = LCMXO2-7000HC-4TG144C
+family = MachXO2
+device = LCMXO2-7000HC
+speed = 4
+package = TQFP144
+operation = Commercial
+
+#design options
+[Design]
+title = mcm_top
+path = C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm
+core_generate = C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm
+search_path = C:/Users/sbenish/repositories/70-0059/cpld
+top = mcm_top
+lpf = C:/Users/sbenish/repositories/70-0059/cpld/mcm_top.lpf
+synthesis = lse
+
+#strategy options
+VHDL2008 = false
+
+#HDLs options
+[HDLs]
+C:/Users/sbenish/repositories/70-0059/cpld/sources/commands.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/cs_decoder.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/intrpt_ctrl.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/mcm_top.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/otm_dac.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/pwm_controller.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/quad_decoder.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/rs232.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/spi_ctrl.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/spi_slave_top.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/status_led.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/uart_controller.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/wb_ctrl.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/config_mcm/ip/pll.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/config_mcm/config.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/config_mcm/ip/spi_slave_efb.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/piezo.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/peizo_elliptec.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/servo.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/shutter_4.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/slider_io.v = Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/sources/slot_cards/stepper.v = Verilog
+[HDL_Defines]
+SBP_SYNTHESIS=
+[HDL_Param]
+[Generated]
+C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm/reveal_workspace/tmpreveal/mcm_top_la0_trig_gen.v=Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm/reveal_workspace/tmpreveal/mcm_top_la0_gen.v=Verilog
+C:/Users/sbenish/repositories/70-0059/cpld/impl_mcm/reveal_workspace/tmpreveal/mcm_top_rvl.v=Verilog,work

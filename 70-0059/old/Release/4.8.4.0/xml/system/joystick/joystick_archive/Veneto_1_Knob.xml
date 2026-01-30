@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<JoystickParameters>
+<!-- In Mappings -->
+	<!-- 1 knob stage map to slot 1 -->
+	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="0" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="0" />
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="0" />
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="1" />
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="240" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="0" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="0" />
+	</InMapParameters>
+
+		<!-- Button 1 toggle disable map to slot 1 -->
+	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="1" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="0" />
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="0" />
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="1" />
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="240" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="0" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="5" />
+	</InMapParameters>
+
+		<!-- Button 2 toggle speed to slot 1 -->
+ 	<InMapParameters command="0x4014" data_length="23">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="2" />
+		<Parameter name="vid" type="UInt16" length="2" offset="8" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="10" value="0" />
+		<Parameter name="modify_control_port" type="Byte" length="1" offset="12" value="2" />
+		<Parameter name="modify_control_ctl_num" type="UInt16" length="2" offset="13" value="1" />
+		<Parameter name="destination_slot" type="Byte" length="1" offset="15" value="1" />
+		<Parameter name="destination_bit" type="Byte" length="1" offset="16" value="0" />
+		<Parameter name="destination_port" type="Byte" length="1" offset="17" value="0" />
+		<Parameter name="destination_virtual" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="modify_speed" type="Byte" length="1" offset="19" value="16" />
+		<Parameter name="revserse_dir" type="Byte" length="1" offset="20" value="0" />
+		<Parameter name="dead_band" type="Byte" length="1" offset="21" value="0" />
+		<Parameter name="mode" type="Byte" length="1" offset="22" value="21" />
+	</InMapParameters> 
+
+
+
+<!-- Out Mappings -->
+	<!-- Button 1 X LED map to slot 1 -->
+	<OutMapParameters command="0x4017" data_length="21">
+		<Parameter name="control_number" type="Byte" length="1" offset="7" value="0" />
+		<Parameter name="HID_USAGE_PAGE_LED" type="Byte" length="1" offset="8" value="8" />
+		<Parameter name="vid" type="UInt16" length="2" offset="9" value="0" />
+		<Parameter name="pid" type="UInt16" length="2" offset="11" value="0" />
+		<Parameter name="mode" type="Byte" length="1" offset="13" value="0" />
+		<Parameter name="color_1_id" type="Byte" length="1" offset="14" value="2" />
+		<Parameter name="color_2_id" type="Byte" length="1" offset="15" value="3" />
+		<Parameter name="color_3_id" type="Byte" length="1" offset="16" value="4" />
+		<Parameter name="source_slot" type="Byte" length="1" offset="17" value="1" />
+		<Parameter name="source_bit" type="Byte" length="1" offset="18" value="0" />
+		<Parameter name="source_port" type="Byte" length="1" offset="19" value="0" />
+		<Parameter name="source_virtual" type="Byte" length="1" offset="20" value="0" />
+	</OutMapParameters>
+ 
+</JoystickParameters>
+
+
+<!-- <Parameter name="" type="" length="" offset="" value="" /> -->
