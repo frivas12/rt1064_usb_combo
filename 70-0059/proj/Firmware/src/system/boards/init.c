@@ -24,6 +24,7 @@
 #include <cpld.h>
 #include "../drivers/supervisor/supervisor.h"
 #include "usb_host.h"
+#include "rt1064_spi_bridge.h"
 #include "25lc1024.h"
 #include "soft_i2c.h"
 #include "delay.h"
@@ -244,9 +245,13 @@ void system_init(void)
 		board_init();
         hid_mapping_service_init();
         itc_service_init();
-		if (board_type != MCM_41_0117_RT1064)
+		if (board_type < MCM_41_0117_RT1064)
 		{
 			usb_host_init();
+		}
+		else
+		{
+			rt1064_spi_bridge_init();
 		}
 	}
 	delay_ms(100);
