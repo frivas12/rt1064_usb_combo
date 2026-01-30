@@ -438,16 +438,32 @@
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>echo Copying SciChart dll into debug folder.
-XCOPY "..\..\deps\Abt.Controls.SciChart.Wpf.dll" "$(TargetDir)" /E /I /F /Y
-
+if exist "..\..\deps\Abt.Controls.SciChart.Wpf.dll" (
+  XCOPY "..\..\deps\Abt.Controls.SciChart.Wpf.dll" "$(TargetDir)" /E /I /F /Y
+) else (
+  echo Warning: SciChart dll not found. Skipping copy.
+)
 
 echo Copying ThemeControl into debug folder.
-XCOPY "..\..\deps\ThemeControl.dll" "$(TargetDir)" /E /I /F /Y
+if exist "..\..\deps\ThemeControl.dll" (
+  XCOPY "..\..\deps\ThemeControl.dll" "$(TargetDir)" /E /I /F /Y
+) else (
+  echo Warning: ThemeControl dll not found. Skipping copy.
+)
 echo Copying XMLs into Debug folder
-XCOPY "..\..\deps\xml\system\" "$(TargetDir)xml\system\" /E /S /F /Y
-RMDIR "$(TargetDir)xml\archived-system" /S /Q
+if exist "..\..\deps\xml\system\" (
+  XCOPY "..\..\deps\xml\system\" "$(TargetDir)xml\system\" /E /S /F /Y
+) else (
+  echo Warning: XML system folder not found. Skipping copy.
+)
+if exist "$(TargetDir)xml\archived-system" RMDIR "$(TargetDir)xml\archived-system" /S /Q
 COPY NUL "$(TargetDir)config.txt"
 echo Copying packages into debug folder.
-XCOPY "..\..\..\..\look-up-tables\bin\onewire.zip" "$(TargetDir)xml\system\packages\" /I /F /Y</PreBuildEvent>
+if not exist "$(TargetDir)xml\system\packages\" mkdir "$(TargetDir)xml\system\packages\"
+if exist "..\..\..\..\look-up-tables\bin\onewire.zip" (
+  XCOPY "..\..\..\..\look-up-tables\bin\onewire.zip" "$(TargetDir)xml\system\packages\" /I /F /Y
+) else (
+  echo Warning: onewire.zip not found. Skipping copy.
+)</PreBuildEvent>
   </PropertyGroup>
 </Project>
