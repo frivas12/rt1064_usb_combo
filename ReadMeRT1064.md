@@ -64,3 +64,63 @@ poll.
 The SAMS70 must clock exactly `1 + LEN + 2` bytes for each READ_BLOCK or
 WRITE_BLOCK. Extra clocks leave data in the RT1064 RX FIFO and can desync the
 protocol.
+
+## Explanation: How the RT1064 Transfers Information to the SAMS70
+
+Below is a detailed walkthrough of the data flow between the RT1064 (SPI slave)
+and the SAMS70 (SPI master), grounded in the current code and protocol
+documentation.
+
+### 1) Protocol overview
+
+The RT1064 SPI bridge publishes USB activity through logical endpoints (EN):
+
+- EN 0: Hub status
+- EN 1–4: HID device slots
+- EN 5: CDC endpoint
+
+Each endpoint exposes a header with DIRTY/TYPE/LEN, a payload of LEN bytes, and
+CRC16 for integrity. The master clocks exactly `1 + LEN + 2` bytes per block.
+
+### 2) SAMS70 polling loop
+
+On RT1064-capable boards, the SAMS70 runs a FreeRTOS task that performs:
+
+1. **Hub poll (EN 0)**
+   - READ_HEADER to check DIRTY.
+   - READ_BLOCK to fetch the hub bitmap when DIRTY is set.
+   - Update local endpoint-active flags (HID slots + CDC).
+2. **Endpoint poll (EN 1–5)**
+   - READ_HEADER for each active endpoint.
+   - READ_BLOCK when DIRTY is set.
+   - Validate CRC and store HID IN or CDC IN payloads locally.
+
+### 3) Command byte and read window
+
+Every SPI transaction begins with one command byte:
+
+```
+[op << 6] | EN
+```
+
+The RT1064 expects:
+
+- READ_HEADER: 1 additional byte to return the header.
+- READ_BLOCK: exactly `1 + LEN + 2` bytes to return header/payload/CRC.
+- WRITE_BLOCK: exactly `1 + LEN + 2` bytes sent by the master.
+
+### 4) DIRTY, TYPE, and LEN
+
+- DIRTY: new data available and should be read.
+- TYPE: descriptor vs. data payload distinction.
+- LEN: byte count of valid payload.
+
+### 5) CRC validation
+
+The SAMS70 computes CRC16 (header + payload) and compares it with the trailing
+CRC bytes. Blocks failing CRC are ignored and retried on the next poll.
+
+### 6) FIFO discipline
+
+The SAMS70 must not clock extra bytes. Extra clocks leave stale data in the
+RT1064 RX FIFO and can desynchronize subsequent transactions.
