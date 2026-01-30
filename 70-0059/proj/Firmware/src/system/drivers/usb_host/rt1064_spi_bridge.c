@@ -1,0 +1,306 @@
+// rt1064_spi_bridge.c
+
+#include "rt1064_spi_bridge.h"
+
+#include "Debugging.h"
+#include "sys_task.h"
+#include "user_spi.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include <string.h>
+
+#define SPI_BRIDGE_MAX_DEVICES (4U)
+#define SPI_BRIDGE_CDC_ENDPOINT_INDEX (SPI_BRIDGE_MAX_DEVICES + 1U)
+#define SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS (SPI_BRIDGE_MAX_DEVICES + 2U)
+
+#define SPI_BRIDGE_CMD_OP_MASK  (0xC0U)
+#define SPI_BRIDGE_CMD_EN_MASK  (0x3FU)
+#define SPI_BRIDGE_CMD_OP_SHIFT (6U)
+
+#define SPI_BRIDGE_HEADER_DIRTY_MASK   (0x01U)
+#define SPI_BRIDGE_HEADER_TYPE_MASK    (0x02U)
+#define SPI_BRIDGE_HEADER_LENGTH_MASK  (0xFCU)
+#define SPI_BRIDGE_HEADER_LENGTH_SHIFT (2U)
+
+#define SPI_BRIDGE_MAX_PAYLOAD_LENGTH (63U)
+#define SPI_BRIDGE_BLOCK_SIZE         (1U + SPI_BRIDGE_MAX_PAYLOAD_LENGTH + 2U)
+
+#define SPI_BRIDGE_CRC_POLY (0x1021U)
+#define SPI_BRIDGE_CRC_INIT (0xFFFFU)
+
+#define SPI_BRIDGE_POLL_PERIOD_MS (10U)
+
+typedef enum
+{
+    kSpiBridgeCommandReadHeader = 0U,
+    kSpiBridgeCommandReadBlock  = 1U,
+    kSpiBridgeCommandWriteBlock = 2U,
+} spi_bridge_command_t;
+
+typedef struct
+{
+    uint8_t header;
+    uint8_t payload[SPI_BRIDGE_MAX_PAYLOAD_LENGTH];
+    uint16_t crc;
+} spi_bridge_block_t;
+
+static spi_bridge_block_t s_hub_status;
+static spi_bridge_block_t s_in_blocks[SPI_BRIDGE_MAX_DEVICES];
+static spi_bridge_block_t s_cdc_in_block;
+static uint8_t s_connected_table[SPI_BRIDGE_MAX_DEVICES + 1U];
+static bool s_endpoint_active[SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS];
+
+static uint8_t spi_bridge_extract_length(uint8_t header)
+{
+    return (uint8_t)((header & SPI_BRIDGE_HEADER_LENGTH_MASK) >> SPI_BRIDGE_HEADER_LENGTH_SHIFT);
+}
+
+static uint16_t spi_bridge_crc_update(uint16_t crc, uint8_t data)
+{
+    crc ^= (uint16_t)data << 8U;
+    for (uint8_t i = 0U; i < 8U; ++i)
+    {
+        if ((crc & 0x8000U) != 0U)
+        {
+            crc = (uint16_t)((crc << 1U) ^ SPI_BRIDGE_CRC_POLY);
+        }
+        else
+        {
+            crc <<= 1U;
+        }
+    }
+    return crc;
+}
+
+static uint16_t spi_bridge_compute_crc(const uint8_t *raw)
+{
+    uint8_t length = spi_bridge_extract_length(raw[0]);
+    uint16_t crc   = SPI_BRIDGE_CRC_INIT;
+
+    crc = spi_bridge_crc_update(crc, raw[0]);
+    for (uint8_t i = 0U; i < length; ++i)
+    {
+        crc = spi_bridge_crc_update(crc, raw[1U + i]);
+    }
+
+    return crc;
+}
+
+static bool spi_bridge_start_transaction(void)
+{
+    xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);
+    if (spi_start_transfer(_SPI_MODE_0, CS_NO_TOGGLE, CS_RT1064) != SPI_OK)
+    {
+        xSemaphoreGive(xSPI_Semaphore);
+        return false;
+    }
+    return true;
+}
+
+static void spi_bridge_end_transaction(void)
+{
+    (void)spi_end_transfer();
+    xSemaphoreGive(xSPI_Semaphore);
+}
+
+static bool spi_bridge_read_header(uint8_t en, uint8_t *header_out)
+{
+    if (header_out == NULL)
+    {
+        return false;
+    }
+
+    if (!spi_bridge_start_transaction())
+    {
+        return false;
+    }
+
+    uint8_t command = (uint8_t)((kSpiBridgeCommandReadHeader << SPI_BRIDGE_CMD_OP_SHIFT) |
+                                (en & SPI_BRIDGE_CMD_EN_MASK));
+    (void)spi_partial_transfer(&command);
+
+    uint8_t header = 0U;
+    (void)spi_partial_transfer(&header);
+    spi_bridge_end_transaction();
+
+    *header_out = header;
+    return true;
+}
+
+static bool spi_bridge_read_block(uint8_t en, spi_bridge_block_t *block)
+{
+    if (block == NULL)
+    {
+        return false;
+    }
+
+    if (!spi_bridge_start_transaction())
+    {
+        return false;
+    }
+
+    uint8_t command = (uint8_t)((kSpiBridgeCommandReadBlock << SPI_BRIDGE_CMD_OP_SHIFT) |
+                                (en & SPI_BRIDGE_CMD_EN_MASK));
+    (void)spi_partial_transfer(&command);
+
+    uint8_t raw[SPI_BRIDGE_BLOCK_SIZE] = { 0 };
+    (void)spi_partial_transfer(&raw[0]);
+
+    uint8_t length = spi_bridge_extract_length(raw[0]);
+    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        spi_bridge_end_transaction();
+        return false;
+    }
+
+    uint8_t total = (uint8_t)(length + 2U);
+    for (uint8_t i = 1U; i <= total; ++i)
+    {
+        (void)spi_partial_transfer(&raw[i]);
+    }
+
+    spi_bridge_end_transaction();
+
+    block->header = raw[0];
+    if (length > 0U)
+    {
+        (void)memcpy(block->payload, &raw[1], length);
+    }
+    if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        (void)memset(&block->payload[length], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
+    }
+    block->crc = (uint16_t)(raw[1U + length] | ((uint16_t)raw[2U + length] << 8U));
+
+    return (spi_bridge_compute_crc(raw) == block->crc);
+}
+
+static void spi_bridge_update_endpoint_state(const spi_bridge_block_t *hub_block)
+{
+    if (hub_block == NULL)
+    {
+        return;
+    }
+
+    uint8_t length = spi_bridge_extract_length(hub_block->header);
+    if (length < (SPI_BRIDGE_MAX_DEVICES + 1U))
+    {
+        return;
+    }
+
+    bool changed = false;
+    for (uint8_t i = 0U; i < SPI_BRIDGE_MAX_DEVICES + 1U; ++i)
+    {
+        uint8_t new_value = hub_block->payload[i];
+        if (s_connected_table[i] != new_value)
+        {
+            s_connected_table[i] = new_value;
+            changed = true;
+        }
+    }
+
+    if (changed)
+    {
+        for (uint8_t i = 0U; i < SPI_BRIDGE_MAX_DEVICES; ++i)
+        {
+            s_endpoint_active[i + 1U] = (s_connected_table[i] != 0U);
+        }
+        s_endpoint_active[SPI_BRIDGE_CDC_ENDPOINT_INDEX] =
+            (s_connected_table[SPI_BRIDGE_MAX_DEVICES] != 0U);
+
+        debug_print("SPI bridge: hub status update (slots=%u%u%u%u, cdc=%u)\r\n",
+                    s_endpoint_active[1U], s_endpoint_active[2U], s_endpoint_active[3U],
+                    s_endpoint_active[4U], s_endpoint_active[SPI_BRIDGE_CDC_ENDPOINT_INDEX]);
+    }
+}
+
+static void spi_bridge_poll_endpoints(void)
+{
+    for (uint8_t en = 1U; en < SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS; ++en)
+    {
+        if (!s_endpoint_active[en])
+        {
+            continue;
+        }
+
+        uint8_t header = 0U;
+        if (!spi_bridge_read_header(en, &header))
+        {
+            continue;
+        }
+
+        if ((header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U)
+        {
+            continue;
+        }
+
+        spi_bridge_block_t block;
+        if (!spi_bridge_read_block(en, &block))
+        {
+            debug_print("SPI bridge: CRC mismatch on EN %u\r\n", en);
+            continue;
+        }
+
+        uint8_t length = spi_bridge_extract_length(block.header);
+        uint8_t type   = (block.header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U;
+
+        if (en == SPI_BRIDGE_CDC_ENDPOINT_INDEX)
+        {
+            s_cdc_in_block = block;
+            debug_print("SPI bridge: CDC IN (%u bytes, type=%u)\r\n", length, type);
+        }
+        else
+        {
+            uint8_t slot = (uint8_t)(en - 1U);
+            s_in_blocks[slot] = block;
+            debug_print("SPI bridge: HID IN slot %u (%u bytes, type=%u)\r\n", slot, length, type);
+        }
+    }
+}
+
+static void task_spi_bridge(void *pvParameters)
+{
+    (void)pvParameters;
+
+    (void)memset(&s_hub_status, 0, sizeof(s_hub_status));
+    (void)memset(s_in_blocks, 0, sizeof(s_in_blocks));
+    (void)memset(&s_cdc_in_block, 0, sizeof(s_cdc_in_block));
+    (void)memset(s_connected_table, 0, sizeof(s_connected_table));
+    (void)memset(s_endpoint_active, 0, sizeof(s_endpoint_active));
+    s_endpoint_active[SPI_BRIDGE_CDC_ENDPOINT_INDEX] = true;
+
+    for (;;)
+    {
+        uint8_t header = 0U;
+        if (spi_bridge_read_header(0U, &header))
+        {
+            if ((header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U)
+            {
+                spi_bridge_block_t hub_block;
+                if (spi_bridge_read_block(0U, &hub_block))
+                {
+                    s_hub_status = hub_block;
+                    spi_bridge_update_endpoint_state(&hub_block);
+                }
+                else
+                {
+                    debug_print("SPI bridge: hub CRC mismatch\r\n");
+                }
+            }
+        }
+
+        spi_bridge_poll_endpoints();
+        vTaskDelay(pdMS_TO_TICKS(SPI_BRIDGE_POLL_PERIOD_MS));
+    }
+}
+
+void rt1064_spi_bridge_init(void)
+{
+    if (xTaskCreate(task_spi_bridge, "SPI Bridge", TASK_SPI_BRIDGE_STACK_SIZE, NULL,
+                    TASK_SPI_BRIDGE_STACK_PRIORITY, NULL) != pdPASS)
+    {
+        debug_print("Failed to create SPI bridge task\r\n");
+    }
+}

@@ -112,6 +112,12 @@ extern "C" {
 #define USB_HOST_ROOT_PORT_TASK_RATE			pdMS_TO_TICKS(100) /* in ms */
 
 /**
+ * RT1064 SPI bridge task
+ */
+#define TASK_SPI_BRIDGE_STACK_SIZE     			(1024/sizeof(portSTACK_TYPE))
+#define TASK_SPI_BRIDGE_STACK_PRIORITY   			(tskIDLE_PRIORITY)
+
+/**
  * USB device task
  */
 #define TASK_USB_HOST_DEVICE_STACK_SIZE 		(1024/sizeof(portSTACK_TYPE))
