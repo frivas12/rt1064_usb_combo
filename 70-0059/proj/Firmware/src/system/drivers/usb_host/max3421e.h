@@ -3,6 +3,8 @@
 #ifndef SRC_SYSTEM_DRIVERS_USB_HOST_MAX3421E_H_
 #define SRC_SYSTEM_DRIVERS_USB_HOST_MAX3421E_H_
 
+#include "user_spi.h"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -12,8 +14,8 @@ extern "C"
  * Defines
  ****************************************************************************/
 #define MAX3421_SPI_MODE 		_SPI_MODE_0
-#define SPI_MAX3421_NO_READ 	MAX3421_SPI_MODE, SPI_NO_READ, CS_NO_TOGGLE, CS_MAX3421
-#define SPI_MAX3421_READ 		MAX3421_SPI_MODE, SPI_READ, CS_NO_TOGGLE, CS_MAX3421
+#define SPI_MAX3421_NO_READ 	MAX3421_SPI_MODE, SPI_NO_READ, CS_NO_TOGGLE, user_spi_get_usb_host_cs()
+#define SPI_MAX3421_READ 		MAX3421_SPI_MODE, SPI_READ, CS_NO_TOGGLE, user_spi_get_usb_host_cs()
 
 /* MAX3421E Registers in HOST mode.*/
 

@@ -83,6 +83,7 @@ enum board_types {
 	MCM6000_REV_004,
 	MCM_41_0117_001,	// CPLD 7000 new version
 	MCM_41_0134_001,	// MCM301, Revision 1
+	MCM_41_0117_RT1064, // new rt1064 USB CDC and HID host
 	END_BOARD_TYPES
 };
 

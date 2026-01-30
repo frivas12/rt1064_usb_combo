@@ -36,6 +36,7 @@ extern "C"
 #define CS_ALL_HIGH				96
 #define CS_FLASH				125
 #define CS_MAX3421				126
+#define CS_RT1064				126
 
 typedef enum
 {
@@ -58,6 +59,7 @@ extern SemaphoreHandle_t xSPI_Semaphore;
  * Public Function Prototypes
  ************************************************************************************/
 void user_spi_init(void);
+uint8_t user_spi_get_usb_host_cs(void);
 spi_status_t spi_transfer(spi_modes mode, bool read, bool toggle, uint8_t cs, uint8_t *buf, uint32_t size);
 
 spi_status_t spi_start_transfer(spi_modes mode, bool toggle, uint8_t cs);

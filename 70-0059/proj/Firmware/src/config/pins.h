@@ -93,6 +93,7 @@ extern "C"
 //
 #define PIN_CLK_OUT 			PIOB, 12	// 12MHz clock from the processor
 #define PIN_MAX_INT 			PIOA, 2
+#define RT1064_INT_PIN			PIOA, 2		// Used on MCM_41_0117_RT1064 and newer
 #define PIN_MAX_GPX_INT 		PIOD, 16	// not used
 #define PIN_MAX_RES 			PIOA, 12	// Reset active low
 #define PIN_MAX_PWR_EN 			PIOD, 9

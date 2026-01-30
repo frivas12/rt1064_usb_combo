@@ -3,6 +3,7 @@
 #include <asf.h>
 #include "Debugging.h"
 #include <pins.h>
+#include "board.h"
 #include "user_spi.h"
 
 // TODO Temp
@@ -382,6 +383,11 @@ void user_spi_init(void)
 	}
 }
 
+uint8_t user_spi_get_usb_host_cs(void)
+{
+	return (board_type >= MCM_41_0117_RT1064) ? CS_RT1064 : CS_MAX3421;
+}
+
 /**
  * \brief Perform SPI master transfer.
  *
@@ -496,4 +502,3 @@ spi_status_t spi_end_transfer(void) {
 
 	return SPI_OK;
 }
-
