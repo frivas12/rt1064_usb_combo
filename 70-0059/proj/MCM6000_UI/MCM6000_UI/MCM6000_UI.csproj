@@ -448,6 +448,6 @@ XCOPY "..\..\deps\xml\system\" "$(TargetDir)xml\system\" /E /S /F /Y
 RMDIR "$(TargetDir)xml\archived-system" /S /Q
 COPY NUL "$(TargetDir)config.txt"
 echo Copying packages into debug folder.
-XCOPY "..\..\..\..\look-up-tables\bin\onewire.zip" "$(TargetDir)/xml/system/packages/" /E /I /F /Y</PreBuildEvent>
+XCOPY "..\..\..\..\look-up-tables\bin\onewire.zip" "$(TargetDir)xml\system\packages\" /I /F /Y</PreBuildEvent>
   </PropertyGroup>
 </Project>
