@@ -168,6 +168,12 @@ void board_init(void)
 		init_slots();
 		break;
 
+	case MCM_41_0117_RT1064: // RT1064 USB CDC and HID host
+		get_slot_types();
+		cpld_start_slot_cards();
+		init_slots();
+		break;
+
 	case HEXAPOD_BOARD_REV_001:
 		cpld_start_slot_cards();
 		// hexapod_init();
@@ -254,4 +260,3 @@ void set_firmware_load_count(void)
 	restart_board();
 }
 #pragma GCC diagnostic pop
-

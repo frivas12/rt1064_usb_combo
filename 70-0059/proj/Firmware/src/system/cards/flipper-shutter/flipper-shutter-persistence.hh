@@ -547,6 +547,7 @@ class layout_25lc1024 {
         switch (type) {
         case MCM_41_0117_001:
         case MCM_41_0134_001:
+        case MCM_41_0117_RT1064:
             return true;
 
         default:

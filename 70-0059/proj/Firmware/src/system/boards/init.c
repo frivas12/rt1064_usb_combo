@@ -244,7 +244,10 @@ void system_init(void)
 		board_init();
         hid_mapping_service_init();
         itc_service_init();
-		usb_host_init();
+		if (board_type != MCM_41_0117_RT1064)
+		{
+			usb_host_init();
+		}
 	}
 	delay_ms(100);
 	usb_slave_init();
