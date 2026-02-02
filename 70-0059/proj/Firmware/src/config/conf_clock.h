@@ -83,7 +83,7 @@
 // Use div effective value here.
 //#define CONFIG_USBCLK_SOURCE        USBCLK_SRC_PLL0
 #define CONFIG_USBCLK_SOURCE        USBCLK_SRC_UPLL
-#define CONFIG_USBCLK_DIV           1
+#define CONFIG_USBCLK_DIV           10
 
 // ===== Target frequency (Processor clock)
 // - XTAL frequency: 12MHz
@@ -96,8 +96,8 @@
 // - System clock: 300 / 2 = 150MHz
 // ===== Target frequency (USB Clock)
 // - USB clock source: UPLL
-// - USB clock divider: 1 (not divided)
+// - USB clock divider: 10
 // - UPLL frequency: 480MHz
-// - USB clock: 480 / 1 = 480MHz
+// - USB clock: 480 / 10 = 48MHz
 
 #endif /* CONF_CLOCK_H_INCLUDED */
