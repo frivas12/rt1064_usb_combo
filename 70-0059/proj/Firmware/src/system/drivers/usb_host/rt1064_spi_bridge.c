@@ -6,6 +6,7 @@
 
 #include "Debugging.h"
 #include "FreeRTOS.h"
+#include "delay.h"
 #include "sys_task.h"
 #include "task.h"
 #include "user_spi.h"
@@ -29,6 +30,7 @@
 #define SPI_BRIDGE_CRC_POLY (0x1021U)
 #define SPI_BRIDGE_CRC_INIT (0xFFFFU)
 
+#define SPI_BRIDGE_RESPONSE_DELAY_US (50U)
 #define SPI_BRIDGE_POLL_PERIOD_MS (10U)
 
 typedef enum {
@@ -78,6 +80,10 @@ static uint16_t spi_bridge_compute_crc(const uint8_t* raw) {
     return crc;
 }
 
+static void spi_bridge_wait_for_response(void) {
+    delay_us(SPI_BRIDGE_RESPONSE_DELAY_US);
+}
+
 static bool spi_bridge_start_transaction(void) {
     xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);
     if (spi_start_transfer(_SPI_MODE_0, CS_NO_TOGGLE, CS_RT1064) != SPI_OK) {
@@ -106,6 +112,8 @@ static bool spi_bridge_read_header(uint8_t en, uint8_t* header_out) {
                   (en & SPI_BRIDGE_CMD_EN_MASK));
     (void)spi_partial_transfer(&command);
 
+    spi_bridge_wait_for_response();
+
     uint8_t header = 0U;
     (void)spi_partial_transfer(&header);
     spi_bridge_end_transaction();
@@ -127,6 +135,8 @@ static bool spi_bridge_read_block(uint8_t en, spi_bridge_block_t* block) {
         (uint8_t)((kSpiBridgeCommandReadBlock << SPI_BRIDGE_CMD_OP_SHIFT) |
                   (en & SPI_BRIDGE_CMD_EN_MASK));
     (void)spi_partial_transfer(&command);
+
+    spi_bridge_wait_for_response();
 
     uint8_t raw[SPI_BRIDGE_BLOCK_SIZE] = {0};
     (void)spi_partial_transfer(&raw[0]);
