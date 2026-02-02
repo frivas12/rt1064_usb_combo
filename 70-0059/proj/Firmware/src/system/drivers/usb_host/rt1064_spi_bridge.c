@@ -277,7 +277,7 @@ static void task_spi_bridge(void* pvParameters) {
             }
         }
 
-        spi_bridge_poll_endpoints();
+        //    spi_bridge_poll_endpoints();
         vTaskDelay(pdMS_TO_TICKS(SPI_BRIDGE_POLL_PERIOD_MS));
     }
 }

@@ -37,7 +37,7 @@ $(OUTPUT_DIR)/onewire.zip: $(onewire_objs)
 	@test -d $(dir $@) || mkdir -p $(dir $@)
 	@echo -e "package - ow\t$@"
 	@cd $(INTERMEDIATE_DIR)/onewire/ && \
-		zip -q0 -o "$(addprefix ../../, $@)" $(onewire_rel_objs)
+		gzip -q0 -o "$(addprefix ../../, $@)" $(onewire_rel_objs)
 
 
 # PHONY is not valid.

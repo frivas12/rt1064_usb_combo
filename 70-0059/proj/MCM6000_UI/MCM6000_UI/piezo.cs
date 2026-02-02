@@ -36,7 +36,7 @@ using System.Diagnostics;
 using Excel = Microsoft.Office.Interop.Excel;
 using Button = System.Windows.Controls.Button;
 
-using Microsoft.Office.Core;
+
 
 namespace Thorlabs
 {
@@ -937,8 +937,8 @@ namespace MCM6000_UI
                 myChart.Chart.Axes(1).MaximumScale = array[count - 2, 0]; ;
                 // myChart.Chart.Axes(1).MajorUnit = 5;
 
-                chartPage.SeriesCollection(2).AxisGroup = XlAxisGroup.xlSecondary;
-                chartPage.SeriesCollection(3).AxisGroup = XlAxisGroup.xlSecondary;
+                chartPage.SeriesCollection(2).AxisGroup = Excel.XlAxisGroup.xlSecondary;
+                chartPage.SeriesCollection(3).AxisGroup = Excel.XlAxisGroup.xlSecondary;
 
                 wb.SaveAs(filename);
 
