@@ -44,4 +44,7 @@
     "C_Cpp.errorSquiggles": "Disabled",
     "C_Cpp.default.intelliSenseMode": "windows-gcc-arm",
     "cortex-debug.showRTOS": false
+
+    // 🔕 Disable spell checking for this workspace
+     "cSpell.enabled": false
 }

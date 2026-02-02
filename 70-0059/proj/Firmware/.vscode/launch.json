@@ -2,13 +2,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug (J-Link)",
+      "name": "Debug (J-Link) - MCM6101",
       "type": "cortex-debug",
       "request": "launch",
-      "servertype": "jlink",
-      "serverpath": "C:/Program Files/SEGGER/JLink_V886/JLinkGDBServerCL.exe",
       "cwd": "${workspaceFolder}",
       "executable": "${workspaceFolder}/bin/MCM6101/MCM6101.elf",
+
+      "preLaunchTask": "Build MCM6101",
+
+      "servertype": "jlink",
+      "serverpath": "C:/Program Files/SEGGER/JLink_V886/JLinkGDBServerCL.exe",
       "device": "ATSAMS70N21A",
       "interface": "swd",
       "runToEntryPoint": "main",

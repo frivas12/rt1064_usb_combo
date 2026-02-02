@@ -5,9 +5,13 @@
       "label": "Build MCM6101",
       "type": "shell",
       "command": "make",
-      "args": ["MCM6101"],
+      "args": ["MAKE=make", "MCM6101"],
       "options": {
-        "cwd": "${workspaceFolder}"
+        "cwd": "${workspaceFolder}",
+        "shell": {
+          "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+          "args": ["-lc"]
+        }
       },
       "problemMatcher": ["$gcc"],
       "group": {
