@@ -130,12 +130,18 @@ static bool spi_bridge_read_header(uint8_t en, uint8_t* header_out) {
     uint8_t command =
         (uint8_t)((kSpiBridgeCommandReadHeader << SPI_BRIDGE_CMD_OP_SHIFT) |
                   (en & SPI_BRIDGE_CMD_EN_MASK));
-    (void)spi_partial_transfer(&command);
+    if (spi_partial_transfer(&command) != SPI_OK) {
+        spi_bridge_end_transaction();
+        return false;
+    }
 
     spi_bridge_wait_for_response();
 
     uint8_t header = 0U;
-    (void)spi_partial_transfer(&header);
+    if (spi_partial_transfer(&header) != SPI_OK) {
+        spi_bridge_end_transaction();
+        return false;
+    }
     spi_bridge_end_transaction();
 
     *header_out = header;
@@ -154,12 +160,18 @@ static bool spi_bridge_read_block(uint8_t en, spi_bridge_block_t* block) {
     uint8_t command =
         (uint8_t)((kSpiBridgeCommandReadBlock << SPI_BRIDGE_CMD_OP_SHIFT) |
                   (en & SPI_BRIDGE_CMD_EN_MASK));
-    (void)spi_partial_transfer(&command);
+    if (spi_partial_transfer(&command) != SPI_OK) {
+        spi_bridge_end_transaction();
+        return false;
+    }
 
     spi_bridge_wait_for_response();
 
     uint8_t raw[SPI_BRIDGE_BLOCK_SIZE] = {0};
-    (void)spi_partial_transfer(&raw[0]);
+    if (spi_partial_transfer(&raw[0]) != SPI_OK) {
+        spi_bridge_end_transaction();
+        return false;
+    }
 
     uint8_t length = spi_bridge_extract_length(raw[0]);
     if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) {
@@ -169,7 +181,10 @@ static bool spi_bridge_read_block(uint8_t en, spi_bridge_block_t* block) {
 
     uint8_t total = (uint8_t)(length + 2U);
     for (uint8_t i = 1U; i <= total; ++i) {
-        (void)spi_partial_transfer(&raw[i]);
+        if (spi_partial_transfer(&raw[i]) != SPI_OK) {
+            spi_bridge_end_transaction();
+            return false;
+        }
     }
 
     spi_bridge_end_transaction();

@@ -625,7 +625,10 @@ static void SPI_BridgeDisableRxInterrupt(void)
 
 static void SPI_BridgeIsrLoadTxByte(uint8_t value)
 {
-    SPI_BRIDGE_SPI_BASE->TDR = value;
+    if ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_TDF_MASK) != 0U)
+    {
+        SPI_BRIDGE_SPI_BASE->TDR = value;
+    }
 }
 
 static uint8_t SPI_BridgePrepareReadResponse(uint8_t en, spi_bridge_command_t command, bool *dirtyBeforeOut,
@@ -736,6 +739,16 @@ void LPSPI1_IRQHandler(void)
 {
     BaseType_t higherPriorityTaskWoken = pdFALSE;
 
+    uint32_t sr = SPI_BRIDGE_SPI_BASE->SR;
+    if ((sr & (LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK)) != 0U)
+    {
+        SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK;
+        s_spiIsrState = kSpiBridgeIsrIdle;
+        s_spiIsrTxRemaining = 0U;
+        s_spiIsrRxExpected = 0U;
+        s_spiIsrRxCount = 0U;
+    }
+
     while ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_RDF_MASK) != 0U)
     {
         uint8_t rx = (uint8_t)SPI_BRIDGE_SPI_BASE->RDR;
@@ -806,6 +819,14 @@ void LPSPI1_IRQHandler(void)
                 SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
                 break;
         }
+    }
+
+    if ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_MBF_MASK) == 0U)
+    {
+        s_spiIsrState = kSpiBridgeIsrIdle;
+        s_spiIsrTxRemaining = 0U;
+        s_spiIsrRxExpected = 0U;
+        s_spiIsrRxCount = 0U;
     }
 
     if ((s_spiBridgeSemaphore != NULL) && s_spiBridgeActivityPending)
@@ -996,9 +1017,6 @@ status_t SPI_BridgeInit(void)
     SPI_BRIDGE_SPI_BASE->SR =
         LPSPI_SR_WCF_MASK | LPSPI_SR_FCF_MASK | LPSPI_SR_TCF_MASK | LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK |
         LPSPI_SR_DMF_MASK;
-    SPI_BRIDGE_SPI_BASE->CR    = LPSPI_CR_MEN_MASK;
-    SPI_BRIDGE_SPI_BASE->TDR   = SPI_BRIDGE_IDLE_TX;
-    SPI_BridgeEnableRxInterrupt();
 
     s_spiBridgeSemaphore = xSemaphoreCreateBinary();
     if (s_spiBridgeSemaphore == NULL)
@@ -1008,6 +1026,15 @@ status_t SPI_BridgeInit(void)
 
     NVIC_SetPriority(LPSPI1_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
     NVIC_EnableIRQ(LPSPI1_IRQn);
+
+    while ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_RDF_MASK) != 0U)
+    {
+        (void)SPI_BRIDGE_SPI_BASE->RDR;
+    }
+
+    SPI_BRIDGE_SPI_BASE->TDR = SPI_BRIDGE_IDLE_TX;
+    SPI_BridgeEnableRxInterrupt();
+    SPI_BRIDGE_SPI_BASE->CR = LPSPI_CR_MEN_MASK;
 
     (void)memset(&s_hubStatus, 0, sizeof(s_hubStatus));
     (void)memset(s_inBlocks, 0, sizeof(s_inBlocks));
