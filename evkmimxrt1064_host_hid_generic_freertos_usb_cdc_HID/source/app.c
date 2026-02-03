@@ -13,8 +13,6 @@
 #include "host_hid_generic.h"
 #include "fsl_common.h"
 #include "board.h"
-#include "fsl_gpio.h"
-#include "fsl_iomuxc.h"
 #include "spi_bridge.h"
 #include "virtual_com.h"
 #include "FreeRTOS.h"
@@ -69,11 +67,6 @@ static void USB_HostTask(void *param);
  * @param param   the host mouse instance pointer.
  */
 static void USB_HostApplicationTask(void *param);
-
-#if APP_SPI_PIN_TOGGLE_TEST
-static void SPI_PinToggleInit(void);
-static void SPI_PinToggleTask(void *param);
-#endif
 
 extern void USB_HostClockInit(void);
 extern void USB_HostIsrEnable(void);
@@ -171,72 +164,9 @@ static void USB_HostApplicationTask(void *param)
     }
 }
 
-#if APP_SPI_PIN_TOGGLE_TEST
-#define SPI_PIN_SCK_GPIO GPIO3
-#define SPI_PIN_SCK_PIN 12U
-#define SPI_PIN_CS_GPIO GPIO3
-#define SPI_PIN_CS_PIN 13U
-#define SPI_PIN_MOSI_GPIO GPIO3
-#define SPI_PIN_MOSI_PIN 14U
-#define SPI_PIN_MISO_GPIO GPIO3
-#define SPI_PIN_MISO_PIN 15U
-
-static void SPI_PinToggleInit(void)
-{
-    gpio_pin_config_t config = {kGPIO_DigitalOutput, 0U, kGPIO_NoIntmode};
-
-    IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_00_GPIO3_IO12, 0U);
-    IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_01_GPIO3_IO13, 0U);
-    IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_02_GPIO3_IO14, 0U);
-    IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_03_GPIO3_IO15, 0U);
-
-    IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_00_GPIO3_IO12, 0x10B0U);
-    IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_01_GPIO3_IO13, 0x10B0U);
-    IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_02_GPIO3_IO14, 0x10B0U);
-    IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_03_GPIO3_IO15, 0x10B0U);
-
-    GPIO_PinInit(SPI_PIN_SCK_GPIO, SPI_PIN_SCK_PIN, &config);
-    GPIO_PinInit(SPI_PIN_CS_GPIO, SPI_PIN_CS_PIN, &config);
-    GPIO_PinInit(SPI_PIN_MOSI_GPIO, SPI_PIN_MOSI_PIN, &config);
-    GPIO_PinInit(SPI_PIN_MISO_GPIO, SPI_PIN_MISO_PIN, &config);
-}
-
-static void SPI_PinToggleTask(void *param)
-{
-    (void)param;
-
-    for (;;)
-    {
-        GPIO_PinWrite(SPI_PIN_CS_GPIO, SPI_PIN_CS_PIN, 1U);
-        vTaskDelay(pdMS_TO_TICKS(100U));
-        GPIO_PinWrite(SPI_PIN_CS_GPIO, SPI_PIN_CS_PIN, 0U);
-        vTaskDelay(pdMS_TO_TICKS(100U));
-
-        GPIO_PinWrite(SPI_PIN_SCK_GPIO, SPI_PIN_SCK_PIN, 1U);
-        vTaskDelay(pdMS_TO_TICKS(100U));
-        GPIO_PinWrite(SPI_PIN_SCK_GPIO, SPI_PIN_SCK_PIN, 0U);
-        vTaskDelay(pdMS_TO_TICKS(100U));
-
-        GPIO_PinWrite(SPI_PIN_MOSI_GPIO, SPI_PIN_MOSI_PIN, 1U);
-        vTaskDelay(pdMS_TO_TICKS(100U));
-        GPIO_PinWrite(SPI_PIN_MOSI_GPIO, SPI_PIN_MOSI_PIN, 0U);
-        vTaskDelay(pdMS_TO_TICKS(100U));
-
-        GPIO_PinWrite(SPI_PIN_MISO_GPIO, SPI_PIN_MISO_PIN, 1U);
-        vTaskDelay(pdMS_TO_TICKS(100U));
-        GPIO_PinWrite(SPI_PIN_MISO_GPIO, SPI_PIN_MISO_PIN, 0U);
-        vTaskDelay(pdMS_TO_TICKS(100U));
-    }
-}
-#endif
-
 int main(void)
 {
     BOARD_InitHardware();
-
-#if APP_SPI_PIN_TOGGLE_TEST
-    SPI_PinToggleInit();
-#endif
 
     USB_HostApplicationInit();
 
@@ -245,12 +175,11 @@ int main(void)
         usb_echo("usb device cdc vcom init error\r\n");
     }
 
-#if !APP_SPI_PIN_TOGGLE_TEST
     if (SPI_BridgeInit() != kStatus_Success)
     {
         usb_echo("spi bridge init error\r\n");
     }
-#endif
+    SPI_BridgeEnableFixedCdcResponse();
 
     if (xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, APP_USB_TASK_PRIORITY, NULL) != pdPASS)
     {
@@ -262,17 +191,10 @@ int main(void)
         usb_echo("create mouse task error\r\n");
     }
 
-#if APP_SPI_PIN_TOGGLE_TEST
-    if (xTaskCreate(SPI_PinToggleTask, "spi pin toggle", 1024L / sizeof(portSTACK_TYPE), NULL, APP_MAIN_TASK_PRIORITY, NULL) != pdPASS)
-    {
-        usb_echo("create spi pin toggle task error\r\n");
-    }
-#else
     if (xTaskCreate(SPI_BridgeTask, "spi bridge", 2048L / sizeof(portSTACK_TYPE), NULL, APP_MAIN_TASK_PRIORITY, NULL) != pdPASS)
     {
         usb_echo("create spi bridge task error\r\n");
     }
-#endif
 
     vTaskStartScheduler();
 

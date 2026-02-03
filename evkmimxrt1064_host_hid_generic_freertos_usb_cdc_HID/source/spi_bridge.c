@@ -86,6 +86,7 @@ static spi_bridge_block_t s_lastLoggedInBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_lastLoggedOutBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_lastLoggedCdcInBlock;
 static spi_bridge_block_t s_lastLoggedCdcOutBlock;
+static bool s_forceCdcInResponse;
 
 static void SPI_BridgeLogState(bool force);
 static bool s_stateTraceEnabled = (SPI_BRIDGE_ENABLE_STATE_TRACE != 0U);
@@ -185,6 +186,21 @@ static void SPI_BridgeUpdateBlockCrc(spi_bridge_block_t *block)
     raw[0] = block->header;
     (void)memcpy(&raw[1], block->payload, SPI_BRIDGE_MAX_PAYLOAD_LENGTH);
     block->crc = SPI_BridgeComputeBlockCrc(raw);
+}
+
+void SPI_BridgeEnableFixedCdcResponse(void)
+{
+    static const uint8_t kTestPayload[8] = {1U, 2U, 3U, 4U, 5U, 6U, 7U, 8U};
+
+    s_forceCdcInResponse = true;
+    s_cdcInBlock.header = SPI_BridgeMakeHeader(true, 0U, (uint8_t)sizeof(kTestPayload));
+    (void)memcpy(s_cdcInBlock.payload, kTestPayload, sizeof(kTestPayload));
+    if (sizeof(kTestPayload) < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        (void)memset(&s_cdcInBlock.payload[sizeof(kTestPayload)], 0,
+                     SPI_BRIDGE_MAX_PAYLOAD_LENGTH - sizeof(kTestPayload));
+    }
+    SPI_BridgeUpdateBlockCrc(&s_cdcInBlock);
 }
 
 static void SPI_BridgeSerializeBlock(const spi_bridge_block_t *block, uint8_t *output)
@@ -636,7 +652,10 @@ static status_t SPI_BridgeHandleReadBlock(uint8_t en)
 
     if ((status == kStatus_Success) && (block != NULL))
     {
-        SPI_BridgeMarkDirty(block, false);
+        if (!(s_forceCdcInResponse && (block == &s_cdcInBlock)))
+        {
+            SPI_BridgeMarkDirty(block, false);
+        }
     }
 
     return status;
@@ -805,6 +824,7 @@ status_t SPI_BridgeInit(void)
     (void)memset(&s_lastLoggedCdcInBlock, 0, sizeof(s_lastLoggedCdcInBlock));
     (void)memset(&s_lastLoggedCdcOutBlock, 0, sizeof(s_lastLoggedCdcOutBlock));
     s_lastHubLoggedHeader = 0U;
+    s_forceCdcInResponse  = false;
 
     SPI_BridgeRebuildHubStatus();
 

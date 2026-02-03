@@ -240,6 +240,35 @@ static void spi_bridge_poll_endpoints(void) {
     }
 }
 
+static void spi_bridge_test_cdc_timing(void) {
+    uint8_t header = 0U;
+    TickType_t start = xTaskGetTickCount();
+
+    if (!spi_bridge_read_header(SPI_BRIDGE_CDC_ENDPOINT_INDEX, &header)) {
+        return;
+    }
+
+    if ((header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) {
+        return;
+    }
+
+    spi_bridge_block_t block;
+    if (!spi_bridge_read_block(SPI_BRIDGE_CDC_ENDPOINT_INDEX, &block)) {
+        debug_print("SPI bridge: CDC test CRC mismatch\r\n");
+        return;
+    }
+
+    TickType_t end = xTaskGetTickCount();
+    uint8_t length = spi_bridge_extract_length(block.header);
+
+    if (length > 0U) {
+        debug_print("SPI bridge: CDC test payload %u..%u\r\n",
+                    block.payload[0], block.payload[length - 1U]);
+    }
+    debug_print("SPI bridge: CDC test %u bytes in %lu ticks\r\n",
+                length, (unsigned long)(end - start));
+}
+
 static void task_spi_bridge(void* pvParameters) {
     /* Set the PCK0 clock source to MAIN_CLK and clock divider to 0*/
     ((Pmc*)PMC)->PMC_PCK[0] = 1;
@@ -277,7 +306,7 @@ static void task_spi_bridge(void* pvParameters) {
             }
         }
 
-        //    spi_bridge_poll_endpoints();
+        spi_bridge_test_cdc_timing();
         vTaskDelay(pdMS_TO_TICKS(SPI_BRIDGE_POLL_PERIOD_MS));
     }
 }
