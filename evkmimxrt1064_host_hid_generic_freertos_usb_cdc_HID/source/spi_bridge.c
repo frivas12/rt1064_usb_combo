@@ -32,6 +32,7 @@
 #include <string.h>
 
 #define SPI_BRIDGE_SPI_TIMEOUT (1000000U)
+#define SPI_BRIDGE_IDLE_TX     (0xA5U)
 
 #ifndef SPI_BRIDGE_SPI_BASE
 #define SPI_BRIDGE_SPI_BASE LPSPI1
@@ -91,6 +92,26 @@ static bool s_forceCdcInResponse;
 static void SPI_BridgeLogState(bool force);
 static bool s_stateTraceEnabled = (SPI_BRIDGE_ENABLE_STATE_TRACE != 0U);
 static SemaphoreHandle_t s_spiBridgeSemaphore;
+static volatile bool s_spiBridgeActivityPending;
+
+typedef enum _spi_bridge_isr_state
+{
+    kSpiBridgeIsrIdle = 0U,
+    kSpiBridgeIsrRead,
+    kSpiBridgeIsrWrite,
+} spi_bridge_isr_state_t;
+
+static volatile spi_bridge_isr_state_t s_spiIsrState;
+static spi_bridge_command_t s_spiIsrCommand;
+static spi_bridge_block_t *s_spiIsrReadBlock;
+static bool s_spiIsrReadDirtyBefore;
+static uint8_t s_spiIsrTxBuffer[SPI_BRIDGE_BLOCK_SIZE];
+static uint8_t s_spiIsrTxRemaining;
+static uint8_t s_spiIsrTxIndex;
+static uint8_t s_spiIsrRxBuffer[SPI_BRIDGE_BLOCK_SIZE];
+static uint8_t s_spiIsrRxCount;
+static uint8_t s_spiIsrRxExpected;
+static uint8_t s_spiIsrCurrentEn;
 
 #define SPI_BRIDGE_TRACE(reason)                                                                                \
     do                                                                                                          \
@@ -602,13 +623,192 @@ static void SPI_BridgeDisableRxInterrupt(void)
     SPI_BRIDGE_SPI_BASE->IER &= ~LPSPI_IER_RDIE_MASK;
 }
 
+static void SPI_BridgeIsrLoadTxByte(uint8_t value)
+{
+    SPI_BRIDGE_SPI_BASE->TDR = value;
+}
+
+static uint8_t SPI_BridgePrepareReadResponse(uint8_t en, spi_bridge_command_t command, bool *dirtyBeforeOut,
+                                             spi_bridge_block_t **blockOut)
+{
+    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, false);
+    uint8_t length = 1U;
+
+    if (dirtyBeforeOut != NULL)
+    {
+        *dirtyBeforeOut = false;
+    }
+
+    if (command == kSPI_BridgeCommandReadHeader)
+    {
+        s_spiIsrTxBuffer[0] = (block != NULL) ? block->header : 0U;
+        return 1U;
+    }
+
+    if (blockOut != NULL)
+    {
+        *blockOut = block;
+    }
+
+    if (block != NULL)
+    {
+        length = SPI_BridgeSerializeBlockWindow(block, s_spiIsrTxBuffer);
+        if (dirtyBeforeOut != NULL)
+        {
+            *dirtyBeforeOut = ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U);
+        }
+    }
+    else
+    {
+        (void)memset(s_spiIsrTxBuffer, 0, sizeof(s_spiIsrTxBuffer));
+        length = 3U;
+    }
+
+    return length;
+}
+
+static bool SPI_BridgeApplyWriteBlockFromIsr(uint8_t en, const uint8_t *raw)
+{
+    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, true);
+    uint8_t length = SPI_BridgeExtractLength(raw[0]);
+
+    if ((block == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) || !SPI_BridgeBlockHasValidCrc(raw))
+    {
+        return false;
+    }
+
+    block->header = (uint8_t)(raw[0] | SPI_BRIDGE_HEADER_DIRTY_MASK);
+    (void)memcpy(block->payload, &raw[1], length);
+    if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        (void)memset(&block->payload[length], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
+    }
+    SPI_BridgeUpdateBlockCrc(block);
+
+    return true;
+}
+
+static void SPI_BridgeIsrHandleCommand(uint8_t command)
+{
+    uint8_t op = (command & SPI_BRIDGE_CMD_OP_MASK) >> SPI_BRIDGE_CMD_OP_SHIFT;
+    uint8_t en = command & SPI_BRIDGE_CMD_EN_MASK;
+
+    s_spiIsrCommand = (spi_bridge_command_t)op;
+    s_spiIsrCurrentEn = en;
+    s_spiIsrReadBlock = NULL;
+    s_spiIsrReadDirtyBefore = false;
+
+    switch (s_spiIsrCommand)
+    {
+        case kSPI_BridgeCommandReadHeader:
+        case kSPI_BridgeCommandReadBlock:
+        {
+            s_spiIsrTxIndex = 0U;
+            s_spiIsrTxRemaining = SPI_BridgePrepareReadResponse(en, s_spiIsrCommand, &s_spiIsrReadDirtyBefore,
+                                                               &s_spiIsrReadBlock);
+            s_spiIsrState = kSpiBridgeIsrRead;
+            if (s_spiIsrTxRemaining > 0U)
+            {
+                SPI_BridgeIsrLoadTxByte(s_spiIsrTxBuffer[s_spiIsrTxIndex++]);
+                --s_spiIsrTxRemaining;
+            }
+            else
+            {
+                s_spiIsrState = kSpiBridgeIsrIdle;
+                SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
+            }
+            break;
+        }
+        case kSPI_BridgeCommandWriteBlock:
+            s_spiIsrState = kSpiBridgeIsrWrite;
+            s_spiIsrRxCount = 0U;
+            s_spiIsrRxExpected = 0U;
+            SPI_BridgeIsrLoadTxByte(0U);
+            break;
+        default:
+            s_spiIsrState = kSpiBridgeIsrIdle;
+            SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
+            break;
+    }
+}
+
 void LPSPI1_IRQHandler(void)
 {
     BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-    SPI_BridgeDisableRxInterrupt();
+    while ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_RDF_MASK) != 0U)
+    {
+        uint8_t rx = (uint8_t)SPI_BRIDGE_SPI_BASE->RDR;
+        SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_RDF_MASK | LPSPI_SR_TDF_MASK;
 
-    if (s_spiBridgeSemaphore != NULL)
+        switch (s_spiIsrState)
+        {
+            case kSpiBridgeIsrIdle:
+                SPI_BridgeIsrHandleCommand(rx);
+                break;
+            case kSpiBridgeIsrRead:
+                if (s_spiIsrTxRemaining > 0U)
+                {
+                    SPI_BridgeIsrLoadTxByte(s_spiIsrTxBuffer[s_spiIsrTxIndex++]);
+                    --s_spiIsrTxRemaining;
+                }
+                else
+                {
+                    if ((s_spiIsrCommand == kSPI_BridgeCommandReadBlock) && (s_spiIsrReadBlock != NULL))
+                    {
+                        if (!(s_forceCdcInResponse && (s_spiIsrReadBlock == &s_cdcInBlock)))
+                        {
+                            SPI_BridgeMarkDirty(s_spiIsrReadBlock, false);
+                        }
+                        if (s_spiIsrReadDirtyBefore)
+                        {
+                            s_spiBridgeActivityPending = true;
+                        }
+                    }
+                    s_spiIsrState = kSpiBridgeIsrIdle;
+                    SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
+                }
+                break;
+            case kSpiBridgeIsrWrite:
+                if (s_spiIsrRxCount < SPI_BRIDGE_BLOCK_SIZE)
+                {
+                    s_spiIsrRxBuffer[s_spiIsrRxCount] = rx;
+                }
+
+                if (s_spiIsrRxCount == 0U)
+                {
+                    uint8_t length = SPI_BridgeExtractLength(rx);
+                    s_spiIsrRxExpected = (uint8_t)(length + 3U);
+                    if (s_spiIsrRxExpected > SPI_BRIDGE_BLOCK_SIZE)
+                    {
+                        s_spiIsrRxExpected = SPI_BRIDGE_BLOCK_SIZE;
+                    }
+                }
+
+                ++s_spiIsrRxCount;
+
+                if ((s_spiIsrRxExpected != 0U) && (s_spiIsrRxCount >= s_spiIsrRxExpected))
+                {
+                    if (SPI_BridgeApplyWriteBlockFromIsr(s_spiIsrCurrentEn, s_spiIsrRxBuffer))
+                    {
+                        s_spiBridgeActivityPending = true;
+                    }
+                    s_spiIsrState = kSpiBridgeIsrIdle;
+                    SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
+                }
+                else
+                {
+                    SPI_BridgeIsrLoadTxByte(0U);
+                }
+                break;
+            default:
+                s_spiIsrState = kSpiBridgeIsrIdle;
+                SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
+                break;
+        }
+    }
+
+    if ((s_spiBridgeSemaphore != NULL) && s_spiBridgeActivityPending)
     {
         (void)xSemaphoreGiveFromISR(s_spiBridgeSemaphore, &higherPriorityTaskWoken);
     }
@@ -797,6 +997,8 @@ status_t SPI_BridgeInit(void)
         LPSPI_SR_WCF_MASK | LPSPI_SR_FCF_MASK | LPSPI_SR_TCF_MASK | LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK |
         LPSPI_SR_DMF_MASK;
     SPI_BRIDGE_SPI_BASE->CR    = LPSPI_CR_MEN_MASK;
+    SPI_BRIDGE_SPI_BASE->TDR   = SPI_BRIDGE_IDLE_TX;
+    SPI_BridgeEnableRxInterrupt();
 
     s_spiBridgeSemaphore = xSemaphoreCreateBinary();
     if (s_spiBridgeSemaphore == NULL)
@@ -825,6 +1027,8 @@ status_t SPI_BridgeInit(void)
     (void)memset(&s_lastLoggedCdcOutBlock, 0, sizeof(s_lastLoggedCdcOutBlock));
     s_lastHubLoggedHeader = 0U;
     s_forceCdcInResponse  = false;
+    s_spiIsrState         = kSpiBridgeIsrIdle;
+    s_spiBridgeActivityPending = false;
 
     SPI_BridgeRebuildHubStatus();
 
@@ -846,13 +1050,15 @@ void SPI_BridgeTask(void *param)
 
     while (1)
     {
-        SPI_BridgeEnableRxInterrupt();
-
-        (void)xSemaphoreTake(s_spiBridgeSemaphore, portMAX_DELAY);
-
-        while (SPI_BridgeMasterRequestPending())
+        if ((s_spiBridgeSemaphore != NULL) && (xSemaphoreTake(s_spiBridgeSemaphore, portMAX_DELAY) == pdTRUE))
         {
-            bool activity = SPI_BridgeHandleCommand();
+            bool activity = false;
+
+            taskENTER_CRITICAL();
+            activity = s_spiBridgeActivityPending;
+            s_spiBridgeActivityPending = false;
+            taskEXIT_CRITICAL();
+
             SPI_BRIDGE_TASK_LOG(activity);
         }
     }
