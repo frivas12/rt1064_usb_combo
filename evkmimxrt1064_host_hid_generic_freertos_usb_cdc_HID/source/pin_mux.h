@@ -47,25 +47,25 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_UART1_TXD_PERIPHERAL                              LPUART1   /*!< Peripheral name */
 #define BOARD_INITPINS_UART1_TXD_SIGNAL                                       TX   /*!< Signal name */
 
-/* GPIO_B1_00 (coord A11), RT1064 SPCK */
+/* GPIO_SD_B0_00 (coord M6), RT1064 SPCK */
 /* Routed pin properties */
-#define BOARD_INITPINS_RT1064_SPCK_PERIPHERAL                               GPIO2   /*!< Peripheral name */
-#define BOARD_INITPINS_RT1064_SPCK_SIGNAL                                   IO16   /*!< Signal name */
+#define BOARD_INITPINS_RT1064_SPCK_PERIPHERAL                              LPSPI1   /*!< Peripheral name */
+#define BOARD_INITPINS_RT1064_SPCK_SIGNAL                                     SCK   /*!< Signal name */
 
-/* GPIO_B1_01 (coord B11), RT1064 SPI CS */
+/* GPIO_SD_B0_01 (coord N6), RT1064 SPI CS */
 /* Routed pin properties */
-#define BOARD_INITPINS_RT1064_SPI_CS_PERIPHERAL                             GPIO2   /*!< Peripheral name */
-#define BOARD_INITPINS_RT1064_SPI_CS_SIGNAL                                 IO17   /*!< Signal name */
+#define BOARD_INITPINS_RT1064_SPI_CS_PERIPHERAL                            LPSPI1   /*!< Peripheral name */
+#define BOARD_INITPINS_RT1064_SPI_CS_SIGNAL                                 PCS0   /*!< Signal name */
 
-/* GPIO_B1_02 (coord C11), MOSI */
+/* GPIO_SD_B0_02 (coord P6), MOSI */
 /* Routed pin properties */
-#define BOARD_INITPINS_MOSI_PERIPHERAL                                      GPIO2   /*!< Peripheral name */
-#define BOARD_INITPINS_MOSI_SIGNAL                                          IO18   /*!< Signal name */
+#define BOARD_INITPINS_MOSI_PERIPHERAL                                     LPSPI1   /*!< Peripheral name */
+#define BOARD_INITPINS_MOSI_SIGNAL                                           SDO   /*!< Signal name */
 
-/* GPIO_B1_03 (coord D11), MISO */
+/* GPIO_SD_B0_03 (coord R6), MISO */
 /* Routed pin properties */
-#define BOARD_INITPINS_MISO_PERIPHERAL                                      GPIO2   /*!< Peripheral name */
-#define BOARD_INITPINS_MISO_SIGNAL                                          IO19   /*!< Signal name */
+#define BOARD_INITPINS_MISO_PERIPHERAL                                     LPSPI1   /*!< Peripheral name */
+#define BOARD_INITPINS_MISO_SIGNAL                                           SDI   /*!< Signal name */
 
 /* GPIO_B1_04 (coord E12), RT1064 INT PIN */
 /* Routed pin properties */
