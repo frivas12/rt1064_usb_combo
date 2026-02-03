@@ -58,22 +58,42 @@ BOARD_InitPins:
  *
  * END ****************************************************************************************************************/
 void BOARD_InitPins(void) {
-  CLOCK_EnableClock(kCLOCK_Iomuxc);           
+	CLOCK_EnableClock(kCLOCK_Iomuxc);
 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_12_LPUART1_TX, 0U); 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_13_LPUART1_RX, 0U); 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_00_LPSPI1_SCK, 0U); 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_01_LPSPI1_PCS0, 0U); 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_02_LPSPI1_SDO, 0U); 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_03_LPSPI1_SDI, 0U); 
-  IOMUXC_SetPinMux(IOMUXC_GPIO_B1_04_GPIO2_IO20, 0U); 
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_12_LPUART1_TX, 0x10B0U); 
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_13_LPUART1_RX, 0x10B0U); 
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_00_LPSPI1_SCK, 0x10B0U); 
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_01_LPSPI1_PCS0, 0x10B0U); 
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_02_LPSPI1_SDO, 0x10B0U); 
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_03_LPSPI1_SDI, 0x10B0U); 
-  IOMUXC_SetPinConfig(IOMUXC_GPIO_B1_04_GPIO2_IO20, 0x10B0U); 
+	    /* ---------------- UART1 ---------------- */
+	    IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_12_LPUART1_TX, 0U);
+	    IOMUXC_SetPinMux(IOMUXC_GPIO_AD_B0_13_LPUART1_RX, 0U);
+
+	    IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_12_LPUART1_TX, 0x10B0U);
+	    IOMUXC_SetPinConfig(IOMUXC_GPIO_AD_B0_13_LPUART1_RX, 0x10B0U);
+
+	    /* ---------------- SPI (RT1064 = SLAVE) ----------------
+	     * Using Arduino header SPI nets after populating R278/R279/R280/R281.
+	     *
+	     * Per YOUR SDK headers:
+	     *   GPIO_SD_B0_00 -> LPSPI1_SCK
+	     *   GPIO_SD_B0_01 -> LPSPI1_PCS0
+	     *   GPIO_SD_B0_02 -> LPSPI1_SDO   (RT output = MISO to master)
+	     *   GPIO_SD_B0_03 -> LPSPI1_SDI   (RT input  = MOSI from master)
+	     *
+	     * IMPORTANT: This means on the Arduino header, MOSI/MISO end up swapped
+	     * versus the usual D11/D12 labeling when the RT is the slave:
+	     *   Master MOSI must go to RT SDI  -> Arduino D12 (GPIO_SD_B0_03)
+	     *   Master MISO comes from RT SDO -> Arduino D11 (GPIO_SD_B0_02)
+	     */
+	    IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_00_LPSPI1_SCK,  0U);
+	    IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_01_LPSPI1_PCS0, 0U);
+	    IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_02_LPSPI1_SDO,  0U); /* RT MISO (output) */
+	    IOMUXC_SetPinMux(IOMUXC_GPIO_SD_B0_03_LPSPI1_SDI,  0U); /* RT MOSI (input)  */
+
+	    IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_00_LPSPI1_SCK,  0x10B0U);
+	    IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_01_LPSPI1_PCS0, 0x10B0U);
+	    IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_02_LPSPI1_SDO,  0x10B0U);
+	    IOMUXC_SetPinConfig(IOMUXC_GPIO_SD_B0_03_LPSPI1_SDI,  0x10B0U);
+
+	    /* ---------------- Optional INT pin as GPIO ---------------- */
+	    IOMUXC_SetPinMux(IOMUXC_GPIO_B1_04_GPIO2_IO20, 0U);
+	    IOMUXC_SetPinConfig(IOMUXC_GPIO_B1_04_GPIO2_IO20, 0x10B0U);
 }
 /***********************************************************************************************************************
  * EOF

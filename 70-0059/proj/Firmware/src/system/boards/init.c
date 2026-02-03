@@ -240,8 +240,7 @@ void system_init(void) {
         board_init();
         hid_mapping_service_init();
         itc_service_init();
-        if (0)  //_type < MCM_41_0117_RT1064)
-        {
+        if (board_type < MCM_41_0117_RT1064) {
             usb_host_init();
         } else {
             rt1064_spi_bridge_init();
