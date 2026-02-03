@@ -77,6 +77,7 @@ namespace MCM6000_UI
             MCM6000_REV_004,
             MCM_41_0117_001,
             MCM_41_0134_001,            // MCM301, Revision 1
+            MCM_41_0117_RT1064,         // RT1064 USB CDC and HID host
         }
 
         public enum SetSystemTypes
