@@ -65,6 +65,20 @@ The SAMS70 must clock exactly `1 + LEN + 2` bytes for each READ_BLOCK or
 WRITE_BLOCK. Extra clocks leave data in the RT1064 RX FIFO and can desync the
 protocol.
 
+## SPI wiring checklist (SAMS70 host ↔ RT1064 slave)
+
+Ensure the SPI pins are wired with the SAMS70 as the **host/master** and the
+RT1064 as the **slave**:
+
+- **SAMS70 SCK → RT1064 SCK**
+- **SAMS70 MOSI → RT1064 MOSI** (master out, slave in)
+- **SAMS70 MISO ← RT1064 MISO** (master in, slave out)
+- **SAMS70 CS/SS → RT1064 CS/SS** (active low)
+- **Common GND** shared between boards
+
+If the chip-select polarity or signal direction is reversed, the RT1064 will
+never see valid command bytes and the SAMS70 will read only 0xFF/0x00 padding.
+
 ## Explanation: How the RT1064 Transfers Information to the SAMS70
 
 Below is a detailed walkthrough of the data flow between the RT1064 (SPI slave)
