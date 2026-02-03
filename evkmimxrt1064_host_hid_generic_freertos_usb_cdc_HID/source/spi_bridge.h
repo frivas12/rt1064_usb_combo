@@ -149,4 +149,12 @@ void SPI_BridgeSetStateTraceEnabled(bool enabled);
  */
 bool SPI_BridgeStateTraceEnabled(void);
 
+/*!
+ * @brief Forces the CDC IN endpoint to respond with a fixed 8-byte test payload.
+ *
+ * This helper is intended for timing verification with the SPI master. The CDC
+ * IN block remains DIRTY so every READ_BLOCK returns the same payload.
+ */
+void SPI_BridgeEnableFixedCdcResponse(void);
+
 #endif /* _SPI_BRIDGE_H_ */
