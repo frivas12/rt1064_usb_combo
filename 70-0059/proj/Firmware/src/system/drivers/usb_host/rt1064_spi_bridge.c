@@ -33,6 +33,9 @@
 #define SPI_BRIDGE_RESPONSE_DELAY_US (50U)
 #define SPI_BRIDGE_POLL_PERIOD_MS (10U)
 
+#define SPI_BRIDGE_SIMPLE_PING_TX (0x00U)
+#define SPI_BRIDGE_SIMPLE_PING_EXPECTED_RX (0xA5U)
+
 typedef enum {
     kSpiBridgeCommandReadHeader = 0U,
     kSpiBridgeCommandReadBlock = 1U,
@@ -96,6 +99,26 @@ static bool spi_bridge_start_transaction(void) {
 static void spi_bridge_end_transaction(void) {
     (void)spi_end_transfer();
     xSemaphoreGive(xSPI_Semaphore);
+}
+
+static bool spi_bridge_single_byte_exchange(uint8_t tx, uint8_t* rx_out) {
+    if (rx_out == NULL) {
+        return false;
+    }
+
+    if (!spi_bridge_start_transaction()) {
+        return false;
+    }
+
+    uint8_t value = tx;
+    if (spi_partial_transfer(&value) != SPI_OK) {
+        spi_bridge_end_transaction();
+        return false;
+    }
+
+    spi_bridge_end_transaction();
+    *rx_out = value;
+    return true;
 }
 
 static bool spi_bridge_read_header(uint8_t en, uint8_t* header_out) {
@@ -292,7 +315,24 @@ static void task_spi_bridge(void* pvParameters) {
     (void)memset(s_endpoint_active, 0, sizeof(s_endpoint_active));
     s_endpoint_active[SPI_BRIDGE_CDC_ENDPOINT_INDEX] = true;
 
+    static bool s_simple_ping_done = false;
+
     for (;;) {
+        if (!s_simple_ping_done) {
+            uint8_t rx = 0U;
+            if (spi_bridge_single_byte_exchange(SPI_BRIDGE_SIMPLE_PING_TX, &rx)) {
+                debug_print("SPI bridge: single-byte test tx=0x%02x rx=0x%02x\r\n",
+                            SPI_BRIDGE_SIMPLE_PING_TX, rx);
+                if (rx != SPI_BRIDGE_SIMPLE_PING_EXPECTED_RX) {
+                    debug_print("SPI bridge: expected rx=0x%02x\r\n",
+                                SPI_BRIDGE_SIMPLE_PING_EXPECTED_RX);
+                }
+            } else {
+                debug_print("SPI bridge: single-byte test failed\r\n");
+            }
+            s_simple_ping_done = true;
+        }
+
         uint8_t header = 0U;
         if (spi_bridge_read_header(0U, &header)) {
             if ((header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U) {
