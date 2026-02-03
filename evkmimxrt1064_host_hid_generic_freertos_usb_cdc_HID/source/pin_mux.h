@@ -47,25 +47,30 @@ void BOARD_InitBootPins(void);
 #define BOARD_INITPINS_UART1_TXD_PERIPHERAL                              LPUART1   /*!< Peripheral name */
 #define BOARD_INITPINS_UART1_TXD_SIGNAL                                       TX   /*!< Signal name */
 
-/* GPIO_SD_B0_01 (coord J3), SD1_CLK/J24[3] */
+/* GPIO_B1_00 (coord A11), RT1064 SPCK */
 /* Routed pin properties */
-#define BOARD_INITPINS_SD1_CLK_PERIPHERAL                                 LPSPI1   /*!< Peripheral name */
-#define BOARD_INITPINS_SD1_CLK_SIGNAL                                       PCS0   /*!< Signal name */
+#define BOARD_INITPINS_RT1064_SPCK_PERIPHERAL                               GPIO2   /*!< Peripheral name */
+#define BOARD_INITPINS_RT1064_SPCK_SIGNAL                                   IO16   /*!< Signal name */
 
-/* GPIO_SD_B0_00 (coord J4), SD1_CMD/J24[6] */
+/* GPIO_B1_01 (coord B11), RT1064 SPI CS */
 /* Routed pin properties */
-#define BOARD_INITPINS_SD1_CMD_PERIPHERAL                                 LPSPI1   /*!< Peripheral name */
-#define BOARD_INITPINS_SD1_CMD_SIGNAL                                        SCK   /*!< Signal name */
+#define BOARD_INITPINS_RT1064_SPI_CS_PERIPHERAL                             GPIO2   /*!< Peripheral name */
+#define BOARD_INITPINS_RT1064_SPI_CS_SIGNAL                                 IO17   /*!< Signal name */
 
-/* GPIO_SD_B0_03 (coord K1), SD1_D1/J24[5]/SPI_MISO */
+/* GPIO_B1_02 (coord C11), MOSI */
 /* Routed pin properties */
-#define BOARD_INITPINS_SD1_D1_PERIPHERAL                                  LPSPI1   /*!< Peripheral name */
-#define BOARD_INITPINS_SD1_D1_SIGNAL                                         SDO   /*!< Signal name */
+#define BOARD_INITPINS_MOSI_PERIPHERAL                                      GPIO2   /*!< Peripheral name */
+#define BOARD_INITPINS_MOSI_SIGNAL                                          IO18   /*!< Signal name */
 
-/* GPIO_SD_B0_02 (coord J1), SD1_D0/J24[4]/SPI_MOSI/PWM */
+/* GPIO_B1_03 (coord D11), MISO */
 /* Routed pin properties */
-#define BOARD_INITPINS_SD1_D0_PERIPHERAL                                  LPSPI1   /*!< Peripheral name */
-#define BOARD_INITPINS_SD1_D0_SIGNAL                                         SDI   /*!< Signal name */
+#define BOARD_INITPINS_MISO_PERIPHERAL                                      GPIO2   /*!< Peripheral name */
+#define BOARD_INITPINS_MISO_SIGNAL                                          IO19   /*!< Signal name */
+
+/* GPIO_B1_04 (coord E12), RT1064 INT PIN */
+/* Routed pin properties */
+#define BOARD_INITPINS_RT1064_INT_PIN_PERIPHERAL                            GPIO2   /*!< Peripheral name */
+#define BOARD_INITPINS_RT1064_INT_PIN_SIGNAL                                IO20   /*!< Signal name */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
