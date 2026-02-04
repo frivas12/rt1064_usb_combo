@@ -344,6 +344,13 @@ __STATIC_INLINE bool _read(uint8_t *rx_data)
 	return SPI_OK;
 }
 
+__STATIC_INLINE void spi_clear_rx(void)
+{
+	while ((SPI0->SPI_SR & SPI_SR_RDRF) != 0) {
+		(void)SPI0->SPI_RDR;
+	}
+}
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -435,6 +442,7 @@ spi_status_t spi_start_transfer(spi_modes mode, bool toggle, uint8_t cs) {
 		{ return SPI_ERROR_TIMEOUT; }
 	}
 
+	spi_clear_rx();
 	set_mode(mode);
 	chip_select(cs);
 
@@ -448,10 +456,12 @@ spi_status_t spi_partial_write(uint8_t value) {
     // Wait until transfer is complete.
     while ((spi_read_status(SPI0) & SPI_SR_RDRF) == 0);
 
+	spi_clear_rx();
     return SPI_OK;
 }
 
 spi_status_t spi_partial_transfer(uint8_t* inout) {
+	spi_clear_rx();
     if (write(*inout) != SPI_OK)
     { return SPI_ERROR_TIMEOUT; }
 
