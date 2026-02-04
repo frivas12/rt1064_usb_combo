@@ -24,7 +24,9 @@
 #include "board.h"
 /*${header:end}*/
 
+#if APP_ENABLE_USB_STACK
 extern usb_host_handle g_HostHandle;
+#endif
 
 /*${function:start}*/
 void BOARD_InitHardware(void)
@@ -38,11 +40,13 @@ void BOARD_InitHardware(void)
 
 void USB_OTG1_IRQHandler(void)
 {
+#if APP_ENABLE_USB_STACK
 #if ((defined USB_HOST_CONFIG_EHCI) && (USB_HOST_CONFIG_EHCI))
     if (CONTROLLER_ID == kUSB_ControllerEhci0)
     {
         USB_HostEhciIsrFunction(g_HostHandle);
     }
+#endif
 #endif
 
     if (CDC_CONTROLLER_ID == kUSB_ControllerEhci0)
@@ -53,11 +57,13 @@ void USB_OTG1_IRQHandler(void)
 
 void USB_OTG2_IRQHandler(void)
 {
+#if APP_ENABLE_USB_STACK
 #if ((defined USB_HOST_CONFIG_EHCI) && (USB_HOST_CONFIG_EHCI))
     if (CONTROLLER_ID == kUSB_ControllerEhci1)
     {
         USB_HostEhciIsrFunction(g_HostHandle);
     }
+#endif
 #endif
 
     if (CDC_CONTROLLER_ID == kUSB_ControllerEhci1)
