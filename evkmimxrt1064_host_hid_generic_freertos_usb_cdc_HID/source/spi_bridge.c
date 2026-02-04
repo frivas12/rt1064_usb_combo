@@ -723,6 +723,13 @@ static void SPI_BridgeIsrHandleCommand(uint8_t command)
             break;
         }
         case kSPI_BridgeCommandWriteBlock:
+            if (en == 0U)
+            {
+                /* Treat WRITE_BLOCK|EN0 (0xA0) as a lightweight hub-status ping. */
+                s_spiIsrState = kSpiBridgeIsrIdle;
+                SPI_BridgeIsrLoadTxByte(s_hubStatus.header);
+                break;
+            }
             s_spiIsrState = kSpiBridgeIsrWrite;
             s_spiIsrRxCount = 0U;
             s_spiIsrRxExpected = 0U;
@@ -982,7 +989,12 @@ static bool SPI_BridgeHandleCommand(void)
         case kSPI_BridgeCommandWriteBlock:
         {
             bool writeActivity = false;
-            status            = SPI_BridgeHandleWriteBlock(en, &writeActivity);
+            if (en == 0U)
+            {
+                (void)SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, s_hubStatus.header, &command);
+                break;
+            }
+            status = SPI_BridgeHandleWriteBlock(en, &writeActivity);
             activity |= writeActivity;
             break;
         }
