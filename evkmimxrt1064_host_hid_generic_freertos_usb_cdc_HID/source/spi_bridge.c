@@ -7,6 +7,7 @@
 #include "spi_bridge.h"
 
 #include "FreeRTOS.h"
+#include "task.h"
 #include "fsl_clock.h"
 
 #define SPI_BRIDGE_IDLE_TX (0x00U)
