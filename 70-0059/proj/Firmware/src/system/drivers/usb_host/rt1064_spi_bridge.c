@@ -26,6 +26,19 @@
 
 #define SPI_BRIDGE_MAX_PAYLOAD_LENGTH (63U)
 #define SPI_BRIDGE_BLOCK_SIZE (1U + SPI_BRIDGE_MAX_PAYLOAD_LENGTH + 2U)
+#define SPI_BRIDGE_FRAME_SOF (0xA5U)
+#define SPI_BRIDGE_FRAME_HEADER_SIZE (4U)
+#define SPI_BRIDGE_FRAME_CRC_SIZE (2U)
+#define SPI_BRIDGE_FRAME_SIZE \
+    (SPI_BRIDGE_FRAME_HEADER_SIZE + SPI_BRIDGE_MAX_PAYLOAD_LENGTH + SPI_BRIDGE_FRAME_CRC_SIZE)
+
+#define SPI_BRIDGE_TYPE_PING (0x01U)
+#define SPI_BRIDGE_TYPE_ECHO (0x02U)
+#define SPI_BRIDGE_TYPE_RESPONSE (0x80U)
+#define SPI_BRIDGE_TYPE_NOT_READY (0x7FU)
+#define SPI_BRIDGE_TYPE_ERROR (0x7EU)
+#define SPI_BRIDGE_ERROR_BAD_FRAME (0x01U)
+#define SPI_BRIDGE_ERROR_BAD_TYPE (0x02U)
 
 #define SPI_BRIDGE_CRC_POLY (0x1021U)
 #define SPI_BRIDGE_CRC_INIT (0xFFFFU)
@@ -80,6 +93,66 @@ static uint16_t spi_bridge_compute_crc(const uint8_t* raw) {
     return crc;
 }
 
+static uint16_t spi_bridge_compute_frame_crc(const uint8_t* frame) {
+    uint8_t length = frame[3];
+    uint16_t crc = SPI_BRIDGE_CRC_INIT;
+
+    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) {
+        return 0U;
+    }
+
+    for (uint8_t i = 0U; i < (SPI_BRIDGE_FRAME_HEADER_SIZE + length); ++i) {
+        crc = spi_bridge_crc_update(crc, frame[i]);
+    }
+
+    return crc;
+}
+
+static void spi_bridge_build_frame(uint8_t* frame, uint8_t seq, uint8_t type,
+                                   const uint8_t* payload, uint8_t length) {
+    if (frame == NULL) {
+        return;
+    }
+
+    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) {
+        length = SPI_BRIDGE_MAX_PAYLOAD_LENGTH;
+    }
+
+    frame[0] = SPI_BRIDGE_FRAME_SOF;
+    frame[1] = seq;
+    frame[2] = type;
+    frame[3] = length;
+
+    if ((payload != NULL) && (length > 0U)) {
+        (void)memcpy(&frame[SPI_BRIDGE_FRAME_HEADER_SIZE], payload, length);
+    }
+    if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH) {
+        (void)memset(&frame[SPI_BRIDGE_FRAME_HEADER_SIZE + length], 0,
+                     SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
+    }
+
+    uint16_t crc = spi_bridge_compute_frame_crc(frame);
+    frame[SPI_BRIDGE_FRAME_SIZE - 2U] = (uint8_t)(crc & 0xFFU);
+    frame[SPI_BRIDGE_FRAME_SIZE - 1U] = (uint8_t)((crc >> 8U) & 0xFFU);
+}
+
+static bool spi_bridge_frame_valid(const uint8_t* frame) {
+    if ((frame == NULL) || (frame[0] != SPI_BRIDGE_FRAME_SOF)) {
+        return false;
+    }
+
+    uint8_t length = frame[3];
+    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) {
+        return false;
+    }
+
+    uint16_t expected = spi_bridge_compute_frame_crc(frame);
+    uint16_t received = (uint16_t)frame[SPI_BRIDGE_FRAME_SIZE - 2U] |
+                        ((uint16_t)frame[SPI_BRIDGE_FRAME_SIZE - 1U] << 8U);
+
+    return (expected != 0U) && (expected == received);
+}
+
 static void spi_bridge_wait_for_response(void) {
     delay_us(SPI_BRIDGE_RESPONSE_DELAY_US);
 }
@@ -96,6 +169,29 @@ static bool spi_bridge_start_transaction(void) {
 static void spi_bridge_end_transaction(void) {
     (void)spi_end_transfer();
     xSemaphoreGive(xSPI_Semaphore);
+}
+
+static bool spi_bridge_transfer_frame(const uint8_t* tx_frame,
+                                      uint8_t* rx_frame) {
+    if ((tx_frame == NULL) || (rx_frame == NULL)) {
+        return false;
+    }
+
+    if (!spi_bridge_start_transaction()) {
+        return false;
+    }
+
+    for (uint8_t i = 0U; i < SPI_BRIDGE_FRAME_SIZE; ++i) {
+        uint8_t value = tx_frame[i];
+        if (spi_partial_transfer(&value) != SPI_OK) {
+            spi_bridge_end_transaction();
+            return false;
+        }
+        rx_frame[i] = value;
+    }
+
+    spi_bridge_end_transaction();
+    return true;
 }
 
 static bool spi_bridge_single_byte_exchange(uint8_t tx, uint8_t* rx_out) {
@@ -347,11 +443,75 @@ static void task_spi_bridge(void* pvParameters) {
     }
     */
 
+    uint8_t seq = 0U;
+    uint8_t last_seq = 0U;
+    uint8_t last_type = 0U;
+    uint8_t last_length = 0U;
+    uint8_t last_payload[SPI_BRIDGE_MAX_PAYLOAD_LENGTH] = {0U};
+
     for (;;) {
-        uint8_t rx = 0U;
-        if (spi_bridge_single_byte_exchange(0xA0U, &rx)) {
-            debug_print("SPI bridge test: TX=0xA0 RX=0x%02X\r\n", rx);
+        uint8_t tx_frame[SPI_BRIDGE_FRAME_SIZE];
+        uint8_t rx_frame[SPI_BRIDGE_FRAME_SIZE];
+        uint8_t payload[SPI_BRIDGE_MAX_PAYLOAD_LENGTH];
+        uint8_t length = 0U;
+        uint8_t type = ((seq & 0x01U) != 0U) ? SPI_BRIDGE_TYPE_ECHO : SPI_BRIDGE_TYPE_PING;
+
+        if (type == SPI_BRIDGE_TYPE_ECHO) {
+            length = 4U;
+            payload[0] = seq;
+            payload[1] = (uint8_t)(seq + 1U);
+            payload[2] = (uint8_t)(seq + 2U);
+            payload[3] = (uint8_t)(seq + 3U);
         }
+
+        spi_bridge_build_frame(tx_frame, seq, type, payload, length);
+
+        if (spi_bridge_transfer_frame(tx_frame, rx_frame)) {
+            if (seq > 0U) {
+                if (!spi_bridge_frame_valid(rx_frame)) {
+                    debug_print("SPI bridge: invalid response frame\r\n");
+                } else {
+                    uint8_t resp_seq = rx_frame[1];
+                    uint8_t resp_type = rx_frame[2];
+                    uint8_t resp_length = rx_frame[3];
+                    const uint8_t *resp_payload = &rx_frame[SPI_BRIDGE_FRAME_HEADER_SIZE];
+
+                    if (resp_type == SPI_BRIDGE_TYPE_NOT_READY) {
+                        debug_print("SPI bridge: not ready response (seq=%u)\r\n", resp_seq);
+                    } else if (resp_type == SPI_BRIDGE_TYPE_ERROR) {
+                        debug_print("SPI bridge: error response (code=%u)\r\n", resp_payload[0]);
+                    } else {
+                        if (resp_seq != last_seq) {
+                            debug_print("SPI bridge: seq mismatch (got=%u expected=%u)\r\n",
+                                        resp_seq, last_seq);
+                        }
+                        if (resp_type != (uint8_t)(SPI_BRIDGE_TYPE_RESPONSE | last_type)) {
+                            debug_print("SPI bridge: type mismatch (got=0x%02X expected=0x%02X)\r\n",
+                                        resp_type, (uint8_t)(SPI_BRIDGE_TYPE_RESPONSE | last_type));
+                        }
+                        if (last_type == SPI_BRIDGE_TYPE_ECHO) {
+                            if ((resp_length != last_length) ||
+                                (memcmp(resp_payload, last_payload, last_length) != 0)) {
+                                debug_print("SPI bridge: echo payload mismatch\r\n");
+                            }
+                        }
+                        debug_print("SPI bridge: response seq=%u type=0x%02X len=%u\r\n",
+                                    resp_seq, resp_type, resp_length);
+                    }
+                }
+            }
+        } else {
+            debug_print("SPI bridge: transfer failed\r\n");
+        }
+
+        last_seq = seq;
+        last_type = type;
+        last_length = length;
+        if (length > 0U) {
+            (void)memcpy(last_payload, payload, length);
+        }
+
+        ++seq;
         vTaskDelay(pdMS_TO_TICKS(SPI_BRIDGE_POLL_PERIOD_MS));
     }
 }

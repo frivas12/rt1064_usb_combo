@@ -1,22 +1,17 @@
 /*
  * SPI bridge task
  *
- * This file implements the RT1064 ⇄ SAMV70 SPI bridge using the EN-indexed
- * command protocol. The MIMXRT acts as an SPI *slave* on LPSPI1 and serves one
- * block per transaction based on the first command byte clocked in by the
- * SAMV70 master:
- *   - READ_HEADER streams a single header byte for the requested EN slot.
- *   - READ_BLOCK streams header + payload + CRC for that EN and clears DIRTY
- *     once all bytes have been shifted out.
- *   - WRITE_BLOCK receives header + payload + CRC for an OUT endpoint, verifies
- *     CRC/LEN, and mirrors the payload into the matching OUT block so the USB
- *     host can consume it.
+ * This file implements the RT1064 ⇄ SAMV70 SPI bridge using a pipelined frame
+ * protocol. The MIMXRT acts as an SPI *slave* on LPSPI1. Each SPI transaction
+ * clocks out a complete response frame prepared from the previous request,
+ * and captures the next request frame for processing after CS deasserts.
  *
- * Logical endpoints (EN = 0–4) include the hub status block (EN 0) and up to
- * four device slots (EN 1–4). Each block stays 66 bytes in memory
- * (1-byte header, 63-byte payload, 2-byte CRC) but transfers only
- * 1 + LEN + 2 bytes on the wire so the master avoids clocking the entire
- * register image on every poll.
+ * Frame format (fixed-length on the wire):
+ *   SOF (0xA5), SEQ, TYPE, LEN, PAYLOAD (0..63), CRC16
+ *
+ * CRC16-CCITT is computed over SOF/SEQ/TYPE/LEN and the active payload bytes.
+ * The response is always delayed by one transaction, so the first response
+ * after reset is a NOT_READY frame.
  */
 #include "spi_bridge.h"
 
@@ -33,6 +28,19 @@
 
 #define SPI_BRIDGE_SPI_TIMEOUT (1000000U)
 #define SPI_BRIDGE_IDLE_TX     (0xA5U)
+#define SPI_BRIDGE_FRAME_SOF   (0xA5U)
+
+#define SPI_BRIDGE_FRAME_HEADER_SIZE (4U)
+#define SPI_BRIDGE_FRAME_CRC_SIZE    (2U)
+#define SPI_BRIDGE_FRAME_SIZE        (SPI_BRIDGE_FRAME_HEADER_SIZE + SPI_BRIDGE_MAX_PAYLOAD_LENGTH + SPI_BRIDGE_FRAME_CRC_SIZE)
+
+#define SPI_BRIDGE_TYPE_PING        (0x01U)
+#define SPI_BRIDGE_TYPE_ECHO        (0x02U)
+#define SPI_BRIDGE_TYPE_RESPONSE    (0x80U)
+#define SPI_BRIDGE_TYPE_NOT_READY   (0x7FU)
+#define SPI_BRIDGE_TYPE_ERROR       (0x7EU)
+#define SPI_BRIDGE_ERROR_BAD_FRAME  (0x01U)
+#define SPI_BRIDGE_ERROR_BAD_TYPE   (0x02U)
 
 #ifndef SPI_BRIDGE_SPI_BASE
 #define SPI_BRIDGE_SPI_BASE LPSPI1
@@ -87,7 +95,25 @@ static spi_bridge_block_t s_lastLoggedInBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_lastLoggedOutBlocks[SPI_BRIDGE_MAX_DEVICES];
 static spi_bridge_block_t s_lastLoggedCdcInBlock;
 static spi_bridge_block_t s_lastLoggedCdcOutBlock;
-static bool s_forceCdcInResponse;
+static bool s_spiFixedResponseEnabled;
+static uint8_t s_spiFixedResponsePayload[8];
+
+static uint8_t s_spiTxBufferA[SPI_BRIDGE_FRAME_SIZE];
+static uint8_t s_spiTxBufferB[SPI_BRIDGE_FRAME_SIZE];
+static uint8_t *s_spiTxActive;
+static uint8_t *s_spiTxNext;
+
+static uint8_t s_spiRxBuffers[2][SPI_BRIDGE_FRAME_SIZE];
+static volatile uint8_t s_spiRxWriteIndex;
+static volatile uint8_t s_spiRxReadyIndex;
+static volatile uint8_t s_spiRxCount;
+static volatile bool s_spiRxComplete;
+static volatile bool s_spiTransactionActive;
+static volatile bool s_spiTxReloadPending;
+static volatile uint8_t s_spiTxIndex;
+static volatile uint8_t s_spiTxRemaining;
+
+#define SPI_BRIDGE_RX_READY_NONE (0xFFU)
 
 static void SPI_BridgeLogState(bool force);
 static bool s_stateTraceEnabled = (SPI_BRIDGE_ENABLE_STATE_TRACE != 0U);
@@ -211,19 +237,88 @@ static void SPI_BridgeUpdateBlockCrc(spi_bridge_block_t *block)
     block->crc = SPI_BridgeComputeBlockCrc(raw);
 }
 
+static uint16_t SPI_BridgeComputeFrameCrc(const uint8_t *frame)
+{
+    uint8_t length = frame[3];
+    uint16_t crc   = SPI_BRIDGE_CRC_INIT;
+
+    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        return 0U;
+    }
+
+    for (uint8_t i = 0U; i < (SPI_BRIDGE_FRAME_HEADER_SIZE + length); ++i)
+    {
+        crc = SPI_BridgeCrcUpdate(crc, frame[i]);
+    }
+
+    return crc;
+}
+
+static void SPI_BridgeBuildFrame(uint8_t *frame, uint8_t seq, uint8_t type, const uint8_t *payload, uint8_t length)
+{
+    if (frame == NULL)
+    {
+        return;
+    }
+
+    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        length = SPI_BRIDGE_MAX_PAYLOAD_LENGTH;
+    }
+
+    frame[0] = SPI_BRIDGE_FRAME_SOF;
+    frame[1] = seq;
+    frame[2] = type;
+    frame[3] = length;
+
+    if ((payload != NULL) && (length > 0U))
+    {
+        (void)memcpy(&frame[SPI_BRIDGE_FRAME_HEADER_SIZE], payload, length);
+    }
+
+    if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        (void)memset(&frame[SPI_BRIDGE_FRAME_HEADER_SIZE + length], 0,
+                     SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
+    }
+
+    uint16_t crc = SPI_BridgeComputeFrameCrc(frame);
+    frame[SPI_BRIDGE_FRAME_SIZE - 2U] = (uint8_t)(crc & 0xFFU);
+    frame[SPI_BRIDGE_FRAME_SIZE - 1U] = (uint8_t)((crc >> 8U) & 0xFFU);
+}
+
+static bool SPI_BridgeFrameValid(const uint8_t *frame)
+{
+    if (frame == NULL)
+    {
+        return false;
+    }
+
+    if (frame[0] != SPI_BRIDGE_FRAME_SOF)
+    {
+        return false;
+    }
+
+    uint8_t length = frame[3];
+    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
+    {
+        return false;
+    }
+
+    uint16_t expected = SPI_BridgeComputeFrameCrc(frame);
+    uint16_t received = (uint16_t)frame[SPI_BRIDGE_FRAME_SIZE - 2U] |
+                        ((uint16_t)frame[SPI_BRIDGE_FRAME_SIZE - 1U] << 8U);
+
+    return (expected != 0U) && (expected == received);
+}
+
 void SPI_BridgeEnableFixedCdcResponse(void)
 {
     static const uint8_t kTestPayload[8] = {1U, 2U, 3U, 4U, 5U, 6U, 7U, 8U};
 
-    s_forceCdcInResponse = true;
-    s_cdcInBlock.header = SPI_BridgeMakeHeader(true, 0U, (uint8_t)sizeof(kTestPayload));
-    (void)memcpy(s_cdcInBlock.payload, kTestPayload, sizeof(kTestPayload));
-    if (sizeof(kTestPayload) < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-    {
-        (void)memset(&s_cdcInBlock.payload[sizeof(kTestPayload)], 0,
-                     SPI_BRIDGE_MAX_PAYLOAD_LENGTH - sizeof(kTestPayload));
-    }
-    SPI_BridgeUpdateBlockCrc(&s_cdcInBlock);
+    s_spiFixedResponseEnabled = true;
+    (void)memcpy(s_spiFixedResponsePayload, kTestPayload, sizeof(kTestPayload));
 }
 
 static void SPI_BridgeSerializeBlock(const spi_bridge_block_t *block, uint8_t *output)
@@ -625,6 +720,22 @@ static void SPI_BridgeDisableRxInterrupt(void)
     SPI_BRIDGE_SPI_BASE->IER &= ~LPSPI_IER_RDIE_MASK;
 }
 
+static void SPI_BridgePrimeActiveTxFifo(void)
+{
+    while ((s_spiTxRemaining > 0U) && ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_TDF_MASK) != 0U))
+    {
+        SPI_BRIDGE_SPI_BASE->TDR = s_spiTxActive[s_spiTxIndex++];
+        --s_spiTxRemaining;
+    }
+}
+
+static void SPI_BridgePrepareNextTransaction(void)
+{
+    s_spiTxIndex = 0U;
+    s_spiTxRemaining = SPI_BRIDGE_FRAME_SIZE;
+    SPI_BridgePrimeActiveTxFifo();
+}
+
 static void SPI_BridgeIsrLoadTxByte(uint8_t value)
 {
     if ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_TDF_MASK) != 0U)
@@ -754,12 +865,11 @@ void LPSPI1_IRQHandler(void)
     if ((sr & (LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK)) != 0U)
     {
         SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK;
-        s_spiIsrState = kSpiBridgeIsrIdle;
-        s_spiIsrTxRemaining = 0U;
-        s_spiIsrRxExpected = 0U;
-        s_spiIsrRxCount = 0U;
-        s_spiIsrReadExpected = 0U;
-        s_spiIsrReadCount = 0U;
+        s_spiTransactionActive = false;
+        s_spiRxCount = 0U;
+        s_spiRxComplete = false;
+        s_spiTxReloadPending = false;
+        SPI_BridgePrepareNextTransaction();
     }
 
     while ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_RDF_MASK) != 0U)
@@ -767,87 +877,48 @@ void LPSPI1_IRQHandler(void)
         uint8_t rx = (uint8_t)SPI_BRIDGE_SPI_BASE->RDR;
         SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_RDF_MASK | LPSPI_SR_TDF_MASK;
 
-        switch (s_spiIsrState)
+        if (!s_spiTransactionActive)
         {
-            case kSpiBridgeIsrIdle:
-                SPI_BridgeIsrHandleCommand(rx);
-                break;
-            case kSpiBridgeIsrRead:
-                if (s_spiIsrReadExpected > 0U)
-                {
-                    if (s_spiIsrReadCount < s_spiIsrReadExpected)
-                    {
-                        ++s_spiIsrReadCount;
-                    }
-                    if (s_spiIsrReadCount >= s_spiIsrReadExpected)
-                    {
-                        if ((s_spiIsrCommand == kSPI_BridgeCommandReadBlock) && (s_spiIsrReadBlock != NULL))
-                        {
-                            if (!(s_forceCdcInResponse && (s_spiIsrReadBlock == &s_cdcInBlock)))
-                            {
-                                SPI_BridgeMarkDirty(s_spiIsrReadBlock, false);
-                            }
-                            if (s_spiIsrReadDirtyBefore)
-                            {
-                                s_spiBridgeActivityPending = true;
-                            }
-                        }
-                        s_spiIsrState = kSpiBridgeIsrIdle;
-                        SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
-                    }
-                    else
-                    {
-                        SPI_BridgeIsrPrimeTxFifo();
-                    }
-                }
-                break;
-            case kSpiBridgeIsrWrite:
-                if (s_spiIsrRxCount < SPI_BRIDGE_BLOCK_SIZE)
-                {
-                    s_spiIsrRxBuffer[s_spiIsrRxCount] = rx;
-                }
-
-                if (s_spiIsrRxCount == 0U)
-                {
-                    uint8_t length = SPI_BridgeExtractLength(rx);
-                    s_spiIsrRxExpected = (uint8_t)(length + 3U);
-                    if (s_spiIsrRxExpected > SPI_BRIDGE_BLOCK_SIZE)
-                    {
-                        s_spiIsrRxExpected = SPI_BRIDGE_BLOCK_SIZE;
-                    }
-                }
-
-                ++s_spiIsrRxCount;
-
-                if ((s_spiIsrRxExpected != 0U) && (s_spiIsrRxCount >= s_spiIsrRxExpected))
-                {
-                    if (SPI_BridgeApplyWriteBlockFromIsr(s_spiIsrCurrentEn, s_spiIsrRxBuffer))
-                    {
-                        s_spiBridgeActivityPending = true;
-                    }
-                    s_spiIsrState = kSpiBridgeIsrIdle;
-                    SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
-                }
-                else
-                {
-                    SPI_BridgeIsrLoadTxByte(0U);
-                }
-                break;
-            default:
-                s_spiIsrState = kSpiBridgeIsrIdle;
-                SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
-                break;
+            s_spiTransactionActive = true;
+            s_spiRxCount = 0U;
+            s_spiRxComplete = false;
         }
+
+        if (s_spiRxCount < SPI_BRIDGE_FRAME_SIZE)
+        {
+            s_spiRxBuffers[s_spiRxWriteIndex][s_spiRxCount] = rx;
+        }
+        ++s_spiRxCount;
+        if (s_spiRxCount >= SPI_BRIDGE_FRAME_SIZE)
+        {
+            s_spiRxComplete = true;
+        }
+
+        SPI_BridgePrimeActiveTxFifo();
     }
 
     if ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_MBF_MASK) == 0U)
     {
-        s_spiIsrState = kSpiBridgeIsrIdle;
-        s_spiIsrTxRemaining = 0U;
-        s_spiIsrRxExpected = 0U;
-        s_spiIsrRxCount = 0U;
-        s_spiIsrReadExpected = 0U;
-        s_spiIsrReadCount = 0U;
+        if (s_spiTransactionActive)
+        {
+            s_spiTransactionActive = false;
+            if (s_spiRxComplete && (s_spiRxCount >= SPI_BRIDGE_FRAME_SIZE))
+            {
+                if (s_spiRxReadyIndex == SPI_BRIDGE_RX_READY_NONE)
+                {
+                    s_spiRxReadyIndex = s_spiRxWriteIndex;
+                    s_spiRxWriteIndex = (uint8_t)((s_spiRxWriteIndex + 1U) & 0x01U);
+                    s_spiBridgeActivityPending = true;
+                }
+                s_spiRxComplete = false;
+            }
+            s_spiRxCount = 0U;
+            if (s_spiTxReloadPending)
+            {
+                s_spiTxReloadPending = false;
+            }
+            SPI_BridgePrepareNextTransaction();
+        }
     }
 
     if ((s_spiBridgeSemaphore != NULL) && s_spiBridgeActivityPending)
@@ -894,7 +965,7 @@ static status_t SPI_BridgeHandleReadBlock(uint8_t en)
 
     if ((status == kStatus_Success) && (block != NULL))
     {
-        if (!(s_forceCdcInResponse && (block == &s_cdcInBlock)))
+        if (!(s_spiFixedResponseEnabled && (block == &s_cdcInBlock)))
         {
             SPI_BridgeMarkDirty(block, false);
         }
@@ -1079,11 +1150,19 @@ status_t SPI_BridgeInit(void)
     (void)memset(&s_lastLoggedCdcInBlock, 0, sizeof(s_lastLoggedCdcInBlock));
     (void)memset(&s_lastLoggedCdcOutBlock, 0, sizeof(s_lastLoggedCdcOutBlock));
     s_lastHubLoggedHeader = 0U;
-    s_forceCdcInResponse  = false;
-    s_spiIsrState         = kSpiBridgeIsrIdle;
+    s_spiFixedResponseEnabled = false;
+    s_spiTxActive = s_spiTxBufferA;
+    s_spiTxNext = s_spiTxBufferB;
+    s_spiRxWriteIndex = 0U;
+    s_spiRxReadyIndex = SPI_BRIDGE_RX_READY_NONE;
+    s_spiRxCount = 0U;
+    s_spiRxComplete = false;
+    s_spiTransactionActive = false;
+    s_spiTxReloadPending = false;
     s_spiBridgeActivityPending = false;
-    s_spiIsrReadExpected = 0U;
-    s_spiIsrReadCount = 0U;
+
+    SPI_BridgeBuildFrame(s_spiTxActive, 0xFFU, SPI_BRIDGE_TYPE_NOT_READY, NULL, 0U);
+    SPI_BridgePrepareNextTransaction();
 
     SPI_BridgeRebuildHubStatus();
 
@@ -1107,14 +1186,86 @@ void SPI_BridgeTask(void *param)
     {
         if ((s_spiBridgeSemaphore != NULL) && (xSemaphoreTake(s_spiBridgeSemaphore, portMAX_DELAY) == pdTRUE))
         {
-            bool activity = false;
+            uint8_t readyIndex = SPI_BRIDGE_RX_READY_NONE;
+            const uint8_t *rxFrame = NULL;
 
             taskENTER_CRITICAL();
-            activity = s_spiBridgeActivityPending;
+            readyIndex = s_spiRxReadyIndex;
+            s_spiRxReadyIndex = SPI_BRIDGE_RX_READY_NONE;
             s_spiBridgeActivityPending = false;
             taskEXIT_CRITICAL();
 
-            SPI_BRIDGE_TASK_LOG(activity);
+            if (readyIndex == SPI_BRIDGE_RX_READY_NONE)
+            {
+                continue;
+            }
+
+            rxFrame = s_spiRxBuffers[readyIndex];
+
+            uint8_t responsePayload[SPI_BRIDGE_MAX_PAYLOAD_LENGTH];
+            uint8_t responseLength = 0U;
+            uint8_t responseType = SPI_BRIDGE_TYPE_ERROR;
+            uint8_t responseSeq = rxFrame[1];
+
+            if (SPI_BridgeFrameValid(rxFrame))
+            {
+                uint8_t requestType = rxFrame[2];
+                uint8_t requestLength = rxFrame[3];
+                const uint8_t *requestPayload = &rxFrame[SPI_BRIDGE_FRAME_HEADER_SIZE];
+
+                switch (requestType)
+                {
+                    case SPI_BRIDGE_TYPE_PING:
+                        responseType = (uint8_t)(SPI_BRIDGE_TYPE_RESPONSE | SPI_BRIDGE_TYPE_PING);
+                        if (s_spiFixedResponseEnabled)
+                        {
+                            responseLength = (uint8_t)sizeof(s_spiFixedResponsePayload);
+                            (void)memcpy(responsePayload, s_spiFixedResponsePayload, responseLength);
+                        }
+                        else
+                        {
+                            static const uint8_t kPongPayload[] = {'P', 'O', 'N', 'G'};
+                            responseLength = (uint8_t)sizeof(kPongPayload);
+                            (void)memcpy(responsePayload, kPongPayload, responseLength);
+                        }
+                        break;
+                    case SPI_BRIDGE_TYPE_ECHO:
+                        responseType = (uint8_t)(SPI_BRIDGE_TYPE_RESPONSE | SPI_BRIDGE_TYPE_ECHO);
+                        responseLength = requestLength;
+                        if (requestLength > 0U)
+                        {
+                            (void)memcpy(responsePayload, requestPayload, requestLength);
+                        }
+                        break;
+                    default:
+                        responseType = SPI_BRIDGE_TYPE_ERROR;
+                        responsePayload[0] = SPI_BRIDGE_ERROR_BAD_TYPE;
+                        responseLength = 1U;
+                        break;
+                }
+            }
+            else
+            {
+                responseType = SPI_BRIDGE_TYPE_ERROR;
+                responsePayload[0] = SPI_BRIDGE_ERROR_BAD_FRAME;
+                responseLength = 1U;
+            }
+
+            SPI_BridgeBuildFrame(s_spiTxNext, responseSeq, responseType, responsePayload, responseLength);
+
+            taskENTER_CRITICAL();
+            uint8_t *swap = s_spiTxActive;
+            s_spiTxActive = s_spiTxNext;
+            s_spiTxNext = swap;
+            if (!s_spiTransactionActive)
+            {
+                SPI_BridgePrepareNextTransaction();
+            }
+            else
+            {
+                s_spiTxReloadPending = true;
+            }
+            taskEXIT_CRITICAL();
         }
     }
 }
