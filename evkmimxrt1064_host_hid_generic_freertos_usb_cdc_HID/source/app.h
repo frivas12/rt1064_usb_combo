@@ -8,6 +8,14 @@
 #ifndef __APP_H__
 #define __APP_H__
 /*
+ * SPI bridge test configuration:
+ * - APP_ENABLE_USB_STACK controls whether the USB host/device stack starts.
+ *   Leave disabled while validating the SPI bridge link.
+ */
+#ifndef APP_ENABLE_USB_STACK
+#define APP_ENABLE_USB_STACK 0U
+#endif
+/*
  * USB combo configuration:
  * - APP_USB_ENABLE_CDC / APP_USB_ENABLE_HID enable each class independently.
  * - APP_USB_CDC_EHCI_INSTANCE / APP_USB_HID_EHCI_INSTANCE select the connector:

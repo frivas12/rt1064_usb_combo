@@ -22,8 +22,10 @@
 #endif /* FSL_FEATURE_SOC_SYSMPU_COUNT */
 #include "app.h"
 
+#if APP_ENABLE_USB_STACK
 #if ((!USB_HOST_CONFIG_KHCI) && (!USB_HOST_CONFIG_EHCI) && (!USB_HOST_CONFIG_OHCI) && (!USB_HOST_CONFIG_IP3516HS))
 #error Please enable USB_HOST_CONFIG_KHCI, USB_HOST_CONFIG_EHCI, USB_HOST_CONFIG_OHCI, or USB_HOST_CONFIG_IP3516HS in file usb_host_config.
+#endif
 #endif
 
 /*******************************************************************************
@@ -45,6 +47,7 @@
  * @retval kStatus_USB_Success              The host is initialized successfully.
  * @retval kStatus_USB_NotSupported         The application don't support the configuration.
  */
+#if APP_ENABLE_USB_STACK
 static usb_status_t USB_HostEvent(usb_device_handle deviceHandle,
                                   usb_host_configuration_handle configurationHandle,
                                   uint32_t eventCode);
@@ -71,14 +74,17 @@ static void USB_HostApplicationTask(void *param);
 extern void USB_HostClockInit(void);
 extern void USB_HostIsrEnable(void);
 extern void USB_HostTaskFn(void *param);
+#endif
 void BOARD_InitHardware(void);
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
 /*! @brief USB host generic instance global variable */
+#if APP_ENABLE_USB_STACK
 extern usb_host_hid_generic_instance_t g_HostHidGeneric[HID_GENERIC_MAX_DEVICES];
 usb_host_handle g_HostHandle;
+#endif
 
 /*******************************************************************************
  * Code
@@ -88,6 +94,7 @@ usb_host_handle g_HostHandle;
  * @brief USB isr function.
  */
 
+#if APP_ENABLE_USB_STACK
 static usb_status_t USB_HostEvent(usb_device_handle deviceHandle,
                                   usb_host_configuration_handle configurationHandle,
                                   uint32_t eventCode)
@@ -163,24 +170,29 @@ static void USB_HostApplicationTask(void *param)
         }
     }
 }
+#endif
 
 int main(void)
 {
     BOARD_InitHardware();
 
+#if APP_ENABLE_USB_STACK
     USB_HostApplicationInit();
 
     if (USB_DeviceCdcVcomInit() != kStatus_USB_Success)
     {
         usb_echo("usb device cdc vcom init error\r\n");
     }
+#else
+    usb_echo("USB stack disabled; SPI bridge test mode.\r\n");
+#endif
 
     if (SPI_BridgeInit() != kStatus_Success)
     {
         usb_echo("spi bridge init error\r\n");
     }
-    SPI_BridgeEnableFixedCdcResponse();
 
+#if APP_ENABLE_USB_STACK
     if (xTaskCreate(USB_HostTask, "usb host task", 2000L / sizeof(portSTACK_TYPE), g_HostHandle, APP_USB_TASK_PRIORITY, NULL) != pdPASS)
     {
         usb_echo("create host task error\r\n");
@@ -190,6 +202,7 @@ int main(void)
     {
         usb_echo("create mouse task error\r\n");
     }
+#endif
 
     if (xTaskCreate(SPI_BridgeTask, "spi bridge", 2048L / sizeof(portSTACK_TYPE), NULL, APP_MAIN_TASK_PRIORITY, NULL) != pdPASS)
     {
