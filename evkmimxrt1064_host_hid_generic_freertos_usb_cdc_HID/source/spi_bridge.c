@@ -112,6 +112,8 @@ static uint8_t s_spiIsrRxBuffer[SPI_BRIDGE_BLOCK_SIZE];
 static uint8_t s_spiIsrRxCount;
 static uint8_t s_spiIsrRxExpected;
 static uint8_t s_spiIsrCurrentEn;
+static uint8_t s_spiIsrReadExpected;
+static uint8_t s_spiIsrReadCount;
 
 #define SPI_BRIDGE_TRACE(reason)                                                                                \
     do                                                                                                          \
@@ -631,6 +633,15 @@ static void SPI_BridgeIsrLoadTxByte(uint8_t value)
     }
 }
 
+static void SPI_BridgeIsrPrimeTxFifo(void)
+{
+    while ((s_spiIsrTxRemaining > 0U) && ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_TDF_MASK) != 0U))
+    {
+        SPI_BRIDGE_SPI_BASE->TDR = s_spiIsrTxBuffer[s_spiIsrTxIndex++];
+        --s_spiIsrTxRemaining;
+    }
+}
+
 static uint8_t SPI_BridgePrepareReadResponse(uint8_t en, spi_bridge_command_t command, bool *dirtyBeforeOut,
                                              spi_bridge_block_t **blockOut)
 {
@@ -709,17 +720,10 @@ static void SPI_BridgeIsrHandleCommand(uint8_t command)
             s_spiIsrTxIndex = 0U;
             s_spiIsrTxRemaining = SPI_BridgePrepareReadResponse(en, s_spiIsrCommand, &s_spiIsrReadDirtyBefore,
                                                                &s_spiIsrReadBlock);
+            s_spiIsrReadExpected = s_spiIsrTxRemaining;
+            s_spiIsrReadCount = 0U;
             s_spiIsrState = kSpiBridgeIsrRead;
-            if (s_spiIsrTxRemaining > 0U)
-            {
-                SPI_BridgeIsrLoadTxByte(s_spiIsrTxBuffer[s_spiIsrTxIndex++]);
-                --s_spiIsrTxRemaining;
-            }
-            else
-            {
-                s_spiIsrState = kSpiBridgeIsrIdle;
-                SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
-            }
+            SPI_BridgeIsrPrimeTxFifo();
             break;
         }
         case kSPI_BridgeCommandWriteBlock:
@@ -754,6 +758,8 @@ void LPSPI1_IRQHandler(void)
         s_spiIsrTxRemaining = 0U;
         s_spiIsrRxExpected = 0U;
         s_spiIsrRxCount = 0U;
+        s_spiIsrReadExpected = 0U;
+        s_spiIsrReadCount = 0U;
     }
 
     while ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_RDF_MASK) != 0U)
@@ -767,26 +773,32 @@ void LPSPI1_IRQHandler(void)
                 SPI_BridgeIsrHandleCommand(rx);
                 break;
             case kSpiBridgeIsrRead:
-                if (s_spiIsrTxRemaining > 0U)
+                if (s_spiIsrReadExpected > 0U)
                 {
-                    SPI_BridgeIsrLoadTxByte(s_spiIsrTxBuffer[s_spiIsrTxIndex++]);
-                    --s_spiIsrTxRemaining;
-                }
-                else
-                {
-                    if ((s_spiIsrCommand == kSPI_BridgeCommandReadBlock) && (s_spiIsrReadBlock != NULL))
+                    if (s_spiIsrReadCount < s_spiIsrReadExpected)
                     {
-                        if (!(s_forceCdcInResponse && (s_spiIsrReadBlock == &s_cdcInBlock)))
-                        {
-                            SPI_BridgeMarkDirty(s_spiIsrReadBlock, false);
-                        }
-                        if (s_spiIsrReadDirtyBefore)
-                        {
-                            s_spiBridgeActivityPending = true;
-                        }
+                        ++s_spiIsrReadCount;
                     }
-                    s_spiIsrState = kSpiBridgeIsrIdle;
-                    SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
+                    if (s_spiIsrReadCount >= s_spiIsrReadExpected)
+                    {
+                        if ((s_spiIsrCommand == kSPI_BridgeCommandReadBlock) && (s_spiIsrReadBlock != NULL))
+                        {
+                            if (!(s_forceCdcInResponse && (s_spiIsrReadBlock == &s_cdcInBlock)))
+                            {
+                                SPI_BridgeMarkDirty(s_spiIsrReadBlock, false);
+                            }
+                            if (s_spiIsrReadDirtyBefore)
+                            {
+                                s_spiBridgeActivityPending = true;
+                            }
+                        }
+                        s_spiIsrState = kSpiBridgeIsrIdle;
+                        SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
+                    }
+                    else
+                    {
+                        SPI_BridgeIsrPrimeTxFifo();
+                    }
                 }
                 break;
             case kSpiBridgeIsrWrite:
@@ -834,6 +846,8 @@ void LPSPI1_IRQHandler(void)
         s_spiIsrTxRemaining = 0U;
         s_spiIsrRxExpected = 0U;
         s_spiIsrRxCount = 0U;
+        s_spiIsrReadExpected = 0U;
+        s_spiIsrReadCount = 0U;
     }
 
     if ((s_spiBridgeSemaphore != NULL) && s_spiBridgeActivityPending)
@@ -1068,6 +1082,8 @@ status_t SPI_BridgeInit(void)
     s_forceCdcInResponse  = false;
     s_spiIsrState         = kSpiBridgeIsrIdle;
     s_spiBridgeActivityPending = false;
+    s_spiIsrReadExpected = 0U;
+    s_spiIsrReadCount = 0U;
 
     SPI_BridgeRebuildHubStatus();
 
