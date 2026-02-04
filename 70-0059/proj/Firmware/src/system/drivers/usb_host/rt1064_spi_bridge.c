@@ -327,6 +327,7 @@ static void task_spi_bridge(void* pvParameters) {
     (void)memset(s_endpoint_active, 0, sizeof(s_endpoint_active));
     s_endpoint_active[SPI_BRIDGE_CDC_ENDPOINT_INDEX] = true;
 
+    /*
     for (;;) {
         uint8_t header = 0U;
         if (spi_bridge_read_header(0U, &header)) {
@@ -342,6 +343,15 @@ static void task_spi_bridge(void* pvParameters) {
         }
 
         spi_bridge_test_cdc_timing();
+        vTaskDelay(pdMS_TO_TICKS(SPI_BRIDGE_POLL_PERIOD_MS));
+    }
+    */
+
+    for (;;) {
+        uint8_t rx = 0U;
+        if (spi_bridge_single_byte_exchange(0xA0U, &rx)) {
+            debug_print("SPI bridge test: TX=0xA0 RX=0x%02X\r\n", rx);
+        }
         vTaskDelay(pdMS_TO_TICKS(SPI_BRIDGE_POLL_PERIOD_MS));
     }
 }
