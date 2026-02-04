@@ -18,6 +18,7 @@
 #endif
 
 #define SPI_BRIDGE_MAX_PAYLOAD_LENGTH (63U)
+#define SPI_DEVICE_ID_INVALID (0xFFU)
 
 status_t SPI_BridgeInit(void);
 void SPI_BridgeTask(void *param);
