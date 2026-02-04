@@ -1,1105 +1,25 @@
 /*
- * SPI bridge task
+ * Minimal SPI bridge test
  *
- * This file implements the RT1064 ⇄ SAMV70 SPI bridge using a pipelined frame
- * protocol. The MIMXRT acts as an SPI *slave* on LPSPI1. Each SPI transaction
- * clocks out a complete response frame prepared from the previous request,
- * and captures the next request frame for processing after CS deasserts.
- *
- * Frame format (fixed-length on the wire):
- *   SOF (0xA5), SEQ, TYPE, LEN, PAYLOAD (0..63), CRC16
- *
- * CRC16-CCITT is computed over SOF/SEQ/TYPE/LEN and the active payload bytes.
- * The response is always delayed by one transaction, so the first response
- * after reset is a NOT_READY frame.
+ * The RT1064 runs as an SPI slave on LPSPI1. Each received byte updates the
+ * next transmit byte so the master can clock a reply on the following byte.
  */
 #include "spi_bridge.h"
 
 #include "FreeRTOS.h"
-#include "app.h"
-#include "board.h"
 #include "fsl_clock.h"
-#include "pin_mux.h"
 
-#include "semphr.h"
-
-#include <stdio.h>
-#include <string.h>
-
-#define SPI_BRIDGE_SPI_TIMEOUT (1000000U)
-#define SPI_BRIDGE_IDLE_TX     (0xA5U)
-#define SPI_BRIDGE_FRAME_SOF   (0xA5U)
-
-#define SPI_BRIDGE_FRAME_HEADER_SIZE (4U)
-#define SPI_BRIDGE_FRAME_CRC_SIZE    (2U)
-#define SPI_BRIDGE_FRAME_SIZE        (SPI_BRIDGE_FRAME_HEADER_SIZE + SPI_BRIDGE_MAX_PAYLOAD_LENGTH + SPI_BRIDGE_FRAME_CRC_SIZE)
-
-#define SPI_BRIDGE_TYPE_PING        (0x01U)
-#define SPI_BRIDGE_TYPE_ECHO        (0x02U)
-#define SPI_BRIDGE_TYPE_RESPONSE    (0x80U)
-#define SPI_BRIDGE_TYPE_NOT_READY   (0x7FU)
-#define SPI_BRIDGE_TYPE_ERROR       (0x7EU)
-#define SPI_BRIDGE_ERROR_BAD_FRAME  (0x01U)
-#define SPI_BRIDGE_ERROR_BAD_TYPE   (0x02U)
+#define SPI_BRIDGE_IDLE_TX (0x00U)
 
 #ifndef SPI_BRIDGE_SPI_BASE
 #define SPI_BRIDGE_SPI_BASE LPSPI1
 #endif
 
-#define SPI_BRIDGE_CMD_OP_MASK  (0xC0U)
-#define SPI_BRIDGE_CMD_EN_MASK  (0x3FU)
-#define SPI_BRIDGE_CMD_OP_SHIFT (6U)
-
-typedef enum _spi_bridge_command
-{
-    kSPI_BridgeCommandReadHeader = 0U,
-    kSPI_BridgeCommandReadBlock  = 1U,
-    kSPI_BridgeCommandWriteBlock = 2U,
-} spi_bridge_command_t;
-
-#define SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS (SPI_BRIDGE_MAX_DEVICES + 2U)
-
-_Static_assert(SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS == (SPI_BRIDGE_MAX_DEVICES + 2U),
-               "EN count must be hub + device slots + CDC endpoint");
-
-#if defined(__GNUC__)
-#pragma message "SPI_BRIDGE_ENABLE_DEBUG=" SPI_BRIDGE_ENABLE_DEBUG_STRING
-#endif
-
-#if SPI_BRIDGE_ENABLE_DEBUG
-#define SPI_BRIDGE_LOG_FAILURE(tag) SPI_BRIDGE_LOG("[spi-bridge] %s failed\r\n", tag)
-#else
-#define SPI_BRIDGE_LOG_FAILURE(tag) ((void)0)
-#endif
-
-/* State mirrored over the SPI connection. The hub status block is followed by
- * paired IN/OUT blocks for each logical device slot. The *_last* structures are
- * used purely for change-detection logging so we can avoid spamming the console
- * unless the register image actually changes. */
-static spi_bridge_block_t s_hubStatus;
-static spi_bridge_block_t s_inBlocks[SPI_BRIDGE_MAX_DEVICES];
-static spi_bridge_block_t s_outBlocks[SPI_BRIDGE_MAX_DEVICES];
-static spi_bridge_block_t s_cdcInBlock;
-static spi_bridge_block_t s_cdcOutBlock;
-static bool s_deviceInUse[SPI_BRIDGE_MAX_DEVICES];
-static uint8_t s_connectedTable[SPI_BRIDGE_MAX_DEVICES + 1U];
-
-static uint8_t s_lastHubLoggedHeader;
-static uint8_t s_lastInLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
-static uint8_t s_lastOutLoggedHeader[SPI_BRIDGE_MAX_DEVICES];
-static uint8_t s_lastCdcInLoggedHeader;
-static uint8_t s_lastCdcOutLoggedHeader;
-
-static spi_bridge_block_t s_lastLoggedHubStatus;
-static spi_bridge_block_t s_lastLoggedInBlocks[SPI_BRIDGE_MAX_DEVICES];
-static spi_bridge_block_t s_lastLoggedOutBlocks[SPI_BRIDGE_MAX_DEVICES];
-static spi_bridge_block_t s_lastLoggedCdcInBlock;
-static spi_bridge_block_t s_lastLoggedCdcOutBlock;
-static bool s_spiFixedResponseEnabled;
-static uint8_t s_spiFixedResponsePayload[8];
-
-static uint8_t s_spiTxBufferA[SPI_BRIDGE_FRAME_SIZE];
-static uint8_t s_spiTxBufferB[SPI_BRIDGE_FRAME_SIZE];
-static uint8_t *s_spiTxActive;
-static uint8_t *s_spiTxNext;
-
-static uint8_t s_spiRxBuffers[2][SPI_BRIDGE_FRAME_SIZE];
-static volatile uint8_t s_spiRxWriteIndex;
-static volatile uint8_t s_spiRxReadyIndex;
-static volatile uint8_t s_spiRxCount;
-static volatile bool s_spiRxComplete;
-static volatile bool s_spiTransactionActive;
-static volatile bool s_spiTxReloadPending;
-static volatile uint8_t s_spiTxIndex;
-static volatile uint8_t s_spiTxRemaining;
-
-#define SPI_BRIDGE_RX_READY_NONE (0xFFU)
-
-static void SPI_BridgeLogState(bool force);
-static bool s_stateTraceEnabled = (SPI_BRIDGE_ENABLE_STATE_TRACE != 0U);
-static SemaphoreHandle_t s_spiBridgeSemaphore;
-static volatile bool s_spiBridgeActivityPending;
-
-typedef enum _spi_bridge_isr_state
-{
-    kSpiBridgeIsrIdle = 0U,
-    kSpiBridgeIsrRead,
-    kSpiBridgeIsrWrite,
-} spi_bridge_isr_state_t;
-
-static volatile spi_bridge_isr_state_t s_spiIsrState;
-static spi_bridge_command_t s_spiIsrCommand;
-static spi_bridge_block_t *s_spiIsrReadBlock;
-static bool s_spiIsrReadDirtyBefore;
-static uint8_t s_spiIsrTxBuffer[SPI_BRIDGE_BLOCK_SIZE];
-static uint8_t s_spiIsrTxRemaining;
-static uint8_t s_spiIsrTxIndex;
-static uint8_t s_spiIsrRxBuffer[SPI_BRIDGE_BLOCK_SIZE];
-static uint8_t s_spiIsrRxCount;
-static uint8_t s_spiIsrRxExpected;
-static uint8_t s_spiIsrCurrentEn;
-static uint8_t s_spiIsrReadExpected;
-static uint8_t s_spiIsrReadCount;
-
-#define SPI_BRIDGE_TRACE(reason)                                                                                \
-    do                                                                                                          \
-    {                                                                                                           \
-        if (SPI_BridgeStateTraceEnabled())                                                                      \
-        {                                                                                                       \
-            SPI_BRIDGE_LOG("\r\n[spi-bridge] %s\r\n", reason);                                                     \
-            SPI_BridgeLogState(true);                                                                           \
-        }                                                                                                       \
-    } while (0)
-
-#define SPI_BRIDGE_TASK_LOG(activity)                                                                           \
-    do                                                                                                          \
-    {                                                                                                           \
-        if (!SPI_BridgeStateTraceEnabled())                                                                     \
-        {                                                                                                       \
-            SPI_BridgeLogState(activity);                                                                       \
-        }                                                                                                       \
-    } while (0)
-
-void SPI_BridgeSetStateTraceEnabled(bool enabled)
-{
-    s_stateTraceEnabled = enabled;
-}
-
-bool SPI_BridgeStateTraceEnabled(void)
-{
-    return s_stateTraceEnabled;
-}
-
-static uint8_t SPI_BridgeGetDeviceAddress(uint8_t deviceId)
-{
-    return (uint8_t)(deviceId + 1U);
-}
-
-static uint16_t SPI_BridgeGetBlockAddress(uint8_t blockIndex)
-{
-    return (uint16_t)(blockIndex * SPI_BRIDGE_BLOCK_SIZE);
-}
-
-static uint8_t SPI_BridgeExtractLength(uint8_t header)
-{
-    return (uint8_t)((header & SPI_BRIDGE_HEADER_LENGTH_MASK) >> SPI_BRIDGE_HEADER_LENGTH_SHIFT);
-}
-
-static uint8_t SPI_BridgeMakeHeader(bool dirty, uint8_t type, uint8_t length)
-{
-    /* The header packs DIRTY/TYPE/LEN so the on-wire representation stays
-     * compact. DIRTY tells the master which blocks changed since the last
-     * transaction, TYPE tags payload meaning, and LEN lists active bytes. */
-    return (uint8_t)((dirty ? SPI_BRIDGE_HEADER_DIRTY_MASK : 0U) | (type ? SPI_BRIDGE_HEADER_TYPE_MASK : 0U) |
-                     ((length << SPI_BRIDGE_HEADER_LENGTH_SHIFT) & SPI_BRIDGE_HEADER_LENGTH_MASK));
-}
-
-static uint16_t SPI_BridgeCrcUpdate(uint16_t crc, uint8_t data)
-{
-    crc ^= (uint16_t)data << 8U;
-    for (int i = 0; i < 8; ++i)
-    {
-        if ((crc & 0x8000U) != 0U)
-        {
-            crc = (uint16_t)((crc << 1U) ^ SPI_BRIDGE_CRC_POLY);
-        }
-        else
-        {
-            crc <<= 1U;
-        }
-    }
-    return crc;
-}
-
-static uint16_t SPI_BridgeComputeBlockCrc(const uint8_t *block)
-{
-    uint8_t header = block[0];
-    uint8_t length = SPI_BridgeExtractLength(header);
-    uint16_t crc   = SPI_BRIDGE_CRC_INIT;
-
-    /* CRC covers the header and the active payload bytes. */
-    crc = SPI_BridgeCrcUpdate(crc, header);
-    for (uint8_t i = 0; i < length; ++i)
-    {
-        crc = SPI_BridgeCrcUpdate(crc, block[1U + i]);
-    }
-
-    return crc;
-}
-
-static void SPI_BridgeUpdateBlockCrc(spi_bridge_block_t *block)
-{
-    uint8_t raw[SPI_BRIDGE_BLOCK_SIZE];
-
-    /* Serialize to the raw wire format before recomputing CRC. */
-    raw[0] = block->header;
-    (void)memcpy(&raw[1], block->payload, SPI_BRIDGE_MAX_PAYLOAD_LENGTH);
-    block->crc = SPI_BridgeComputeBlockCrc(raw);
-}
-
-static uint16_t SPI_BridgeComputeFrameCrc(const uint8_t *frame)
-{
-    uint8_t length = frame[3];
-    uint16_t crc   = SPI_BRIDGE_CRC_INIT;
-
-    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-    {
-        return 0U;
-    }
-
-    for (uint8_t i = 0U; i < (SPI_BRIDGE_FRAME_HEADER_SIZE + length); ++i)
-    {
-        crc = SPI_BridgeCrcUpdate(crc, frame[i]);
-    }
-
-    return crc;
-}
-
-static void SPI_BridgeBuildFrame(uint8_t *frame, uint8_t seq, uint8_t type, const uint8_t *payload, uint8_t length)
-{
-    if (frame == NULL)
-    {
-        return;
-    }
-
-    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-    {
-        length = SPI_BRIDGE_MAX_PAYLOAD_LENGTH;
-    }
-
-    frame[0] = SPI_BRIDGE_FRAME_SOF;
-    frame[1] = seq;
-    frame[2] = type;
-    frame[3] = length;
-
-    if ((payload != NULL) && (length > 0U))
-    {
-        (void)memcpy(&frame[SPI_BRIDGE_FRAME_HEADER_SIZE], payload, length);
-    }
-
-    if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-    {
-        (void)memset(&frame[SPI_BRIDGE_FRAME_HEADER_SIZE + length], 0,
-                     SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
-    }
-
-    uint16_t crc = SPI_BridgeComputeFrameCrc(frame);
-    frame[SPI_BRIDGE_FRAME_SIZE - 2U] = (uint8_t)(crc & 0xFFU);
-    frame[SPI_BRIDGE_FRAME_SIZE - 1U] = (uint8_t)((crc >> 8U) & 0xFFU);
-}
-
-static bool SPI_BridgeFrameValid(const uint8_t *frame)
-{
-    if (frame == NULL)
-    {
-        return false;
-    }
-
-    if (frame[0] != SPI_BRIDGE_FRAME_SOF)
-    {
-        return false;
-    }
-
-    uint8_t length = frame[3];
-    if (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-    {
-        return false;
-    }
-
-    uint16_t expected = SPI_BridgeComputeFrameCrc(frame);
-    uint16_t received = (uint16_t)frame[SPI_BRIDGE_FRAME_SIZE - 2U] |
-                        ((uint16_t)frame[SPI_BRIDGE_FRAME_SIZE - 1U] << 8U);
-
-    return (expected != 0U) && (expected == received);
-}
-
-void SPI_BridgeEnableFixedCdcResponse(void)
-{
-    static const uint8_t kTestPayload[8] = {1U, 2U, 3U, 4U, 5U, 6U, 7U, 8U};
-
-    s_spiFixedResponseEnabled = true;
-    (void)memcpy(s_spiFixedResponsePayload, kTestPayload, sizeof(kTestPayload));
-}
-
-static void SPI_BridgeSerializeBlock(const spi_bridge_block_t *block, uint8_t *output)
-{
-    uint8_t length = SPI_BridgeExtractLength(block->header);
-
-    /* Copy header and payload, append CRC, pad unused payload bytes with 0. */
-    output[0] = block->header;
-    (void)memcpy(&output[1], block->payload, SPI_BRIDGE_MAX_PAYLOAD_LENGTH);
-    output[1U + length] = (uint8_t)(block->crc & 0xFFU);
-    output[2U + length] = (uint8_t)(block->crc >> 8U);
-    if ((3U + length) < SPI_BRIDGE_BLOCK_SIZE)
-    {
-        (void)memset(&output[3U + length], 0, SPI_BRIDGE_BLOCK_SIZE - (3U + length));
-    }
-}
-
-static uint8_t SPI_BridgeSerializeBlockWindow(const spi_bridge_block_t *block, uint8_t *output)
-{
-    uint8_t length = SPI_BridgeExtractLength(block->header);
-
-    output[0]          = block->header;
-    (void)memcpy(&output[1], block->payload, length);
-    output[1U + length] = (uint8_t)(block->crc & 0xFFU);
-    output[2U + length] = (uint8_t)(block->crc >> 8U);
-
-    return (uint8_t)(length + 3U);
-}
-
-static void SPI_BridgeMarkDirty(spi_bridge_block_t *block, bool dirty)
-{
-    if (dirty)
-    {
-        block->header |= SPI_BRIDGE_HEADER_DIRTY_MASK;
-    }
-    else
-    {
-        block->header &= (uint8_t)(~SPI_BRIDGE_HEADER_DIRTY_MASK);
-    }
-    SPI_BridgeUpdateBlockCrc(block);
-}
-
-static uint8_t SPI_BridgeGetWireLength(const spi_bridge_block_t *block)
-{
-    return (uint8_t)(SPI_BridgeExtractLength(block->header) + 3U);
-}
-
-static spi_bridge_block_t *SPI_BridgeMapEnToBlock(uint8_t en, bool writeDirection)
-{
-    if (en >= SPI_BRIDGE_MAX_LOGICAL_ENDPOINTS)
-    {
-        return NULL;
-    }
-
-    if (en == 0U)
-    {
-        return writeDirection ? NULL : &s_hubStatus;
-    }
-
-    if (en == SPI_BRIDGE_CDC_ENDPOINT_INDEX)
-    {
-        return writeDirection ? &s_cdcOutBlock : &s_cdcInBlock;
-    }
-
-    uint8_t deviceId = (uint8_t)(en - 1U);
-
-    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
-    {
-        return NULL;
-    }
-
-    if (writeDirection && !s_deviceInUse[deviceId])
-    {
-        return NULL;
-    }
-
-    return writeDirection ? &s_outBlocks[deviceId] : &s_inBlocks[deviceId];
-}
-
-static bool SPI_BridgeBlocksEqual(const spi_bridge_block_t *a, const spi_bridge_block_t *b)
-{
-    return (a->header == b->header) &&
-           (memcmp(a->payload, b->payload, SPI_BRIDGE_MAX_PAYLOAD_LENGTH) == 0) &&
-           (a->crc == b->crc);
-}
-
-static void SPI_BridgeLogHexBuffer(const uint8_t *data, uint8_t length)
-{
-    if (length == 0U)
-    {
-        SPI_BRIDGE_LOG("    (empty)\r\n");
-        return;
-    }
-
-    for (uint8_t i = 0U; i < length; ++i)
-    {
-        SPI_BRIDGE_LOG("    %02x%s", data[i], (((i + 1U) % 16U) == 0U) ? "\r\n\r\n" : " ");
-    }
-    if ((length % 16U) != 0U)
-    {
-        SPI_BRIDGE_LOG("\r\n");
-    }
-}
-
-static void SPI_BridgeLogBlock(const char *label, uint8_t blockIndex, const spi_bridge_block_t *block, bool force)
-{
-    if (((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
-    {
-        return;
-    }
-//    if (!force && ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
-//    {
-//        return;
-//    }
-    uint8_t length = SPI_BridgeExtractLength(block->header);
-    uint8_t serialized[SPI_BRIDGE_BLOCK_SIZE];
-
-    /* Render the logical block and its on-the-wire representation. */
-    SPI_BridgeSerializeBlock(block, serialized);
-    SPI_BRIDGE_LOG("SPI_BRIDGE: [%s @0x%04X] DIRTY=%u TYPE=%u LEN=%u CRC=0x%04X\r\n", label,
-                   SPI_BridgeGetBlockAddress(blockIndex),
-                   (block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) ? 1U : 0U,
-                   (block->header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U, length, block->crc);
-//    SPI_BRIDGE_LOG("SPI_BRIDGE: [%s] payload:\r\n", label);
-//    SPI_BridgeLogHexBuffer(block->payload, length);
-    SPI_BRIDGE_LOG("SPI_BRIDGE: [%s] register image:\r\n", label);
-    SPI_BridgeLogHexBuffer(serialized, (uint8_t)(3U + length));
-}
-
-static void SPI_BridgeSetBlockPayload(spi_bridge_block_t *block, uint8_t type, const uint8_t *payload, uint8_t length)
-{
-    uint8_t safeLength = (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) ? SPI_BRIDGE_MAX_PAYLOAD_LENGTH : length;
-    uint8_t cleanHeader = SPI_BridgeMakeHeader(false, type, safeLength);
-
-    /* Replace payload, mark as dirty, and regenerate CRC. */
-    block->header = cleanHeader;
-    if (safeLength > 0U)
-    {
-        (void)memcpy(block->payload, payload, safeLength);
-    }
-    if (safeLength < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-    {
-        (void)memset(&block->payload[safeLength], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - safeLength);
-    }
-
-    block->header = (uint8_t)(cleanHeader | SPI_BRIDGE_HEADER_DIRTY_MASK);
-    SPI_BridgeUpdateBlockCrc(block);
-}
-
-static bool SPI_BridgeBlockHasValidCrc(const uint8_t *raw)
-{
-    uint16_t computed = SPI_BridgeComputeBlockCrc(raw);
-    uint8_t length    = SPI_BridgeExtractLength(raw[0]);
-    uint16_t received = (uint16_t)raw[1U + length] | ((uint16_t)raw[2U + length] << 8U);
-
-    return computed == received;
-}
-
-static void SPI_BridgeLogGridRow(const char *label, uint8_t blockIndex, const spi_bridge_block_t *block)
-{
-    uint8_t length = SPI_BridgeExtractLength(block->header);
-
-    SPI_BRIDGE_LOG("| %-9s | 0x%04X | %-5s |   %u  | %3u | 0x%04X |\r\n", label,
-                   SPI_BridgeGetBlockAddress(blockIndex),
-                   (block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) ? "dirty" : "clean",
-                   (block->header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U, length, block->crc);
-}
-
-static void SPI_BridgeLogGrid(void)
-{
-    SPI_BRIDGE_LOG("SDI register grid:\r\n");
-    SPI_BRIDGE_LOG("+-----------+-------+-------+------+-----+-------+\r\n");
-    SPI_BRIDGE_LOG("| Block     | Addr  | Dirty | Type | Len |  CRC  |\r\n");
-    SPI_BRIDGE_LOG("+-----------+-------+-------+------+-----+-------+\r\n");
-
-    SPI_BridgeLogGridRow("HUB_STATUS", 0U, &s_hubStatus);
-
-    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
-    {
-        uint8_t deviceAddress = SPI_BridgeGetDeviceAddress(deviceId);
-        char label[16];
-
-        (void)snprintf(label, sizeof(label), "DEV_IN[%u]", deviceAddress);
-        SPI_BridgeLogGridRow(label, (uint8_t)(1U + (deviceId * 2U)), &s_inBlocks[deviceId]);
-
-        (void)snprintf(label, sizeof(label), "DEV_OUT[%u]", deviceAddress);
-        SPI_BridgeLogGridRow(label, (uint8_t)(2U + (deviceId * 2U)), &s_outBlocks[deviceId]);
-    }
-
-    SPI_BRIDGE_LOG("+-----------+-------+-------+------+-----+-------+\r\n");
-}
-
-static bool SPI_BridgeLogHub(bool force)
-{
-    if (!force && ((s_hubStatus.header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
-    {
-        return false;
-    }
-
-    if (!force && SPI_BridgeBlocksEqual(&s_hubStatus, &s_lastLoggedHubStatus))
-    {
-        return false;
-    }
-
-    SPI_BridgeLogBlock("HUB_STATUS", 0U, &s_hubStatus, force);
-    s_lastLoggedHubStatus = s_hubStatus;
-    s_lastHubLoggedHeader = s_hubStatus.header;
-
-    return true;
-}
-
-static bool SPI_BridgeLogIn(uint8_t deviceId, bool force)
-{
-    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
-    {
-        return false;
-    }
-
-    if (!force && ((s_inBlocks[deviceId].header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
-    {
-        return false;
-    }
-
-    if (!force && SPI_BridgeBlocksEqual(&s_inBlocks[deviceId], &s_lastLoggedInBlocks[deviceId]))
-    {
-        return false;
-    }
-
-    uint8_t deviceAddress = SPI_BridgeGetDeviceAddress(deviceId);
-    uint8_t blockIndex = 1U + (deviceId * 2U);
-    char label[16];
-
-    (void)snprintf(label, sizeof(label), "DEV_IN[%u]", deviceAddress);
-    SPI_BridgeLogBlock(label, blockIndex, &s_inBlocks[deviceId], force);
-    s_lastInLoggedHeader[deviceId] = s_inBlocks[deviceId].header;
-    s_lastLoggedInBlocks[deviceId] = s_inBlocks[deviceId];
-
-    return true;
-}
-
-static bool SPI_BridgeLogOut(uint8_t deviceId, bool done, bool force)
-{
-    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
-    {
-        return false;
-    }
-
-    uint8_t header = s_outBlocks[deviceId].header;
-    uint8_t deviceAddress = SPI_BridgeGetDeviceAddress(deviceId);
-    uint8_t blockIndex = 2U + (deviceId * 2U);
-    char label[16];
-
-    if (!force && ((header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U))
-    {
-        return false;
-    }
-
-    if (!force && !done && SPI_BridgeBlocksEqual(&s_outBlocks[deviceId], &s_lastLoggedOutBlocks[deviceId]))
-    {
-        return false;
-    }
-
-    (void)snprintf(label, sizeof(label), "DEV_OUT[%u]", deviceAddress);
-    SPI_BridgeLogBlock(label, blockIndex, &s_outBlocks[deviceId], force);
-    s_lastOutLoggedHeader[deviceId] = header;
-    s_lastLoggedOutBlocks[deviceId] = s_outBlocks[deviceId];
-
-    return true;
-}
-
-static bool SPI_BridgeLogCdc(bool inDirection, bool force)
-{
-    spi_bridge_block_t *block           = inDirection ? &s_cdcInBlock : &s_cdcOutBlock;
-    uint8_t *lastHeader                 = inDirection ? &s_lastCdcInLoggedHeader : &s_lastCdcOutLoggedHeader;
-    spi_bridge_block_t *lastLoggedBlock = inDirection ? &s_lastLoggedCdcInBlock : &s_lastLoggedCdcOutBlock;
-    const char *label                   = inDirection ? "CDC_IN" : "CDC_OUT";
-    uint8_t header                      = block->header;
-    bool dirty                          = (header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U;
-
-    if (!force && !dirty && (header == *lastHeader))
-    {
-        return false;
-    }
-
-    if (!force && !dirty && SPI_BridgeBlocksEqual(block, lastLoggedBlock))
-    {
-        return false;
-    }
-
-    SPI_BridgeLogBlock(label, (uint8_t)(SPI_BRIDGE_CDC_ENDPOINT_INDEX + 1U), block, force || dirty);
-    *lastHeader      = header;
-    *lastLoggedBlock = *block;
-
-    return true;
-}
-
-static void SPI_BridgeLogState(bool force)
-{
-    bool stateChanged = SPI_BridgeLogHub(force);
-
-    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
-    {
-        stateChanged |= SPI_BridgeLogIn(deviceId, force);
-        stateChanged |= SPI_BridgeLogOut(deviceId, false, force);
-    }
-
-    stateChanged |= SPI_BridgeLogCdc(true, force);
-    stateChanged |= SPI_BridgeLogCdc(false, force);
-
-//    if (force || stateChanged)
-//    {
-//        SPI_BridgeLogGrid();
-//    }
-}
-
-static void SPI_BridgeRebuildHubStatus(void)
-{
-    uint8_t payloadLength            = SPI_BRIDGE_MAX_DEVICES + 1U;
-    uint8_t cleanHeader              = SPI_BridgeMakeHeader(false, 0U, payloadLength);
-    s_connectedTable[SPI_BRIDGE_MAX_DEVICES] = 1U; /* CDC endpoint is always available. */
-
-    /* Populate the hub bitmap payload then flag it dirty so the host reads it. */
-    s_hubStatus.header = cleanHeader;
-    (void)memcpy(s_hubStatus.payload, s_connectedTable, payloadLength);
-    if (payloadLength < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-    {
-        (void)memset(&s_hubStatus.payload[payloadLength], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - payloadLength);
-    }
-
-    s_hubStatus.header = (uint8_t)(cleanHeader | SPI_BRIDGE_HEADER_DIRTY_MASK);
-    SPI_BridgeUpdateBlockCrc(&s_hubStatus);
-
-    SPI_BRIDGE_TRACE("hub status updated for SPI mirror");
-}
-
-static status_t SPI_BridgeTransferByte(LPSPI_Type *base, uint8_t txData, uint8_t *rxData)
-{
-    uint32_t timeout = SPI_BRIDGE_SPI_TIMEOUT;
-
-    /* Wait for TX FIFO space then push a byte. */
-    while (((base->SR & LPSPI_SR_TDF_MASK) == 0U) && (timeout > 0U))
-    {
-        --timeout;
-    }
-
-    if (timeout == 0U)
-    {
-        return kStatus_Timeout;
-    }
-
-    base->TDR = txData;
-
-    timeout = SPI_BRIDGE_SPI_TIMEOUT;
-    /* Wait for RX data (the peer's response). */
-    while (((base->SR & LPSPI_SR_RDF_MASK) == 0U) && (timeout > 0U))
-    {
-        --timeout;
-    }
-
-    if (timeout == 0U)
-    {
-        return kStatus_Fail;
-    }
-
-    *rxData = (uint8_t)base->RDR;
-    base->SR = LPSPI_SR_RDF_MASK | LPSPI_SR_TDF_MASK;
-
-    return kStatus_Success;
-}
-
-static bool SPI_BridgeMasterRequestPending(void)
-{
-    uint32_t status = SPI_BRIDGE_SPI_BASE->SR;
-
-    /*
-     * As an SPI slave we should only drive transfers while the master is actively
-     * clocking data. Treat both "RX FIFO has data" and "module busy" as evidence
-     * that PCS is asserted and the host wants a transaction.
-     */
-    return ((status & LPSPI_SR_RDF_MASK) != 0U) || ((status & LPSPI_SR_MBF_MASK) != 0U);
-}
-
-static status_t SPI_BridgeHandleReadHeader(uint8_t en)
-{
-    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, false);
-    uint8_t header            = (block != NULL) ? block->header : 0U;
-    uint8_t sink;
-
-    return SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, header, &sink);
-}
-
-static void SPI_BridgeEnableRxInterrupt(void)
-{
-    SPI_BRIDGE_SPI_BASE->IER |= LPSPI_IER_RDIE_MASK;
-}
-
-static void SPI_BridgeDisableRxInterrupt(void)
-{
-    SPI_BRIDGE_SPI_BASE->IER &= ~LPSPI_IER_RDIE_MASK;
-}
-
-static void SPI_BridgePrimeActiveTxFifo(void)
-{
-    while ((s_spiTxRemaining > 0U) && ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_TDF_MASK) != 0U))
-    {
-        SPI_BRIDGE_SPI_BASE->TDR = s_spiTxActive[s_spiTxIndex++];
-        --s_spiTxRemaining;
-    }
-}
-
-static void SPI_BridgePrepareNextTransaction(void)
-{
-    s_spiTxIndex = 0U;
-    s_spiTxRemaining = SPI_BRIDGE_FRAME_SIZE;
-    SPI_BridgePrimeActiveTxFifo();
-}
-
-static void SPI_BridgeIsrLoadTxByte(uint8_t value)
-{
-    if ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_TDF_MASK) != 0U)
-    {
-        SPI_BRIDGE_SPI_BASE->TDR = value;
-    }
-}
-
-static void SPI_BridgeIsrPrimeTxFifo(void)
-{
-    while ((s_spiIsrTxRemaining > 0U) && ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_TDF_MASK) != 0U))
-    {
-        SPI_BRIDGE_SPI_BASE->TDR = s_spiIsrTxBuffer[s_spiIsrTxIndex++];
-        --s_spiIsrTxRemaining;
-    }
-}
-
-static uint8_t SPI_BridgePrepareReadResponse(uint8_t en, spi_bridge_command_t command, bool *dirtyBeforeOut,
-                                             spi_bridge_block_t **blockOut)
-{
-    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, false);
-    uint8_t length = 1U;
-
-    if (dirtyBeforeOut != NULL)
-    {
-        *dirtyBeforeOut = false;
-    }
-
-    if (command == kSPI_BridgeCommandReadHeader)
-    {
-        s_spiIsrTxBuffer[0] = (block != NULL) ? block->header : 0U;
-        return 1U;
-    }
-
-    if (blockOut != NULL)
-    {
-        *blockOut = block;
-    }
-
-    if (block != NULL)
-    {
-        length = SPI_BridgeSerializeBlockWindow(block, s_spiIsrTxBuffer);
-        if (dirtyBeforeOut != NULL)
-        {
-            *dirtyBeforeOut = ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U);
-        }
-    }
-    else
-    {
-        (void)memset(s_spiIsrTxBuffer, 0, sizeof(s_spiIsrTxBuffer));
-        length = 3U;
-    }
-
-    return length;
-}
-
-static bool SPI_BridgeApplyWriteBlockFromIsr(uint8_t en, const uint8_t *raw)
-{
-    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, true);
-    uint8_t length = SPI_BridgeExtractLength(raw[0]);
-
-    if ((block == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH) || !SPI_BridgeBlockHasValidCrc(raw))
-    {
-        return false;
-    }
-
-    block->header = (uint8_t)(raw[0] | SPI_BRIDGE_HEADER_DIRTY_MASK);
-    (void)memcpy(block->payload, &raw[1], length);
-    if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-    {
-        (void)memset(&block->payload[length], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
-    }
-    SPI_BridgeUpdateBlockCrc(block);
-
-    return true;
-}
-
-static void SPI_BridgeIsrHandleCommand(uint8_t command)
-{
-    uint8_t op = (command & SPI_BRIDGE_CMD_OP_MASK) >> SPI_BRIDGE_CMD_OP_SHIFT;
-    uint8_t en = command & SPI_BRIDGE_CMD_EN_MASK;
-
-    s_spiIsrCommand = (spi_bridge_command_t)op;
-    s_spiIsrCurrentEn = en;
-    s_spiIsrReadBlock = NULL;
-    s_spiIsrReadDirtyBefore = false;
-
-    switch (s_spiIsrCommand)
-    {
-        case kSPI_BridgeCommandReadHeader:
-        case kSPI_BridgeCommandReadBlock:
-        {
-            s_spiIsrTxIndex = 0U;
-            s_spiIsrTxRemaining = SPI_BridgePrepareReadResponse(en, s_spiIsrCommand, &s_spiIsrReadDirtyBefore,
-                                                               &s_spiIsrReadBlock);
-            s_spiIsrReadExpected = s_spiIsrTxRemaining;
-            s_spiIsrReadCount = 0U;
-            s_spiIsrState = kSpiBridgeIsrRead;
-            SPI_BridgeIsrPrimeTxFifo();
-            break;
-        }
-        case kSPI_BridgeCommandWriteBlock:
-            if (en == 0U)
-            {
-                /* Treat WRITE_BLOCK|EN0 (0xA0) as a lightweight hub-status ping. */
-                s_spiIsrState = kSpiBridgeIsrIdle;
-                SPI_BridgeIsrLoadTxByte(s_hubStatus.header);
-                break;
-            }
-            s_spiIsrState = kSpiBridgeIsrWrite;
-            s_spiIsrRxCount = 0U;
-            s_spiIsrRxExpected = 0U;
-            SPI_BridgeIsrLoadTxByte(0U);
-            break;
-        default:
-            s_spiIsrState = kSpiBridgeIsrIdle;
-            SPI_BridgeIsrLoadTxByte(SPI_BRIDGE_IDLE_TX);
-            break;
-    }
-}
-
-void LPSPI1_IRQHandler(void)
-{
-    BaseType_t higherPriorityTaskWoken = pdFALSE;
-
-    uint32_t sr = SPI_BRIDGE_SPI_BASE->SR;
-    if ((sr & (LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK)) != 0U)
-    {
-        SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK;
-        s_spiTransactionActive = false;
-        s_spiRxCount = 0U;
-        s_spiRxComplete = false;
-        s_spiTxReloadPending = false;
-        SPI_BridgePrepareNextTransaction();
-    }
-
-    while ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_RDF_MASK) != 0U)
-    {
-        uint8_t rx = (uint8_t)SPI_BRIDGE_SPI_BASE->RDR;
-        SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_RDF_MASK | LPSPI_SR_TDF_MASK;
-
-        if (!s_spiTransactionActive)
-        {
-            s_spiTransactionActive = true;
-            s_spiRxCount = 0U;
-            s_spiRxComplete = false;
-        }
-
-        if (s_spiRxCount < SPI_BRIDGE_FRAME_SIZE)
-        {
-            s_spiRxBuffers[s_spiRxWriteIndex][s_spiRxCount] = rx;
-        }
-        ++s_spiRxCount;
-        if (s_spiRxCount >= SPI_BRIDGE_FRAME_SIZE)
-        {
-            s_spiRxComplete = true;
-        }
-
-        SPI_BridgePrimeActiveTxFifo();
-    }
-
-    if ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_MBF_MASK) == 0U)
-    {
-        if (s_spiTransactionActive)
-        {
-            s_spiTransactionActive = false;
-            if (s_spiRxComplete && (s_spiRxCount >= SPI_BRIDGE_FRAME_SIZE))
-            {
-                if (s_spiRxReadyIndex == SPI_BRIDGE_RX_READY_NONE)
-                {
-                    s_spiRxReadyIndex = s_spiRxWriteIndex;
-                    s_spiRxWriteIndex = (uint8_t)((s_spiRxWriteIndex + 1U) & 0x01U);
-                    s_spiBridgeActivityPending = true;
-                }
-                s_spiRxComplete = false;
-            }
-            s_spiRxCount = 0U;
-            if (s_spiTxReloadPending)
-            {
-                s_spiTxReloadPending = false;
-            }
-            SPI_BridgePrepareNextTransaction();
-        }
-    }
-
-    if ((s_spiBridgeSemaphore != NULL) && s_spiBridgeActivityPending)
-    {
-        (void)xSemaphoreGiveFromISR(s_spiBridgeSemaphore, &higherPriorityTaskWoken);
-    }
-
-    portYIELD_FROM_ISR(higherPriorityTaskWoken);
-}
-
-static status_t SPI_BridgeHandleReadBlock(uint8_t en)
-{
-    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, false);
-    uint8_t serialized[SPI_BRIDGE_BLOCK_SIZE];
-    uint8_t length = 3U;
-
-    if (block != NULL)
-    {
-        length = SPI_BridgeGetWireLength(block);
-        (void)SPI_BridgeSerializeBlockWindow(block, serialized);
-    }
-    else
-    {
-        (void)memset(serialized, 0, sizeof(serialized));
-    }
-
-    status_t status = kStatus_Success;
-
-    /*
-     * The master must clock exactly (1 + LEN + 2) bytes after issuing
-     * READ_BLOCK|EN. Additional clocks are treated as undefined padding by the
-     * slave and should be ignored by the host if it chooses to send more than
-     * the requested window.
-     */
-    for (uint8_t i = 0; i < length; ++i)
-    {
-        uint8_t rx;
-        status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, serialized[i], &rx);
-        if (status != kStatus_Success)
-        {
-            break;
-        }
-    }
-
-    if ((status == kStatus_Success) && (block != NULL))
-    {
-        if (!(s_spiFixedResponseEnabled && (block == &s_cdcInBlock)))
-        {
-            SPI_BridgeMarkDirty(block, false);
-        }
-    }
-
-    return status;
-}
-
-static status_t SPI_BridgeHandleWriteBlock(uint8_t en, bool *activityOut)
-{
-    if (activityOut != NULL)
-    {
-        *activityOut = false;
-    }
-
-    uint8_t raw[SPI_BRIDGE_BLOCK_SIZE];
-    status_t status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &raw[0]);
-
-    if (status != kStatus_Success)
-    {
-        return status;
-    }
-
-    uint8_t length = SPI_BridgeExtractLength(raw[0]);
-    uint8_t total  = (uint8_t)(length + 3U);
-
-    if (total > SPI_BRIDGE_BLOCK_SIZE)
-    {
-        total = SPI_BRIDGE_BLOCK_SIZE;
-    }
-
-    /*
-     * The master must send exactly (1 + LEN + 2) bytes for WRITE_BLOCK. Extra
-     * clocks would leave data queued in the RX FIFO and corrupt subsequent
-     * commands.
-     */
-    for (uint8_t i = 1U; i < total; ++i)
-    {
-        status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &raw[i]);
-        if (status != kStatus_Success)
-        {
-            return status;
-        }
-    }
-
-    spi_bridge_block_t *block = SPI_BridgeMapEnToBlock(en, true);
-
-    if ((block != NULL) && (length <= SPI_BRIDGE_MAX_PAYLOAD_LENGTH) && SPI_BridgeBlockHasValidCrc(raw))
-    {
-        block->header = (uint8_t)(raw[0] | SPI_BRIDGE_HEADER_DIRTY_MASK);
-        (void)memcpy(block->payload, &raw[1], length);
-        if (length < SPI_BRIDGE_MAX_PAYLOAD_LENGTH)
-        {
-            (void)memset(&block->payload[length], 0, SPI_BRIDGE_MAX_PAYLOAD_LENGTH - length);
-        }
-        SPI_BridgeUpdateBlockCrc(block);
-
-        uint8_t deviceId = (uint8_t)(en - 1U);
-        SPI_BRIDGE_LOG("SPI_BRIDGE: received OUT block for device %u (%u bytes)\r\n", deviceId, length);
-        SPI_BridgeLogHexBuffer(block->payload, length);
-        SPI_BridgeLogOut(deviceId, false, true);
-
-        if (activityOut != NULL)
-        {
-            *activityOut = true;
-        }
-    }
-
-    return status;
-}
-
-static bool SPI_BridgeHandleCommand(void)
-{
-    uint8_t command = 0U;
-    status_t status = SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, 0U, &command);
-
-    if (status != kStatus_Success)
-    {
-        if (status != kStatus_Timeout)
-        {
-            SPI_BRIDGE_LOG_FAILURE("command");
-        }
-        return false;
-    }
-
-    uint8_t op = (command & SPI_BRIDGE_CMD_OP_MASK) >> SPI_BRIDGE_CMD_OP_SHIFT;
-    uint8_t en = command & SPI_BRIDGE_CMD_EN_MASK;
-    bool activity = false;
-    bool dirtyBefore = false;
-    spi_bridge_block_t *block = NULL;
-
-    switch ((spi_bridge_command_t)op)
-    {
-        case kSPI_BridgeCommandReadHeader:
-            (void)SPI_BridgeHandleReadHeader(en);
-            break;
-        case kSPI_BridgeCommandReadBlock:
-            block  = SPI_BridgeMapEnToBlock(en, false);
-            dirtyBefore = (block != NULL) && ((block->header & SPI_BRIDGE_HEADER_DIRTY_MASK) != 0U);
-            status = SPI_BridgeHandleReadBlock(en);
-            if ((status == kStatus_Success) && dirtyBefore)
-            {
-                activity = true;
-            }
-            break;
-        case kSPI_BridgeCommandWriteBlock:
-        {
-            bool writeActivity = false;
-            if (en == 0U)
-            {
-                (void)SPI_BridgeTransferByte(SPI_BRIDGE_SPI_BASE, s_hubStatus.header, &command);
-                break;
-            }
-            status = SPI_BridgeHandleWriteBlock(en, &writeActivity);
-            activity |= writeActivity;
-            break;
-        }
-        default:
-            /* Reserved opcodes are ignored but we still consumed the command byte. */
-            break;
-    }
-
-    if ((status != kStatus_Success) && (status != kStatus_Timeout))
-    {
-        SPI_BRIDGE_LOG_FAILURE("transfer");
-    }
-
-    return activity;
-}
+static volatile uint8_t s_lastRxByte;
+static volatile uint8_t s_nextTxByte = SPI_BRIDGE_IDLE_TX;
 
 status_t SPI_BridgeInit(void)
 {
-    SPI_BRIDGE_LOG("SPI_BridgeInit: starting\r\n");
-    /* Configure LPSPI1 as an 8-bit slave before any transfers occur. */
     CLOCK_SetMux(kCLOCK_LpspiMux, 1U);
     CLOCK_SetDiv(kCLOCK_LpspiDiv, 7U);
     CLOCK_EnableClock(kCLOCK_Lpspi1);
@@ -1108,18 +28,12 @@ status_t SPI_BridgeInit(void)
     SPI_BRIDGE_SPI_BASE->CR = 0U;
     SPI_BRIDGE_SPI_BASE->CFGR1 =
         LPSPI_CFGR1_MASTER(0U) | LPSPI_CFGR1_NOSTALL(1U) | LPSPI_CFGR1_PINCFG(0U);
-    SPI_BRIDGE_SPI_BASE->FCR   = LPSPI_FCR_TXWATER(0U) | LPSPI_FCR_RXWATER(0U);
-    SPI_BRIDGE_SPI_BASE->TCR   = LPSPI_TCR_FRAMESZ(7U) | LPSPI_TCR_PCS(0U) | LPSPI_TCR_CPHA(0U) |
-                               LPSPI_TCR_CPOL(0U);
+    SPI_BRIDGE_SPI_BASE->FCR = LPSPI_FCR_TXWATER(0U) | LPSPI_FCR_RXWATER(0U);
+    SPI_BRIDGE_SPI_BASE->TCR =
+        LPSPI_TCR_FRAMESZ(7U) | LPSPI_TCR_PCS(0U) | LPSPI_TCR_CPHA(0U) | LPSPI_TCR_CPOL(0U);
     SPI_BRIDGE_SPI_BASE->SR =
         LPSPI_SR_WCF_MASK | LPSPI_SR_FCF_MASK | LPSPI_SR_TCF_MASK | LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK |
         LPSPI_SR_DMF_MASK;
-
-    s_spiBridgeSemaphore = xSemaphoreCreateBinary();
-    if (s_spiBridgeSemaphore == NULL)
-    {
-        return kStatus_Fail;
-    }
 
     NVIC_SetPriority(LPSPI1_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
     NVIC_EnableIRQ(LPSPI1_IRQn);
@@ -1129,49 +43,10 @@ status_t SPI_BridgeInit(void)
         (void)SPI_BRIDGE_SPI_BASE->RDR;
     }
 
-    SPI_BRIDGE_SPI_BASE->TDR = SPI_BRIDGE_IDLE_TX;
-    SPI_BridgeEnableRxInterrupt();
+    s_nextTxByte = SPI_BRIDGE_IDLE_TX;
+    SPI_BRIDGE_SPI_BASE->TDR = s_nextTxByte;
+    SPI_BRIDGE_SPI_BASE->IER = LPSPI_IER_RDIE_MASK;
     SPI_BRIDGE_SPI_BASE->CR = LPSPI_CR_MEN_MASK;
-
-    (void)memset(&s_hubStatus, 0, sizeof(s_hubStatus));
-    (void)memset(s_inBlocks, 0, sizeof(s_inBlocks));
-    (void)memset(s_outBlocks, 0, sizeof(s_outBlocks));
-    (void)memset(&s_cdcInBlock, 0, sizeof(s_cdcInBlock));
-    (void)memset(&s_cdcOutBlock, 0, sizeof(s_cdcOutBlock));
-    (void)memset(s_deviceInUse, 0, sizeof(s_deviceInUse));
-    (void)memset(s_connectedTable, 0, sizeof(s_connectedTable));
-    (void)memset(s_lastInLoggedHeader, 0, sizeof(s_lastInLoggedHeader));
-    (void)memset(s_lastOutLoggedHeader, 0, sizeof(s_lastOutLoggedHeader));
-    s_lastCdcInLoggedHeader  = 0U;
-    s_lastCdcOutLoggedHeader = 0U;
-    (void)memset(&s_lastLoggedHubStatus, 0, sizeof(s_lastLoggedHubStatus));
-    (void)memset(s_lastLoggedInBlocks, 0, sizeof(s_lastLoggedInBlocks));
-    (void)memset(s_lastLoggedOutBlocks, 0, sizeof(s_lastLoggedOutBlocks));
-    (void)memset(&s_lastLoggedCdcInBlock, 0, sizeof(s_lastLoggedCdcInBlock));
-    (void)memset(&s_lastLoggedCdcOutBlock, 0, sizeof(s_lastLoggedCdcOutBlock));
-    s_lastHubLoggedHeader = 0U;
-    s_spiFixedResponseEnabled = false;
-    s_spiTxActive = s_spiTxBufferA;
-    s_spiTxNext = s_spiTxBufferB;
-    s_spiRxWriteIndex = 0U;
-    s_spiRxReadyIndex = SPI_BRIDGE_RX_READY_NONE;
-    s_spiRxCount = 0U;
-    s_spiRxComplete = false;
-    s_spiTransactionActive = false;
-    s_spiTxReloadPending = false;
-    s_spiBridgeActivityPending = false;
-
-    SPI_BridgeBuildFrame(s_spiTxActive, 0xFFU, SPI_BRIDGE_TYPE_NOT_READY, NULL, 0U);
-    SPI_BridgePrepareNextTransaction();
-
-    SPI_BridgeRebuildHubStatus();
-
-    SPI_BRIDGE_LOG("SPI_BridgeInit: done\r\n");
-
-    /* Print the freshly initialized register image so descriptors and hub
-     * state are visible immediately after boot, even before the SPI master
-     * polls us. */
-    SPI_BridgeLogState(true);
 
     return kStatus_Success;
 }
@@ -1180,297 +55,116 @@ void SPI_BridgeTask(void *param)
 {
     (void)param;
 
-    SPI_BRIDGE_LOG("SPI_BridgeTask: entering main loop\r\n");
-
-    while (1)
+    for (;;)
     {
-        if ((s_spiBridgeSemaphore != NULL) && (xSemaphoreTake(s_spiBridgeSemaphore, portMAX_DELAY) == pdTRUE))
-        {
-            uint8_t readyIndex = SPI_BRIDGE_RX_READY_NONE;
-            const uint8_t *rxFrame = NULL;
-
-            taskENTER_CRITICAL();
-            readyIndex = s_spiRxReadyIndex;
-            s_spiRxReadyIndex = SPI_BRIDGE_RX_READY_NONE;
-            s_spiBridgeActivityPending = false;
-            taskEXIT_CRITICAL();
-
-            if (readyIndex == SPI_BRIDGE_RX_READY_NONE)
-            {
-                continue;
-            }
-
-            rxFrame = s_spiRxBuffers[readyIndex];
-
-            uint8_t responsePayload[SPI_BRIDGE_MAX_PAYLOAD_LENGTH];
-            uint8_t responseLength = 0U;
-            uint8_t responseType = SPI_BRIDGE_TYPE_ERROR;
-            uint8_t responseSeq = rxFrame[1];
-
-            if (SPI_BridgeFrameValid(rxFrame))
-            {
-                uint8_t requestType = rxFrame[2];
-                uint8_t requestLength = rxFrame[3];
-                const uint8_t *requestPayload = &rxFrame[SPI_BRIDGE_FRAME_HEADER_SIZE];
-
-                switch (requestType)
-                {
-                    case SPI_BRIDGE_TYPE_PING:
-                        responseType = (uint8_t)(SPI_BRIDGE_TYPE_RESPONSE | SPI_BRIDGE_TYPE_PING);
-                        if (s_spiFixedResponseEnabled)
-                        {
-                            responseLength = (uint8_t)sizeof(s_spiFixedResponsePayload);
-                            (void)memcpy(responsePayload, s_spiFixedResponsePayload, responseLength);
-                        }
-                        else
-                        {
-                            static const uint8_t kPongPayload[] = {'P', 'O', 'N', 'G'};
-                            responseLength = (uint8_t)sizeof(kPongPayload);
-                            (void)memcpy(responsePayload, kPongPayload, responseLength);
-                        }
-                        break;
-                    case SPI_BRIDGE_TYPE_ECHO:
-                        responseType = (uint8_t)(SPI_BRIDGE_TYPE_RESPONSE | SPI_BRIDGE_TYPE_ECHO);
-                        responseLength = requestLength;
-                        if (requestLength > 0U)
-                        {
-                            (void)memcpy(responsePayload, requestPayload, requestLength);
-                        }
-                        break;
-                    default:
-                        responseType = SPI_BRIDGE_TYPE_ERROR;
-                        responsePayload[0] = SPI_BRIDGE_ERROR_BAD_TYPE;
-                        responseLength = 1U;
-                        break;
-                }
-            }
-            else
-            {
-                responseType = SPI_BRIDGE_TYPE_ERROR;
-                responsePayload[0] = SPI_BRIDGE_ERROR_BAD_FRAME;
-                responseLength = 1U;
-            }
-
-            SPI_BridgeBuildFrame(s_spiTxNext, responseSeq, responseType, responsePayload, responseLength);
-
-            taskENTER_CRITICAL();
-            uint8_t *swap = s_spiTxActive;
-            s_spiTxActive = s_spiTxNext;
-            s_spiTxNext = swap;
-            if (!s_spiTransactionActive)
-            {
-                SPI_BridgePrepareNextTransaction();
-            }
-            else
-            {
-                s_spiTxReloadPending = true;
-            }
-            taskEXIT_CRITICAL();
-        }
+        vTaskDelay(pdMS_TO_TICKS(100U));
     }
 }
 
-static int32_t SPI_BridgeFindFreeSlot(void)
+void LPSPI1_IRQHandler(void)
 {
-    for (uint8_t deviceId = 0; deviceId < SPI_BRIDGE_MAX_DEVICES; ++deviceId)
+    uint32_t sr = SPI_BRIDGE_SPI_BASE->SR;
+
+    if ((sr & (LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK)) != 0U)
     {
-        if (!s_deviceInUse[deviceId])
-        {
-            return deviceId;
-        }
+        SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK;
     }
-    return -1;
+
+    while ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_RDF_MASK) != 0U)
+    {
+        uint8_t rx = (uint8_t)SPI_BRIDGE_SPI_BASE->RDR;
+        s_lastRxByte = rx;
+        s_nextTxByte = (uint8_t)(rx + 1U);
+        SPI_BRIDGE_SPI_BASE->TDR = s_nextTxByte;
+        SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_RDF_MASK | LPSPI_SR_TDF_MASK;
+    }
 }
 
 status_t SPI_BridgeAllocDevice(uint8_t *deviceIdOut)
 {
-    int32_t slot = SPI_BridgeFindFreeSlot();
-
-    if (slot < 0)
-    {
-        return kStatus_Fail;
-    }
-
-    s_deviceInUse[slot]      = true;
-    s_connectedTable[slot]   = 1U;
-    s_inBlocks[slot].header  = SPI_BridgeMakeHeader(false, 0U, 0U);
-    s_outBlocks[slot].header = SPI_BridgeMakeHeader(false, 0U, 0U);
-    SPI_BridgeUpdateBlockCrc(&s_inBlocks[slot]);
-    SPI_BridgeUpdateBlockCrc(&s_outBlocks[slot]);
-
-    SPI_BridgeRebuildHubStatus();
-
-    SPI_BRIDGE_TRACE("allocated SPI bridge slot");
-
     if (deviceIdOut != NULL)
     {
-        *deviceIdOut = (uint8_t)slot;
+        *deviceIdOut = 0U;
     }
-
     return kStatus_Success;
 }
 
 status_t SPI_BridgeRemoveDevice(uint8_t deviceId)
 {
-    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
-    {
-        return kStatus_InvalidArgument;
-    }
-
-    if (!s_deviceInUse[deviceId])
-    {
-        return kStatus_InvalidArgument;
-    }
-
-    s_deviceInUse[deviceId]    = false;
-    s_connectedTable[deviceId] = 0U;
-    (void)memset(&s_inBlocks[deviceId], 0, sizeof(s_inBlocks[deviceId]));
-    (void)memset(&s_outBlocks[deviceId], 0, sizeof(s_outBlocks[deviceId]));
-
-    SPI_BridgeRebuildHubStatus();
-
-    SPI_BRIDGE_TRACE("removed SPI bridge slot");
-
+    (void)deviceId;
     return kStatus_Success;
 }
 
 status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId, const uint8_t *descriptor, uint16_t length)
 {
-    if ((deviceId >= SPI_BRIDGE_MAX_DEVICES) || (descriptor == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
-    {
-        return kStatus_InvalidArgument;
-    }
-
-    SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 1U, descriptor, (uint8_t)length);
-    SPI_BRIDGE_LOG("SPI_BRIDGE: queued report descriptor for device %u (%u bytes); DIRTY set\r\n", deviceId,
-                   length);
-    SPI_BRIDGE_TRACE("updated IN descriptor for V70");
-
-    /* Force a log so the descriptor is printed as soon as it is mirrored,
-     * regardless of whether state tracing is enabled or the SPI master has
-     * requested a transaction yet. Also dump the full register image so the
-     * descriptor is visible even if the SPI master never polls us. */
-    SPI_BridgeLogIn(deviceId, true);
-    SPI_BridgeLogState(true);
+    (void)deviceId;
+    (void)descriptor;
+    (void)length;
     return kStatus_Success;
 }
 
 status_t SPI_BridgeSendReport(uint8_t deviceId, bool inDirection, uint8_t reportId, const uint8_t *data, uint16_t length)
 {
+    (void)deviceId;
+    (void)inDirection;
     (void)reportId;
-    if ((deviceId >= SPI_BRIDGE_MAX_DEVICES) || (data == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
-    {
-        return kStatus_InvalidArgument;
-    }
-
-    if (!inDirection)
-    {
-        return kStatus_InvalidArgument;
-    }
-
-    SPI_BridgeSetBlockPayload(&s_inBlocks[deviceId], 0U, data, (uint8_t)length);
-
-    SPI_BRIDGE_TRACE("updated IN report payload for V70");
-
-    return kStatus_Success;
-}
-
-bool SPI_BridgeGetOutReport(uint8_t deviceId, uint8_t *typeOut, uint8_t *payloadOut, uint8_t *lengthOut)
-{
-    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
-    {
-        return false;
-    }
-
-    uint8_t header = s_outBlocks[deviceId].header;
-    uint8_t length = SPI_BridgeExtractLength(header);
-
-    if (((header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
-    {
-        return false;
-    }
-
-    if (payloadOut != NULL)
-    {
-        (void)memcpy(payloadOut, s_outBlocks[deviceId].payload, length);
-    }
-    if (typeOut != NULL)
-    {
-        *typeOut = (uint8_t)((header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U);
-    }
-    if (lengthOut != NULL)
-    {
-        *lengthOut = length;
-    }
-
-    return true;
-}
-
-status_t SPI_BridgeClearOutReport(uint8_t deviceId)
-{
-    if (deviceId >= SPI_BRIDGE_MAX_DEVICES)
-    {
-        return kStatus_InvalidArgument;
-    }
-
-    SPI_BridgeMarkDirty(&s_outBlocks[deviceId], false);
-    SPI_BRIDGE_TRACE("host consumed OUT report");
+    (void)data;
+    (void)length;
     return kStatus_Success;
 }
 
 status_t SPI_BridgeSendCdcIn(const uint8_t *data, uint8_t length)
 {
-    if ((data == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
-    {
-        return kStatus_InvalidArgument;
-    }
-
-    SPI_BridgeSetBlockPayload(&s_cdcInBlock, 0U, data, length);
-    SPI_BRIDGE_TRACE("updated CDC IN payload for V70");
+    (void)data;
+    (void)length;
     return kStatus_Success;
 }
 
 status_t SPI_BridgeSendCdcDescriptor(const uint8_t *descriptor, uint8_t length)
 {
-    if ((descriptor == NULL) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
-    {
-        return kStatus_InvalidArgument;
-    }
+    (void)descriptor;
+    (void)length;
+    return kStatus_Success;
+}
 
-    SPI_BridgeSetBlockPayload(&s_cdcInBlock, 1U, descriptor, length);
-    SPI_BRIDGE_TRACE("updated CDC descriptor for V70");
+bool SPI_BridgeGetOutReport(uint8_t deviceId, uint8_t *typeOut, uint8_t *payloadOut, uint8_t *lengthOut)
+{
+    (void)deviceId;
+    (void)typeOut;
+    (void)payloadOut;
+    (void)lengthOut;
+    return false;
+}
+
+status_t SPI_BridgeClearOutReport(uint8_t deviceId)
+{
+    (void)deviceId;
     return kStatus_Success;
 }
 
 bool SPI_BridgeGetCdcOut(uint8_t *typeOut, uint8_t *payloadOut, uint8_t *lengthOut)
 {
-    uint8_t header = s_cdcOutBlock.header;
-    uint8_t length = SPI_BridgeExtractLength(header);
-
-    if (((header & SPI_BRIDGE_HEADER_DIRTY_MASK) == 0U) || (length > SPI_BRIDGE_MAX_PAYLOAD_LENGTH))
-    {
-        return false;
-    }
-
-    if (payloadOut != NULL)
-    {
-        (void)memcpy(payloadOut, s_cdcOutBlock.payload, length);
-    }
-    if (typeOut != NULL)
-    {
-        *typeOut = (uint8_t)((header & SPI_BRIDGE_HEADER_TYPE_MASK) ? 1U : 0U);
-    }
-    if (lengthOut != NULL)
-    {
-        *lengthOut = length;
-    }
-
-    return true;
+    (void)typeOut;
+    (void)payloadOut;
+    (void)lengthOut;
+    return false;
 }
 
 status_t SPI_BridgeClearCdcOut(void)
 {
-    SPI_BridgeMarkDirty(&s_cdcOutBlock, false);
-    SPI_BRIDGE_TRACE("host consumed CDC OUT payload");
     return kStatus_Success;
+}
+
+void SPI_BridgeSetStateTraceEnabled(bool enabled)
+{
+    (void)enabled;
+}
+
+bool SPI_BridgeStateTraceEnabled(void)
+{
+    return false;
+}
+
+void SPI_BridgeEnableFixedCdcResponse(void)
+{
 }
