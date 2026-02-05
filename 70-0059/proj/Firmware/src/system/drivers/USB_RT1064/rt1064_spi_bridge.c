@@ -12,6 +12,10 @@
 
 #define SPI_BRIDGE_POLL_PERIOD_MS (10U)
 
+#if (CS_NO_TOGGLE != 0)
+#error "rt1064 bridge requires CS_NO_TOGGLE so CS stays asserted for all 64 bytes"
+#endif
+
 volatile bool last_rx_good = false;
 volatile uint32_t good_count = 0U;
 volatile uint32_t bad_count = 0U;

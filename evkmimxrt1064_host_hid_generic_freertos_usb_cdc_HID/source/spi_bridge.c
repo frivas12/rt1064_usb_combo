@@ -10,6 +10,7 @@
 
 #include "FreeRTOS.h"
 #include "fsl_clock.h"
+#include "PERI_DMAMUX.h"
 #include "task.h"
 
 #define FRAME_SIZE (64U)
@@ -21,6 +22,14 @@
 #define SPI_BRIDGE_DMA_TX_CHANNEL (1U)
 #define SPI_BRIDGE_DMA_RX_REQUEST (13U) /* kDmaRequestMuxLPSPI1Rx in PERI_DMAMUX.h */
 #define SPI_BRIDGE_DMA_TX_REQUEST (14U) /* kDmaRequestMuxLPSPI1Tx in PERI_DMAMUX.h */
+
+#if (((uint32_t)kDmaRequestMuxLPSPI1Rx & 0xFFU) != SPI_BRIDGE_DMA_RX_REQUEST)
+#error "SPI_BRIDGE_DMA_RX_REQUEST must match kDmaRequestMuxLPSPI1Rx"
+#endif
+
+#if (((uint32_t)kDmaRequestMuxLPSPI1Tx & 0xFFU) != SPI_BRIDGE_DMA_TX_REQUEST)
+#error "SPI_BRIDGE_DMA_TX_REQUEST must match kDmaRequestMuxLPSPI1Tx"
+#endif
 
 #ifndef SPI_BRIDGE_SPI_BASE
 #define SPI_BRIDGE_SPI_BASE LPSPI1
