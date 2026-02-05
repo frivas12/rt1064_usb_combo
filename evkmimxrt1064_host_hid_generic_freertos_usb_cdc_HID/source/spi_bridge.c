@@ -112,13 +112,17 @@ static void lpspi_slave_init_with_dma(void)
 
 static void arm_lpspi_dma(uint8_t *tx, uint8_t *rx)
 {
-    const uint32_t tx_dma_count = (FRAME_SIZE > 0U) ? (FRAME_SIZE - 1U) : 0U;
+    const uint32_t tx_dma_count = FRAME_SIZE;
 
     SPI_BRIDGE_DMA_BASE->CERQ = DMA_CERQ_CERQ(SPI_BRIDGE_DMA_RX_CHANNEL);
     SPI_BRIDGE_DMA_BASE->CERQ = DMA_CERQ_CERQ(SPI_BRIDGE_DMA_TX_CHANNEL);
 
-    /* Prime first byte so MISO is valid before the first SCK edge. */
-    SPI_BRIDGE_SPI_BASE->TDR = tx[0];
+    /*
+     * Re-arm from a clean FIFO state to avoid bit/byte slip between frames.
+     * Any stale RX residue from the previous frame can desynchronize the next
+     * DMA transaction if it is not cleared before re-enabling requests.
+     */
+    SPI_BRIDGE_SPI_BASE->CR |= (LPSPI_CR_RRF_MASK | LPSPI_CR_RTF_MASK);
 
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].SADDR = (uint32_t)&SPI_BRIDGE_SPI_BASE->RDR;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].SOFF = 0;
@@ -132,11 +136,11 @@ static void arm_lpspi_dma(uint8_t *tx, uint8_t *rx)
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].CSR = DMA_CSR_INTMAJOR_MASK | DMA_CSR_DREQ_MASK;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].BITER_ELINKNO = DMA_BITER_ELINKNO_BITER(FRAME_SIZE);
 
-    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].SADDR = (uint32_t)&tx[1];
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].SADDR = (uint32_t)tx;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].SOFF = 1;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].ATTR = DMA_ATTR_SSIZE(0U) | DMA_ATTR_DSIZE(0U);
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].NBYTES_MLNO = 1U;
-    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].SLAST = -(int32_t)tx_dma_count;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].SLAST = -(int32_t)FRAME_SIZE;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].DADDR = (uint32_t)&SPI_BRIDGE_SPI_BASE->TDR;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].DOFF = 0;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].CITER_ELINKNO = DMA_CITER_ELINKNO_CITER(tx_dma_count);
