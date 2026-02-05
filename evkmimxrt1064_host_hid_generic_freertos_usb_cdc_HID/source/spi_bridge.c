@@ -14,6 +14,14 @@
 
 #define FRAME_SIZE (64U)
 #define FRAME_DATA_SIZE (62U)
+#define COMPLETION_QUEUE_SIZE (4U)
+
+#define SPI_BRIDGE_DMA_BASE DMA0
+#define SPI_BRIDGE_DMAMUX_BASE DMAMUX
+#define SPI_BRIDGE_DMA_RX_CHANNEL (0U)
+#define SPI_BRIDGE_DMA_TX_CHANNEL (1U)
+#define SPI_BRIDGE_DMA_RX_REQUEST (13U)
+#define SPI_BRIDGE_DMA_TX_REQUEST (14U)
 
 #ifndef SPI_BRIDGE_SPI_BASE
 #define SPI_BRIDGE_SPI_BASE LPSPI1
@@ -29,10 +37,37 @@ uint8_t last_tx[FRAME_SIZE];
 static uint8_t tx_buf[2][FRAME_SIZE];
 static uint8_t rx_buf[2][FRAME_SIZE];
 static volatile uint8_t active_idx = 0U;
-static volatile uint8_t completed_idx = 0U;
-static volatile bool processing_pending = false;
+static volatile uint8_t completed_queue[COMPLETION_QUEUE_SIZE];
+static volatile uint8_t completed_head = 0U;
+static volatile uint8_t completed_tail = 0U;
+static volatile uint8_t completed_count = 0U;
 
 static TaskHandle_t s_bridgeTaskHandle;
+
+static void dma_configure_lpspi_channels(void)
+{
+    CLOCK_EnableClock(kCLOCK_Dma);
+    CLOCK_EnableClock(kCLOCK_Dmamux);
+
+    SPI_BRIDGE_DMAMUX_BASE->CHCFG[SPI_BRIDGE_DMA_RX_CHANNEL] = 0U;
+    SPI_BRIDGE_DMAMUX_BASE->CHCFG[SPI_BRIDGE_DMA_TX_CHANNEL] = 0U;
+
+    SPI_BRIDGE_DMAMUX_BASE->CHCFG[SPI_BRIDGE_DMA_RX_CHANNEL] =
+        DMAMUX_CHCFG_SOURCE(SPI_BRIDGE_DMA_RX_REQUEST) | DMAMUX_CHCFG_ENBL_MASK;
+    SPI_BRIDGE_DMAMUX_BASE->CHCFG[SPI_BRIDGE_DMA_TX_CHANNEL] =
+        DMAMUX_CHCFG_SOURCE(SPI_BRIDGE_DMA_TX_REQUEST) | DMAMUX_CHCFG_ENBL_MASK;
+
+    SPI_BRIDGE_DMA_BASE->CERQ = DMA_CERQ_CERQ(SPI_BRIDGE_DMA_RX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->CERQ = DMA_CERQ_CERQ(SPI_BRIDGE_DMA_TX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->CINT = DMA_CINT_CINT(SPI_BRIDGE_DMA_RX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->CINT = DMA_CINT_CINT(SPI_BRIDGE_DMA_TX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->CDNE = DMA_CDNE_CDNE(SPI_BRIDGE_DMA_RX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->CDNE = DMA_CDNE_CDNE(SPI_BRIDGE_DMA_TX_CHANNEL);
+
+    NVIC_ClearPendingIRQ(DMA0_DMA16_IRQn);
+    NVIC_SetPriority(DMA0_DMA16_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1U);
+    EnableIRQ(DMA0_DMA16_IRQn);
+}
 
 static uint16_t crc16_ccitt_false(const uint8_t *data, uint32_t len)
 {
@@ -88,6 +123,7 @@ static void lpspi_slave_init_with_dma(void)
 
     SPI_BRIDGE_SPI_BASE->CR = LPSPI_CR_RST_MASK;
     SPI_BRIDGE_SPI_BASE->CR = 0U;
+    SPI_BRIDGE_SPI_BASE->CR = LPSPI_CR_RRF_MASK | LPSPI_CR_RTF_MASK;
     SPI_BRIDGE_SPI_BASE->CFGR1 = LPSPI_CFGR1_MASTER(0U) | LPSPI_CFGR1_NOSTALL(1U) | LPSPI_CFGR1_PINCFG(0U);
     SPI_BRIDGE_SPI_BASE->FCR = LPSPI_FCR_TXWATER(0U) | LPSPI_FCR_RXWATER(0U);
     SPI_BRIDGE_SPI_BASE->TCR = LPSPI_TCR_FRAMESZ(7U) | LPSPI_TCR_PCS(0U) | LPSPI_TCR_CPHA(0U) | LPSPI_TCR_CPOL(0U);
@@ -101,18 +137,45 @@ static void lpspi_slave_init_with_dma(void)
 
 static void arm_lpspi_dma(uint8_t *tx, uint8_t *rx)
 {
-    /*
-     * Driver-specific DMA setup intentionally isolated here.
-     * Replace this with eDMA transfer descriptors for 64-byte RX/TX.
-     */
-    (void)tx;
-    (void)rx;
+    SPI_BRIDGE_DMA_BASE->CERQ = DMA_CERQ_CERQ(SPI_BRIDGE_DMA_RX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->CERQ = DMA_CERQ_CERQ(SPI_BRIDGE_DMA_TX_CHANNEL);
+
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].SADDR = (uint32_t)&SPI_BRIDGE_SPI_BASE->RDR;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].SOFF = 0;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].ATTR = DMA_ATTR_SSIZE(0U) | DMA_ATTR_DSIZE(0U);
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].NBYTES_MLNO = 1U;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].SLAST = 0;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].DADDR = (uint32_t)rx;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].DOFF = 1;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].CITER_ELINKNO = DMA_CITER_ELINKNO_CITER(FRAME_SIZE);
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].DLAST_SGA = -(int32_t)FRAME_SIZE;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].CSR = DMA_CSR_INTMAJOR_MASK;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].BITER_ELINKNO = DMA_BITER_ELINKNO_BITER(FRAME_SIZE);
+
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].SADDR = (uint32_t)tx;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].SOFF = 1;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].ATTR = DMA_ATTR_SSIZE(0U) | DMA_ATTR_DSIZE(0U);
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].NBYTES_MLNO = 1U;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].SLAST = -(int32_t)FRAME_SIZE;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].DADDR = (uint32_t)&SPI_BRIDGE_SPI_BASE->TDR;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].DOFF = 0;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].CITER_ELINKNO = DMA_CITER_ELINKNO_CITER(FRAME_SIZE);
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].DLAST_SGA = 0;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].CSR = 0;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].BITER_ELINKNO = DMA_BITER_ELINKNO_BITER(FRAME_SIZE);
+
+    SPI_BRIDGE_DMA_BASE->CINT = DMA_CINT_CINT(SPI_BRIDGE_DMA_RX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->CINT = DMA_CINT_CINT(SPI_BRIDGE_DMA_TX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->CDNE = DMA_CDNE_CDNE(SPI_BRIDGE_DMA_RX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->CDNE = DMA_CDNE_CDNE(SPI_BRIDGE_DMA_TX_CHANNEL);
+
+    SPI_BRIDGE_DMA_BASE->SERQ = DMA_SERQ_SERQ(SPI_BRIDGE_DMA_TX_CHANNEL);
+    SPI_BRIDGE_DMA_BASE->SERQ = DMA_SERQ_SERQ(SPI_BRIDGE_DMA_RX_CHANNEL);
 }
 
 static void notify_processing_task_from_isr(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    processing_pending = true;
     if (s_bridgeTaskHandle != NULL)
     {
         vTaskNotifyGiveFromISR(s_bridgeTaskHandle, &xHigherPriorityTaskWoken);
@@ -120,10 +183,39 @@ static void notify_processing_task_from_isr(void)
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-static void rt1064_spi_bringup_process(void)
+static bool completed_queue_push_from_isr(uint8_t idx)
 {
-    uint8_t idx = completed_idx;
-    uint8_t prep_idx = (uint8_t)(active_idx ^ 1U);
+    if (completed_count >= COMPLETION_QUEUE_SIZE)
+    {
+        return false;
+    }
+
+    completed_queue[completed_tail] = idx;
+    completed_tail = (uint8_t)((completed_tail + 1U) % COMPLETION_QUEUE_SIZE);
+    completed_count++;
+    return true;
+}
+
+static bool completed_queue_pop(uint8_t *idx)
+{
+    bool hasItem = false;
+
+    taskENTER_CRITICAL();
+    if (completed_count != 0U)
+    {
+        *idx = completed_queue[completed_head];
+        completed_head = (uint8_t)((completed_head + 1U) % COMPLETION_QUEUE_SIZE);
+        completed_count--;
+        hasItem = true;
+    }
+    taskEXIT_CRITICAL();
+
+    return hasItem;
+}
+
+static void rt1064_spi_bringup_process(uint8_t idx)
+{
+    uint8_t prep_idx = idx;
 
     memcpy(last_rx, rx_buf[idx], FRAME_SIZE);
     last_rx_good = frame_check_crc(last_rx);
@@ -147,11 +239,23 @@ static void rt1064_spi_bringup_process(void)
  */
 void LPSPI_RX_DMA_IRQHandler(void)
 {
-    completed_idx = active_idx;
+    uint8_t finished_idx = active_idx;
     active_idx ^= 1U;
 
     arm_lpspi_dma(tx_buf[active_idx], rx_buf[active_idx]);
-    notify_processing_task_from_isr();
+    if (completed_queue_push_from_isr(finished_idx))
+    {
+        notify_processing_task_from_isr();
+    }
+}
+
+void DMA0_DMA16_DriverIRQHandler(void)
+{
+    if ((SPI_BRIDGE_DMA_BASE->INT & (1UL << SPI_BRIDGE_DMA_RX_CHANNEL)) != 0UL)
+    {
+        SPI_BRIDGE_DMA_BASE->CINT = DMA_CINT_CINT(SPI_BRIDGE_DMA_RX_CHANNEL);
+        LPSPI_RX_DMA_IRQHandler();
+    }
 }
 
 status_t SPI_BridgeInit(void)
@@ -162,11 +266,13 @@ status_t SPI_BridgeInit(void)
     build_test_frame(tx_buf[0], 0x80U);
     build_test_frame(tx_buf[1], 0x80U);
 
+    dma_configure_lpspi_channels();
     lpspi_slave_init_with_dma();
 
     active_idx = 0U;
-    completed_idx = 0U;
-    processing_pending = false;
+    completed_head = 0U;
+    completed_tail = 0U;
+    completed_count = 0U;
 
     arm_lpspi_dma(tx_buf[active_idx], rx_buf[active_idx]);
 
@@ -181,15 +287,12 @@ void SPI_BridgeTask(void *param)
 
     for (;;)
     {
-        if (!processing_pending)
-        {
-            (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(1000U));
-        }
+        (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(1000U));
 
-        if (processing_pending)
+        uint8_t idx = 0U;
+        while (completed_queue_pop(&idx))
         {
-            processing_pending = false;
-            rt1064_spi_bringup_process();
+            rt1064_spi_bringup_process(idx);
         }
     }
 }
