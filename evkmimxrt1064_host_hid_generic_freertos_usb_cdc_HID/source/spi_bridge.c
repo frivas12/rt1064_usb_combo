@@ -13,6 +13,8 @@
 #include "task.h"
 
 #define FRAME_SIZE (64U)
+#define SPI_BRIDGE_TX_FILL_VALUE (0xA5U)
+#define SPI_BRIDGE_RX_EXPECTED_VALUE (0x01U)
 #define SPI_BRIDGE_DMA_BASE DMA0
 #define SPI_BRIDGE_DMAMUX_BASE DMAMUX
 #define SPI_BRIDGE_DMA_RX_CHANNEL (0U)
@@ -174,7 +176,7 @@ static void rt1064_spi_bringup_process(uint8_t idx)
     uint8_t prep_idx = active_idx; /* prepare the buffer currently armed for next DMA transfer */
 
     memcpy((void *)last_rx, rx_buf[idx], FRAME_SIZE);
-    last_rx_good = frame_is_all_value((const uint8_t *)last_rx, 0x01U);
+    last_rx_good = frame_is_all_value((const uint8_t *)last_rx, SPI_BRIDGE_RX_EXPECTED_VALUE);
 
     if (last_rx_good)
     {
@@ -185,7 +187,7 @@ static void rt1064_spi_bringup_process(uint8_t idx)
         bad_count++;
     }
 
-    build_fill_frame(tx_buf[prep_idx], 0x01U);
+    build_fill_frame(tx_buf[prep_idx], SPI_BRIDGE_TX_FILL_VALUE);
     memcpy((void *)last_tx, tx_buf[prep_idx], FRAME_SIZE);
 }
 
@@ -222,8 +224,8 @@ status_t SPI_BridgeInit(void)
     memset((void *)last_rx, 0, sizeof(last_rx));
     memset((void *)last_tx, 0, sizeof(last_tx));
 
-    build_fill_frame(tx_buf[0], 0x01U);
-    build_fill_frame(tx_buf[1], 0x01U);
+    build_fill_frame(tx_buf[0], SPI_BRIDGE_TX_FILL_VALUE);
+    build_fill_frame(tx_buf[1], SPI_BRIDGE_TX_FILL_VALUE);
 
     dma_configure_lpspi_channels();
     lpspi_slave_init_with_dma();
