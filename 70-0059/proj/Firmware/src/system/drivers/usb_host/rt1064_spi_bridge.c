@@ -2,80 +2,154 @@
 
 #include "rt1064_spi_bridge.h"
 
+#include <string.h>
+
 #include "Debugging.h"
 #include "FreeRTOS.h"
 #include "sys_task.h"
 #include "task.h"
 #include "user_spi.h"
 
-#define SPI_BRIDGE_POLL_PERIOD_MS (100U)
+#define FRAME_SIZE (64U)
+#define FRAME_DATA_SIZE (62U)
+#define SPI_BRIDGE_POLL_PERIOD_MS (10U)
 
-static bool spi_bridge_start_transaction(void) {
+volatile bool last_rx_good = false;
+volatile uint32_t good_count = 0U;
+volatile uint32_t bad_count = 0U;
+
+uint8_t last_rx[FRAME_SIZE];
+uint8_t last_tx[FRAME_SIZE];
+
+static uint8_t s_tx_frame[FRAME_SIZE];
+static uint8_t s_rx_frame[FRAME_SIZE];
+
+static uint16_t crc16_ccitt_false(const uint8_t *data, uint32_t len)
+{
+    uint16_t crc = 0xFFFFU;
+
+    for (uint32_t i = 0U; i < len; i++)
+    {
+        crc ^= (uint16_t)data[i] << 8;
+        for (uint8_t b = 0U; b < 8U; b++)
+        {
+            if ((crc & 0x8000U) != 0U)
+            {
+                crc = (uint16_t)((crc << 1) ^ 0x1021U);
+            }
+            else
+            {
+                crc = (uint16_t)(crc << 1);
+            }
+        }
+    }
+
+    return crc;
+}
+
+static void frame_write_crc(uint8_t frame[FRAME_SIZE])
+{
+    uint16_t crc = crc16_ccitt_false(frame, FRAME_DATA_SIZE);
+    frame[62] = (uint8_t)(crc & 0xFFU);
+    frame[63] = (uint8_t)(crc >> 8);
+}
+
+static bool frame_check_crc(const uint8_t frame[FRAME_SIZE])
+{
+    uint16_t calc = crc16_ccitt_false(frame, FRAME_DATA_SIZE);
+    uint16_t recv = (uint16_t)frame[62] | ((uint16_t)frame[63] << 8);
+    return calc == recv;
+}
+
+static void build_test_frame(uint8_t frame[FRAME_SIZE], uint8_t start)
+{
+    frame[0] = 0xA5U;
+    frame[1] = 0x12U;
+    frame[2] = 0x34U;
+
+    uint8_t value = start;
+    for (uint32_t i = 3U; i <= 61U; i++)
+    {
+        frame[i] = value;
+        value++;
+    }
+
+    frame_write_crc(frame);
+}
+
+static bool spi_bridge_start_transaction(void)
+{
     xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);
-    if (spi_start_transfer(_SPI_MODE_0, CS_NO_TOGGLE, CS_RT1064) != SPI_OK) {
+    if (spi_start_transfer(_SPI_MODE_0, CS_NO_TOGGLE, CS_RT1064) != SPI_OK)
+    {
         xSemaphoreGive(xSPI_Semaphore);
         return false;
     }
     return true;
 }
 
-static void spi_bridge_end_transaction(void) {
+static void spi_bridge_end_transaction(void)
+{
     (void)spi_end_transfer();
     xSemaphoreGive(xSPI_Semaphore);
 }
 
-static bool spi_bridge_exchange_byte(uint8_t tx_byte, uint8_t *rx_byte) {
-    uint8_t value = tx_byte;
-    if (spi_partial_transfer(&value) != SPI_OK) {
-        return false;
+static bool spi_transfer_64(const uint8_t *tx, uint8_t *rx)
+{
+    for (uint32_t i = 0U; i < FRAME_SIZE; i++)
+    {
+        uint8_t value = tx[i];
+        if (spi_partial_transfer(&value) != SPI_OK)
+        {
+            return false;
+        }
+        rx[i] = value;
     }
-    if (rx_byte != NULL) {
-        *rx_byte = value;
-    }
+
     return true;
 }
 
-static void task_spi_bridge(void *pvParameters) {
-    /* Set the PCK0 clock source to MAIN_CLK and clock divider to 0 */
-    ((Pmc *)PMC)->PMC_PCK[0] = 1;
-
-    /* Enable PCK0 output to pin */
-    ((Pmc *)PMC)->PMC_SCER |= PMC_SCER_PCK0;
-
-    /* Setup the clock pin from the processor to CPLD to mode MUX D */
-    ((Pio *)PIOB)->PIO_ABCDSR[0] |= PIO_PB12;
-    ((Pio *)PIOB)->PIO_ABCDSR[1] |= PIO_PB12;
-    /* Disables the PIO from controlling the corresponding pin (enables
-     * peripheral control of the pin). */
-    ((Pio *)PIOB)->PIO_PDR = PIO_PB12;
-
+static void task_spi_bridge(void *pvParameters)
+{
     (void)pvParameters;
 
-    uint8_t tx_byte = 0x00U;
+    uint8_t start = 0x00U;
 
-    for (;;) {
-        if (spi_bridge_start_transaction()) {
-            uint8_t stale_rx = 0x00U;
-            uint8_t response = 0x00U;
+    for (;;)
+    {
+        build_test_frame(s_tx_frame, start);
+        start++;
+        memcpy(last_tx, s_tx_frame, FRAME_SIZE);
 
-            if (!spi_bridge_exchange_byte(tx_byte, &stale_rx)) {
-                debug_print("SPI bridge: transfer failed (tx)\r\n");
-                spi_bridge_end_transaction();
-                vTaskDelay(pdMS_TO_TICKS(SPI_BRIDGE_POLL_PERIOD_MS));
-                continue;
-            }
-
-            if (!spi_bridge_exchange_byte(0x00U, &response)) {
-                debug_print("SPI bridge: transfer failed (rx)\r\n");
-                spi_bridge_end_transaction();
-                vTaskDelay(pdMS_TO_TICKS(SPI_BRIDGE_POLL_PERIOD_MS));
-                continue;
-            }
-
+        if (spi_bridge_start_transaction())
+        {
+            bool transfer_ok = spi_transfer_64(s_tx_frame, s_rx_frame);
             spi_bridge_end_transaction();
-            debug_print("SPI bridge: sent 0x%02X received 0x%02X\r\n", tx_byte, response);
-            ++tx_byte;
-        } else {
+
+            if (transfer_ok)
+            {
+                memcpy(last_rx, s_rx_frame, FRAME_SIZE);
+                last_rx_good = frame_check_crc(s_rx_frame);
+                if (last_rx_good)
+                {
+                    good_count++;
+                }
+                else
+                {
+                    bad_count++;
+                }
+            }
+            else
+            {
+                bad_count++;
+                last_rx_good = false;
+                debug_print("SPI bridge: 64-byte transfer failed\r\n");
+            }
+        }
+        else
+        {
+            bad_count++;
+            last_rx_good = false;
             debug_print("SPI bridge: failed to start transaction\r\n");
         }
 
@@ -83,9 +157,14 @@ static void task_spi_bridge(void *pvParameters) {
     }
 }
 
-void rt1064_spi_bridge_init(void) {
-    if (xTaskCreate(task_spi_bridge, "SPI Bridge", TASK_SPI_BRIDGE_STACK_SIZE,
-                    NULL, TASK_SPI_BRIDGE_STACK_PRIORITY, NULL) != pdPASS) {
+void rt1064_spi_bridge_init(void)
+{
+    memset(last_rx, 0, sizeof(last_rx));
+    memset(last_tx, 0, sizeof(last_tx));
+
+    if (xTaskCreate(task_spi_bridge, "SPI Bridge", TASK_SPI_BRIDGE_STACK_SIZE, NULL, TASK_SPI_BRIDGE_STACK_PRIORITY,
+                    NULL) != pdPASS)
+    {
         debug_print("Failed to create SPI bridge task\r\n");
     }
 }
