@@ -21,20 +21,25 @@ volatile uint8_t last_tx[SPI_BRIDGE_FRAME_SIZE];
 
 volatile uint8_t spi_active_idx = 0U;
 volatile uint8_t spi_last_completed_idx = 0U;
+volatile uint32_t spi_transfer_seq = 0U;
 
 static uint8_t s_tx_frame[SPI_BRIDGE_FRAME_SIZE];
 static uint8_t s_rx_frame[SPI_BRIDGE_FRAME_SIZE];
 
-static void build_fill_frame(uint8_t frame[SPI_BRIDGE_FRAME_SIZE], uint8_t fill)
-{
-    memset(frame, fill, SPI_BRIDGE_FRAME_SIZE);
-}
-
-static bool frame_is_all_value(const uint8_t frame[SPI_BRIDGE_FRAME_SIZE], uint8_t expected)
+static void build_pattern_frame(uint8_t frame[SPI_BRIDGE_FRAME_SIZE], uint8_t seq)
 {
     for (uint32_t i = 0U; i < SPI_BRIDGE_FRAME_SIZE; i++)
     {
-        if (frame[i] != expected)
+        frame[i] = (uint8_t)(seq + i);
+    }
+}
+
+static bool frame_matches_tx_pattern(const uint8_t rx[SPI_BRIDGE_FRAME_SIZE],
+                                     const uint8_t tx[SPI_BRIDGE_FRAME_SIZE])
+{
+    for (uint32_t i = 0U; i < SPI_BRIDGE_FRAME_SIZE; i++)
+    {
+        if (rx[i] != tx[i])
         {
             return false;
         }
@@ -82,7 +87,7 @@ static bool spi_transfer_fixed_with_optional_retry(const uint8_t *tx, uint8_t *r
         return false;
     }
 
-    if (rx[0] == 0x01U)
+    if (rx[0] == tx[0])
     {
         return true;
     }
@@ -108,7 +113,8 @@ static void task_spi_bridge(void *pvParameters)
     for (;;)
     {
         spi_active_idx ^= 1U;
-        build_fill_frame(s_tx_frame, 0x01U);
+        const uint8_t seq = (uint8_t)(spi_transfer_seq++);
+        build_pattern_frame(s_tx_frame, seq);
         memcpy((void *)last_tx, s_tx_frame, SPI_BRIDGE_FRAME_SIZE);
 
         xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);
@@ -120,7 +126,7 @@ static void task_spi_bridge(void *pvParameters)
             {
                 spi_last_completed_idx = spi_active_idx;
                 memcpy((void *)last_rx, s_rx_frame, SPI_BRIDGE_FRAME_SIZE);
-                last_rx_good = frame_is_all_value(s_rx_frame, 0x01U);
+                last_rx_good = frame_matches_tx_pattern(s_rx_frame, s_tx_frame);
                 if (last_rx_good)
                 {
                     good_count++;
@@ -134,7 +140,7 @@ static void task_spi_bridge(void *pvParameters)
             {
                 bad_count++;
                 last_rx_good = false;
-                debug_print("SPI bridge: 1-byte transfer failed\r\n");
+                debug_print("SPI bridge: fixed transfer failed\r\n");
             }
         }
 
