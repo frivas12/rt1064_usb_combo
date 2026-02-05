@@ -30,8 +30,8 @@ volatile bool last_rx_good = false;
 volatile uint32_t good_count = 0U;
 volatile uint32_t bad_count = 0U;
 
-uint8_t last_rx[FRAME_SIZE];
-uint8_t last_tx[FRAME_SIZE];
+volatile uint8_t last_rx[FRAME_SIZE];
+volatile uint8_t last_tx[FRAME_SIZE];
 
 static uint8_t tx_buf[2][FRAME_SIZE];
 static uint8_t rx_buf[2][FRAME_SIZE];
@@ -200,8 +200,8 @@ static void rt1064_spi_bringup_process(uint8_t idx)
 {
     uint8_t prep_idx = idx;
 
-    memcpy(last_rx, rx_buf[idx], FRAME_SIZE);
-    last_rx_good = frame_check_crc(last_rx);
+    memcpy((void *)last_rx, rx_buf[idx], FRAME_SIZE);
+    last_rx_good = frame_check_crc((const uint8_t *)last_rx);
 
     if (last_rx_good)
     {
@@ -213,7 +213,7 @@ static void rt1064_spi_bringup_process(uint8_t idx)
     }
 
     build_test_frame(tx_buf[prep_idx], 0x80U);
-    memcpy(last_tx, tx_buf[prep_idx], FRAME_SIZE);
+    memcpy((void *)last_tx, tx_buf[prep_idx], FRAME_SIZE);
 }
 
 /*
@@ -242,8 +242,8 @@ void DMA0_DMA16_DriverIRQHandler(void)
 
 status_t SPI_BridgeInit(void)
 {
-    memset(last_rx, 0, sizeof(last_rx));
-    memset(last_tx, 0, sizeof(last_tx));
+    memset((void *)last_rx, 0, sizeof(last_rx));
+    memset((void *)last_tx, 0, sizeof(last_tx));
 
     build_test_frame(tx_buf[0], 0x80U);
     build_test_frame(tx_buf[1], 0x80U);
@@ -271,7 +271,7 @@ void SPI_BridgeTask(void *param)
         (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(1000U));
 
         uint8_t idx = 0U;
-        while (completed_fetch(&idx))
+        if (completed_fetch(&idx))
         {
             rt1064_spi_bringup_process(idx);
         }
