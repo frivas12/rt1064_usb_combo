@@ -100,6 +100,7 @@ C_SRCS = \
 	src/system/drivers/usb_slave/usb_slave.c \
 	src/system/drivers/usb_slave/ftdi/ftdi.c \
 	src/system/drivers/usb_host/*.c \
+	src/system/drivers/USB_RT1064/*.c \
 	src/system/drivers/encoder/encoder.c \
 	src/system/drivers/encoder/encoder_quad_linear.c \
 	src/system/drivers/encoder/encoder_abs_index_linear.c \
@@ -273,6 +274,7 @@ INC_PATH = \
 	src/system/drivers/usb_slave/ftdi \
 	src/system/drivers/usb_host \
 	src/system/drivers/usb_host/usb-device \
+	src/system/drivers/USB_RT1064 \
 	src/system/drivers/encoder \
 	src/system/drivers/log \
 	src/system/drivers/buffers \
