@@ -1,8 +1,8 @@
 /*
  * SPI bring-up test (RT1064 slave side)
  *
- * Fixed 64-byte full-duplex frames with double-buffered TX/RX data ownership
- * for DMA-style handoff.
+ * Fixed 16-byte full-duplex frames with deterministic pattern generation
+ * and double-buffered TX/RX data ownership for DMA-style handoff.
  */
 #include "spi_bridge.h"
 
@@ -12,9 +12,7 @@
 #include "fsl_clock.h"
 #include "task.h"
 
-#define FRAME_SIZE (64U)
-#define SPI_BRIDGE_TX_FILL_VALUE (0xA5U)
-#define SPI_BRIDGE_RX_EXPECTED_VALUE (0x01U)
+#define FRAME_SIZE (SPI_BRIDGE_FRAME_SIZE)
 #define SPI_BRIDGE_DMA_BASE DMA0
 #define SPI_BRIDGE_DMAMUX_BASE DMAMUX
 #define SPI_BRIDGE_DMA_RX_CHANNEL (0U)
@@ -69,16 +67,21 @@ static void dma_configure_lpspi_channels(void)
     EnableIRQ(DMA0_DMA16_IRQn);
 }
 
-static void build_fill_frame(uint8_t frame[FRAME_SIZE], uint8_t fill)
-{
-    memset(frame, fill, FRAME_SIZE);
-}
+static uint8_t s_tx_seq = 0U;
 
-static bool frame_is_all_value(const uint8_t frame[FRAME_SIZE], uint8_t expected)
+static void build_pattern_frame(uint8_t frame[FRAME_SIZE], uint8_t seq)
 {
     for (uint32_t i = 0U; i < FRAME_SIZE; i++)
     {
-        if (frame[i] != expected)
+        frame[i] = (uint8_t)(seq + i);
+    }
+}
+
+static bool frame_matches_tx_pattern(const uint8_t rx[FRAME_SIZE], const uint8_t tx[FRAME_SIZE])
+{
+    for (uint32_t i = 0U; i < FRAME_SIZE; i++)
+    {
+        if (rx[i] != tx[i])
         {
             return false;
         }
@@ -176,8 +179,9 @@ static void rt1064_spi_bringup_process(uint8_t idx)
     uint8_t prep_idx = active_idx; /* prepare the buffer currently armed for next DMA transfer */
 
     memcpy((void *)last_rx, rx_buf[idx], FRAME_SIZE);
-    last_rx_good = frame_is_all_value((const uint8_t *)last_rx, SPI_BRIDGE_RX_EXPECTED_VALUE);
+    memcpy((void *)last_tx, tx_buf[idx], FRAME_SIZE);
 
+    last_rx_good = frame_matches_tx_pattern((const uint8_t *)last_rx, (const uint8_t *)last_tx);
     if (last_rx_good)
     {
         good_count++;
@@ -187,8 +191,7 @@ static void rt1064_spi_bringup_process(uint8_t idx)
         bad_count++;
     }
 
-    build_fill_frame(tx_buf[prep_idx], SPI_BRIDGE_TX_FILL_VALUE);
-    memcpy((void *)last_tx, tx_buf[prep_idx], FRAME_SIZE);
+    build_pattern_frame(tx_buf[prep_idx], s_tx_seq++);
 }
 
 /*
@@ -224,8 +227,9 @@ status_t SPI_BridgeInit(void)
     memset((void *)last_rx, 0, sizeof(last_rx));
     memset((void *)last_tx, 0, sizeof(last_tx));
 
-    build_fill_frame(tx_buf[0], SPI_BRIDGE_TX_FILL_VALUE);
-    build_fill_frame(tx_buf[1], SPI_BRIDGE_TX_FILL_VALUE);
+    s_tx_seq = 0U;
+    build_pattern_frame(tx_buf[0], s_tx_seq++);
+    build_pattern_frame(tx_buf[1], s_tx_seq++);
 
     dma_configure_lpspi_channels();
     lpspi_slave_init_with_dma();
