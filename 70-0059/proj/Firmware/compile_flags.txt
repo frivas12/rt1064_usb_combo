@@ -105,6 +105,8 @@ src/system/drivers/usb_host
 -I
 src/system/drivers/usb_host/usb-device
 -I
+src/system/drivers/USB_RT1064
+-I
 src/system/drivers/usb_slave
 -I
 src/system/drivers/usb_slave/ftdi
