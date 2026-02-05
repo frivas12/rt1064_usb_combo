@@ -44,7 +44,9 @@ static TaskHandle_t s_bridgeTaskHandle;
 static void dma_configure_lpspi_channels(void)
 {
     CLOCK_EnableClock(kCLOCK_Dma);
+#if defined(kCLOCK_Dmamux)
     CLOCK_EnableClock(kCLOCK_Dmamux);
+#endif
 
     SPI_BRIDGE_DMAMUX_BASE->CHCFG[SPI_BRIDGE_DMA_RX_CHANNEL] = 0U;
     SPI_BRIDGE_DMAMUX_BASE->CHCFG[SPI_BRIDGE_DMA_TX_CHANNEL] = 0U;
