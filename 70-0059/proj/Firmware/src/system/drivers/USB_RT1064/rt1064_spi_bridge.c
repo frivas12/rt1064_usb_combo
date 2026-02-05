@@ -103,6 +103,39 @@ static bool spi_transfer_64(const uint8_t *tx, uint8_t *rx)
     return true;
 }
 
+static bool spi_transfer_64_with_optional_retry(const uint8_t *tx, uint8_t *rx)
+{
+    if (!spi_bridge_start_transaction())
+    {
+        return false;
+    }
+
+    bool ok = spi_transfer_64(tx, rx);
+    spi_bridge_end_transaction();
+    if (!ok)
+    {
+        return false;
+    }
+
+    if (rx[0] == 0xA5U)
+    {
+        return true;
+    }
+
+    /*
+     * On RT1064 LPSPI slave + DMA bring-up the first frame after reset can be
+     * invalid if MISO is not driven on the earliest clock edges. Retry once.
+     */
+    if (!spi_bridge_start_transaction())
+    {
+        return false;
+    }
+
+    ok = spi_transfer_64(tx, rx);
+    spi_bridge_end_transaction();
+    return ok;
+}
+
 static void task_spi_bridge(void *pvParameters)
 {
     (void)pvParameters;
@@ -117,10 +150,8 @@ static void task_spi_bridge(void *pvParameters)
         memcpy((void *)last_tx, s_tx_frame, SPI_BRIDGE_FRAME_SIZE);
 
         xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);
-        if (spi_bridge_start_transaction())
         {
-            bool transfer_ok = spi_transfer_64(s_tx_frame, s_rx_frame);
-            spi_bridge_end_transaction();
+            bool transfer_ok = spi_transfer_64_with_optional_retry(s_tx_frame, s_rx_frame);
             xSemaphoreGive(xSPI_Semaphore);
 
             if (transfer_ok)
@@ -143,13 +174,6 @@ static void task_spi_bridge(void *pvParameters)
                 last_rx_good = false;
                 debug_print("SPI bridge: 64-byte transfer failed\r\n");
             }
-        }
-        else
-        {
-            xSemaphoreGive(xSPI_Semaphore);
-            bad_count++;
-            last_rx_good = false;
-            debug_print("SPI bridge: failed to start transaction\r\n");
         }
 
         vTaskDelay(pdMS_TO_TICKS(SPI_BRIDGE_POLL_PERIOD_MS));
