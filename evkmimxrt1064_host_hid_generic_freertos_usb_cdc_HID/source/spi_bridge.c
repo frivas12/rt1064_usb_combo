@@ -67,13 +67,13 @@ static void dma_configure_lpspi_channels(void)
     EnableIRQ(DMA0_DMA16_IRQn);
 }
 
-static uint8_t s_tx_seq = 0U;
+static const uint8_t s_tx_const = 0x03U;
 
-static void build_pattern_frame(uint8_t frame[FRAME_SIZE], uint8_t seq)
+static void build_pattern_frame(uint8_t frame[FRAME_SIZE])
 {
     for (uint32_t i = 0U; i < FRAME_SIZE; i++)
     {
-        frame[i] = (uint8_t)(seq + i);
+        frame[i] = s_tx_const;
     }
 }
 
@@ -191,7 +191,7 @@ static void rt1064_spi_bringup_process(uint8_t idx)
         bad_count++;
     }
 
-    build_pattern_frame(tx_buf[prep_idx], s_tx_seq++);
+    build_pattern_frame(tx_buf[prep_idx]);
 }
 
 /*
@@ -227,9 +227,8 @@ status_t SPI_BridgeInit(void)
     memset((void *)last_rx, 0, sizeof(last_rx));
     memset((void *)last_tx, 0, sizeof(last_tx));
 
-    s_tx_seq = 0U;
-    build_pattern_frame(tx_buf[0], s_tx_seq++);
-    build_pattern_frame(tx_buf[1], s_tx_seq++);
+    build_pattern_frame(tx_buf[0]);
+    build_pattern_frame(tx_buf[1]);
 
     dma_configure_lpspi_channels();
     lpspi_slave_init_with_dma();
