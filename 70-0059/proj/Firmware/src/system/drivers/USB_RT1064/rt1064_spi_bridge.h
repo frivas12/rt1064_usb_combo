@@ -10,9 +10,9 @@
 extern "C" {
 #endif
 
-#define SPI_BRIDGE_FRAME_SIZE (64U)
-#define SPI_BRIDGE_DATA_BYTES (62U)
-#define SPI_BRIDGE_CRC_BYTES (2U)
+#define SPI_BRIDGE_FRAME_SIZE (1U)
+#define SPI_BRIDGE_DATA_BYTES (1U)
+#define SPI_BRIDGE_CRC_BYTES (0U)
 
 extern volatile bool last_rx_good;
 extern volatile uint32_t good_count;

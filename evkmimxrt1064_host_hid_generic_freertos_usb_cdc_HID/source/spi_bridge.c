@@ -185,7 +185,7 @@ static void rt1064_spi_bringup_process(uint8_t idx)
         bad_count++;
     }
 
-    build_fill_frame(tx_buf[prep_idx], 0x02U);
+    build_fill_frame(tx_buf[prep_idx], 0x01U);
     memcpy((void *)last_tx, tx_buf[prep_idx], FRAME_SIZE);
 }
 
@@ -222,8 +222,8 @@ status_t SPI_BridgeInit(void)
     memset((void *)last_rx, 0, sizeof(last_rx));
     memset((void *)last_tx, 0, sizeof(last_tx));
 
-    build_fill_frame(tx_buf[0], 0x02U);
-    build_fill_frame(tx_buf[1], 0x02U);
+    build_fill_frame(tx_buf[0], 0x01U);
+    build_fill_frame(tx_buf[1], 0x01U);
 
     dma_configure_lpspi_channels();
     lpspi_slave_init_with_dma();
