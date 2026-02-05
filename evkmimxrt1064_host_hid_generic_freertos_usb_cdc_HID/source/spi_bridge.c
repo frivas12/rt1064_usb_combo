@@ -201,7 +201,7 @@ static bool completed_fetch(uint8_t *idx)
 
 static void rt1064_spi_bringup_process(uint8_t idx)
 {
-    uint8_t prep_idx = active_idx;
+    uint8_t prep_idx = active_idx; /* prepare the buffer currently armed for next DMA transfer */
 
     memcpy((void *)last_rx, rx_buf[idx], FRAME_SIZE);
     last_rx_good = frame_check_crc((const uint8_t *)last_rx);
