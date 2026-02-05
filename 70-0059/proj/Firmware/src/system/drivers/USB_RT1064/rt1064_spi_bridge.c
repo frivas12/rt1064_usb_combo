@@ -53,7 +53,7 @@ static void spi_bridge_end_transaction(void)
     (void)spi_end_transfer();
 }
 
-static bool spi_transfer_64(const uint8_t *tx, uint8_t *rx)
+static bool spi_transfer_fixed(const uint8_t *tx, uint8_t *rx)
 {
     for (uint32_t i = 0U; i < SPI_BRIDGE_FRAME_SIZE; i++)
     {
@@ -68,21 +68,21 @@ static bool spi_transfer_64(const uint8_t *tx, uint8_t *rx)
     return true;
 }
 
-static bool spi_transfer_64_with_optional_retry(const uint8_t *tx, uint8_t *rx)
+static bool spi_transfer_fixed_with_optional_retry(const uint8_t *tx, uint8_t *rx)
 {
     if (!spi_bridge_start_transaction())
     {
         return false;
     }
 
-    bool ok = spi_transfer_64(tx, rx);
+    bool ok = spi_transfer_fixed(tx, rx);
     spi_bridge_end_transaction();
     if (!ok)
     {
         return false;
     }
 
-    if (rx[0] == 0x02U)
+    if (rx[0] == 0x01U)
     {
         return true;
     }
@@ -96,7 +96,7 @@ static bool spi_transfer_64_with_optional_retry(const uint8_t *tx, uint8_t *rx)
         return false;
     }
 
-    ok = spi_transfer_64(tx, rx);
+    ok = spi_transfer_fixed(tx, rx);
     spi_bridge_end_transaction();
     return ok;
 }
@@ -113,14 +113,14 @@ static void task_spi_bridge(void *pvParameters)
 
         xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);
         {
-            bool transfer_ok = spi_transfer_64_with_optional_retry(s_tx_frame, s_rx_frame);
+            bool transfer_ok = spi_transfer_fixed_with_optional_retry(s_tx_frame, s_rx_frame);
             xSemaphoreGive(xSPI_Semaphore);
 
             if (transfer_ok)
             {
                 spi_last_completed_idx = spi_active_idx;
                 memcpy((void *)last_rx, s_rx_frame, SPI_BRIDGE_FRAME_SIZE);
-                last_rx_good = frame_is_all_value(s_rx_frame, 0x02U);
+                last_rx_good = frame_is_all_value(s_rx_frame, 0x01U);
                 if (last_rx_good)
                 {
                     good_count++;
@@ -134,7 +134,7 @@ static void task_spi_bridge(void *pvParameters)
             {
                 bad_count++;
                 last_rx_good = false;
-                debug_print("SPI bridge: 64-byte transfer failed\r\n");
+                debug_print("SPI bridge: 1-byte transfer failed\r\n");
             }
         }
 
