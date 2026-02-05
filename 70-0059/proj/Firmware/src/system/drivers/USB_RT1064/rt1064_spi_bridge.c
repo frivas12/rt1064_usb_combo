@@ -80,19 +80,12 @@ static void build_test_frame(uint8_t frame[SPI_BRIDGE_FRAME_SIZE], uint8_t start
 
 static bool spi_bridge_start_transaction(void)
 {
-    xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);
-    if (spi_start_transfer(_SPI_MODE_0, CS_NO_TOGGLE, CS_RT1064) != SPI_OK)
-    {
-        xSemaphoreGive(xSPI_Semaphore);
-        return false;
-    }
-    return true;
+    return (spi_start_transfer(_SPI_MODE_0, CS_NO_TOGGLE, CS_RT1064) == SPI_OK);
 }
 
 static void spi_bridge_end_transaction(void)
 {
     (void)spi_end_transfer();
-    xSemaphoreGive(xSPI_Semaphore);
 }
 
 static bool spi_transfer_64(const uint8_t *tx, uint8_t *rx)
@@ -123,10 +116,12 @@ static void task_spi_bridge(void *pvParameters)
         start++;
         memcpy((void *)last_tx, s_tx_frame, SPI_BRIDGE_FRAME_SIZE);
 
+        xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);
         if (spi_bridge_start_transaction())
         {
             bool transfer_ok = spi_transfer_64(s_tx_frame, s_rx_frame);
             spi_bridge_end_transaction();
+            xSemaphoreGive(xSPI_Semaphore);
 
             if (transfer_ok)
             {
@@ -151,6 +146,7 @@ static void task_spi_bridge(void *pvParameters)
         }
         else
         {
+            xSemaphoreGive(xSPI_Semaphore);
             bad_count++;
             last_rx_good = false;
             debug_print("SPI bridge: failed to start transaction\r\n");
