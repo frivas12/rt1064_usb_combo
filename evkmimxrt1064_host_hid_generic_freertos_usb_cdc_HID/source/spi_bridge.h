@@ -17,23 +17,26 @@
 #define SPI_BRIDGE_CDC_ENDPOINT_INDEX (SPI_BRIDGE_MAX_DEVICES + 1U)
 #endif
 
-#define SPI_BRIDGE_MAX_PAYLOAD_LENGTH (63U)
 #define SPI_DEVICE_ID_INVALID (0xFFU)
 
 #define SPI_BRIDGE_FRAME_SIZE (64U)
+#define SPI_BRIDGE_DATA_BYTES (62U)
+#define SPI_BRIDGE_CRC_BYTES (2U)
+#define SPI_BRIDGE_MAX_PAYLOAD_LENGTH (SPI_BRIDGE_DATA_BYTES)
 
 extern volatile bool last_rx_good;
 extern volatile uint32_t good_count;
 extern volatile uint32_t bad_count;
 
-extern uint8_t last_rx[SPI_BRIDGE_FRAME_SIZE];
-extern uint8_t last_tx[SPI_BRIDGE_FRAME_SIZE];
+extern volatile uint8_t last_rx[SPI_BRIDGE_FRAME_SIZE];
+extern volatile uint8_t last_tx[SPI_BRIDGE_FRAME_SIZE];
 
 void LPSPI_RX_DMA_IRQHandler(void);
 
 status_t SPI_BridgeInit(void);
 void SPI_BridgeTask(void *param);
 
+/* The APIs below are retained as bring-up compatibility stubs. */
 status_t SPI_BridgeAllocDevice(uint8_t *deviceIdOut);
 status_t SPI_BridgeRemoveDevice(uint8_t deviceId);
 status_t SPI_BridgeSendReportDescriptor(uint8_t deviceId, const uint8_t *descriptor, uint16_t length);
