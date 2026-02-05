@@ -10,19 +10,20 @@
 #include "task.h"
 #include "user_spi.h"
 
-#define FRAME_SIZE (64U)
-#define FRAME_DATA_SIZE (62U)
 #define SPI_BRIDGE_POLL_PERIOD_MS (10U)
 
 volatile bool last_rx_good = false;
 volatile uint32_t good_count = 0U;
 volatile uint32_t bad_count = 0U;
 
-uint8_t last_rx[FRAME_SIZE];
-uint8_t last_tx[FRAME_SIZE];
+volatile uint8_t last_rx[SPI_BRIDGE_FRAME_SIZE];
+volatile uint8_t last_tx[SPI_BRIDGE_FRAME_SIZE];
 
-static uint8_t s_tx_frame[FRAME_SIZE];
-static uint8_t s_rx_frame[FRAME_SIZE];
+volatile uint8_t spi_active_idx = 0U;
+volatile uint8_t spi_last_completed_idx = 0U;
+
+static uint8_t s_tx_frame[SPI_BRIDGE_FRAME_SIZE];
+static uint8_t s_rx_frame[SPI_BRIDGE_FRAME_SIZE];
 
 static uint16_t crc16_ccitt_false(const uint8_t *data, uint32_t len)
 {
@@ -47,21 +48,21 @@ static uint16_t crc16_ccitt_false(const uint8_t *data, uint32_t len)
     return crc;
 }
 
-static void frame_write_crc(uint8_t frame[FRAME_SIZE])
+static void frame_write_crc(uint8_t frame[SPI_BRIDGE_FRAME_SIZE])
 {
-    uint16_t crc = crc16_ccitt_false(frame, FRAME_DATA_SIZE);
+    uint16_t crc = crc16_ccitt_false(frame, SPI_BRIDGE_DATA_BYTES);
     frame[62] = (uint8_t)(crc & 0xFFU);
     frame[63] = (uint8_t)(crc >> 8);
 }
 
-static bool frame_check_crc(const uint8_t frame[FRAME_SIZE])
+static bool frame_check_crc(const uint8_t frame[SPI_BRIDGE_FRAME_SIZE])
 {
-    uint16_t calc = crc16_ccitt_false(frame, FRAME_DATA_SIZE);
+    uint16_t calc = crc16_ccitt_false(frame, SPI_BRIDGE_DATA_BYTES);
     uint16_t recv = (uint16_t)frame[62] | ((uint16_t)frame[63] << 8);
     return calc == recv;
 }
 
-static void build_test_frame(uint8_t frame[FRAME_SIZE], uint8_t start)
+static void build_test_frame(uint8_t frame[SPI_BRIDGE_FRAME_SIZE], uint8_t start)
 {
     frame[0] = 0xA5U;
     frame[1] = 0x12U;
@@ -96,7 +97,7 @@ static void spi_bridge_end_transaction(void)
 
 static bool spi_transfer_64(const uint8_t *tx, uint8_t *rx)
 {
-    for (uint32_t i = 0U; i < FRAME_SIZE; i++)
+    for (uint32_t i = 0U; i < SPI_BRIDGE_FRAME_SIZE; i++)
     {
         uint8_t value = tx[i];
         if (spi_partial_transfer(&value) != SPI_OK)
@@ -117,9 +118,10 @@ static void task_spi_bridge(void *pvParameters)
 
     for (;;)
     {
+        spi_active_idx ^= 1U;
         build_test_frame(s_tx_frame, start);
         start++;
-        memcpy(last_tx, s_tx_frame, FRAME_SIZE);
+        memcpy((void *)last_tx, s_tx_frame, SPI_BRIDGE_FRAME_SIZE);
 
         if (spi_bridge_start_transaction())
         {
@@ -128,7 +130,8 @@ static void task_spi_bridge(void *pvParameters)
 
             if (transfer_ok)
             {
-                memcpy(last_rx, s_rx_frame, FRAME_SIZE);
+                spi_last_completed_idx = spi_active_idx;
+                memcpy((void *)last_rx, s_rx_frame, SPI_BRIDGE_FRAME_SIZE);
                 last_rx_good = frame_check_crc(s_rx_frame);
                 if (last_rx_good)
                 {
@@ -159,8 +162,8 @@ static void task_spi_bridge(void *pvParameters)
 
 void rt1064_spi_bridge_init(void)
 {
-    memset(last_rx, 0, sizeof(last_rx));
-    memset(last_tx, 0, sizeof(last_tx));
+    memset((void *)last_rx, 0, sizeof(last_rx));
+    memset((void *)last_tx, 0, sizeof(last_tx));
 
     if (xTaskCreate(task_spi_bridge, "SPI Bridge", TASK_SPI_BRIDGE_STACK_SIZE, NULL, TASK_SPI_BRIDGE_STACK_PRIORITY,
                     NULL) != pdPASS)

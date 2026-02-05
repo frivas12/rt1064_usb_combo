@@ -10,12 +10,19 @@
 extern "C" {
 #endif
 
+#define SPI_BRIDGE_FRAME_SIZE (64U)
+#define SPI_BRIDGE_DATA_BYTES (62U)
+#define SPI_BRIDGE_CRC_BYTES (2U)
+
 extern volatile bool last_rx_good;
 extern volatile uint32_t good_count;
 extern volatile uint32_t bad_count;
 
-extern uint8_t last_rx[64];
-extern uint8_t last_tx[64];
+extern volatile uint8_t last_rx[SPI_BRIDGE_FRAME_SIZE];
+extern volatile uint8_t last_tx[SPI_BRIDGE_FRAME_SIZE];
+
+extern volatile uint8_t spi_active_idx;
+extern volatile uint8_t spi_last_completed_idx;
 
 /**
  * @brief Initialize the RT1064 SPI bridge task when the RT1064 USB host is present.
