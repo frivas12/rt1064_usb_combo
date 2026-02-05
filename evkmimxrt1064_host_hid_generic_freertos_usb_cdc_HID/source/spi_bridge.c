@@ -14,14 +14,13 @@
 
 #define FRAME_SIZE (64U)
 #define FRAME_DATA_SIZE (62U)
-#define COMPLETION_QUEUE_SIZE (4U)
 
 #define SPI_BRIDGE_DMA_BASE DMA0
 #define SPI_BRIDGE_DMAMUX_BASE DMAMUX
 #define SPI_BRIDGE_DMA_RX_CHANNEL (0U)
 #define SPI_BRIDGE_DMA_TX_CHANNEL (1U)
-#define SPI_BRIDGE_DMA_RX_REQUEST (13U)
-#define SPI_BRIDGE_DMA_TX_REQUEST (14U)
+#define SPI_BRIDGE_DMA_RX_REQUEST (13U) /* kDmaRequestMuxLPSPI1Rx in PERI_DMAMUX.h */
+#define SPI_BRIDGE_DMA_TX_REQUEST (14U) /* kDmaRequestMuxLPSPI1Tx in PERI_DMAMUX.h */
 
 #ifndef SPI_BRIDGE_SPI_BASE
 #define SPI_BRIDGE_SPI_BASE LPSPI1
@@ -37,10 +36,8 @@ uint8_t last_tx[FRAME_SIZE];
 static uint8_t tx_buf[2][FRAME_SIZE];
 static uint8_t rx_buf[2][FRAME_SIZE];
 static volatile uint8_t active_idx = 0U;
-static volatile uint8_t completed_queue[COMPLETION_QUEUE_SIZE];
-static volatile uint8_t completed_head = 0U;
-static volatile uint8_t completed_tail = 0U;
-static volatile uint8_t completed_count = 0U;
+static volatile bool completed_pending = false;
+static volatile uint8_t completed_idx = 0U;
 
 static TaskHandle_t s_bridgeTaskHandle;
 
@@ -149,7 +146,7 @@ static void arm_lpspi_dma(uint8_t *tx, uint8_t *rx)
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].DOFF = 1;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].CITER_ELINKNO = DMA_CITER_ELINKNO_CITER(FRAME_SIZE);
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].DLAST_SGA = -(int32_t)FRAME_SIZE;
-    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].CSR = DMA_CSR_INTMAJOR_MASK;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].CSR = DMA_CSR_INTMAJOR_MASK | DMA_CSR_DREQ_MASK;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_RX_CHANNEL].BITER_ELINKNO = DMA_BITER_ELINKNO_BITER(FRAME_SIZE);
 
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].SADDR = (uint32_t)tx;
@@ -161,7 +158,7 @@ static void arm_lpspi_dma(uint8_t *tx, uint8_t *rx)
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].DOFF = 0;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].CITER_ELINKNO = DMA_CITER_ELINKNO_CITER(FRAME_SIZE);
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].DLAST_SGA = 0;
-    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].CSR = 0;
+    SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].CSR = DMA_CSR_DREQ_MASK;
     SPI_BRIDGE_DMA_BASE->TCD[SPI_BRIDGE_DMA_TX_CHANNEL].BITER_ELINKNO = DMA_BITER_ELINKNO_BITER(FRAME_SIZE);
 
     SPI_BRIDGE_DMA_BASE->CINT = DMA_CINT_CINT(SPI_BRIDGE_DMA_RX_CHANNEL);
@@ -183,30 +180,16 @@ static void notify_processing_task_from_isr(void)
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-static bool completed_queue_push_from_isr(uint8_t idx)
+static bool completed_fetch(uint8_t *idx)
 {
-    if (completed_count >= COMPLETION_QUEUE_SIZE)
-    {
-        return false;
-    }
-
-    completed_queue[completed_tail] = idx;
-    completed_tail = (uint8_t)((completed_tail + 1U) % COMPLETION_QUEUE_SIZE);
-    completed_count++;
-    return true;
-}
-
-static bool completed_queue_pop(uint8_t *idx)
-{
-    bool hasItem = false;
+    bool hasItem;
 
     taskENTER_CRITICAL();
-    if (completed_count != 0U)
+    hasItem = completed_pending;
+    if (hasItem)
     {
-        *idx = completed_queue[completed_head];
-        completed_head = (uint8_t)((completed_head + 1U) % COMPLETION_QUEUE_SIZE);
-        completed_count--;
-        hasItem = true;
+        *idx = completed_idx;
+        completed_pending = false;
     }
     taskEXIT_CRITICAL();
 
@@ -243,10 +226,9 @@ void LPSPI_RX_DMA_IRQHandler(void)
     active_idx ^= 1U;
 
     arm_lpspi_dma(tx_buf[active_idx], rx_buf[active_idx]);
-    if (completed_queue_push_from_isr(finished_idx))
-    {
-        notify_processing_task_from_isr();
-    }
+    completed_idx = finished_idx;
+    completed_pending = true;
+    notify_processing_task_from_isr();
 }
 
 void DMA0_DMA16_DriverIRQHandler(void)
@@ -270,9 +252,8 @@ status_t SPI_BridgeInit(void)
     lpspi_slave_init_with_dma();
 
     active_idx = 0U;
-    completed_head = 0U;
-    completed_tail = 0U;
-    completed_count = 0U;
+    completed_idx = 0U;
+    completed_pending = false;
 
     arm_lpspi_dma(tx_buf[active_idx], rx_buf[active_idx]);
 
@@ -290,7 +271,7 @@ void SPI_BridgeTask(void *param)
         (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(1000U));
 
         uint8_t idx = 0U;
-        while (completed_queue_pop(&idx))
+        while (completed_fetch(&idx))
         {
             rt1064_spi_bringup_process(idx);
         }
