@@ -434,6 +434,13 @@ spi_status_t spi_start_transfer(spi_modes mode, bool toggle, uint8_t cs) {
 	spi0_toggle_s = toggle;
 	spi0_current_cs_s = cs;
 
+	/*
+	 * Some slaves (notably RT1064 LPSPI+DMA) require CS setup time before the
+	 * first clock edge. Keep this delay short but non-zero to avoid first-byte
+	 * corruption on initial transactions.
+	 */
+	static const uint8_t cs_to_sck_delay_us = 1U;
+
 	uint32_t timeout = SPI_TIMEOUT;
 	// Wait for transmit register to be empty
 	while (! (SPI0->SPI_SR & SPI_SR_TDRE))
@@ -445,6 +452,7 @@ spi_status_t spi_start_transfer(spi_modes mode, bool toggle, uint8_t cs) {
 	spi_clear_rx();
 	set_mode(mode);
 	chip_select(cs);
+	delay_us(cs_to_sck_delay_us);
 
 	return SPI_OK;
 }
