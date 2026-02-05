@@ -38,6 +38,7 @@ static uint8_t rx_buf[2][FRAME_SIZE];
 static volatile uint8_t active_idx = 0U;
 static volatile bool completed_pending = false;
 static volatile uint8_t completed_idx = 0U;
+static volatile uint32_t dropped_completions = 0U;
 
 static TaskHandle_t s_bridgeTaskHandle;
 
@@ -200,7 +201,7 @@ static bool completed_fetch(uint8_t *idx)
 
 static void rt1064_spi_bringup_process(uint8_t idx)
 {
-    uint8_t prep_idx = idx;
+    uint8_t prep_idx = active_idx;
 
     memcpy((void *)last_rx, rx_buf[idx], FRAME_SIZE);
     last_rx_good = frame_check_crc((const uint8_t *)last_rx);
@@ -228,6 +229,10 @@ void LPSPI_RX_DMA_IRQHandler(void)
     active_idx ^= 1U;
 
     arm_lpspi_dma(tx_buf[active_idx], rx_buf[active_idx]);
+    if (completed_pending)
+    {
+        dropped_completions++;
+    }
     completed_idx = finished_idx;
     completed_pending = true;
     notify_processing_task_from_isr();
