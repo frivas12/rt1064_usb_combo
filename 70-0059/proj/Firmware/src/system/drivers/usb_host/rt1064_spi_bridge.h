@@ -10,6 +10,13 @@
 extern "C" {
 #endif
 
+extern volatile bool last_rx_good;
+extern volatile uint32_t good_count;
+extern volatile uint32_t bad_count;
+
+extern uint8_t last_rx[64];
+extern uint8_t last_tx[64];
+
 /**
  * @brief Initialize the RT1064 SPI bridge task when the RT1064 USB host is present.
  */

@@ -20,6 +20,17 @@
 #define SPI_BRIDGE_MAX_PAYLOAD_LENGTH (63U)
 #define SPI_DEVICE_ID_INVALID (0xFFU)
 
+#define SPI_BRIDGE_FRAME_SIZE (64U)
+
+extern volatile bool last_rx_good;
+extern volatile uint32_t good_count;
+extern volatile uint32_t bad_count;
+
+extern uint8_t last_rx[SPI_BRIDGE_FRAME_SIZE];
+extern uint8_t last_tx[SPI_BRIDGE_FRAME_SIZE];
+
+void LPSPI_RX_DMA_IRQHandler(void);
+
 status_t SPI_BridgeInit(void);
 void SPI_BridgeTask(void *param);
 

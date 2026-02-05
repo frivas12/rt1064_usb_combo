@@ -1,25 +1,86 @@
 /*
- * Minimal SPI bridge test
+ * SPI bring-up test (RT1064 slave side)
  *
- * The RT1064 runs as an SPI slave on LPSPI1. Each received byte updates the
- * next transmit byte so the master can clock a reply on the following byte.
+ * Fixed 64-byte full-duplex frames with CRC16/CCITT-FALSE and double-buffered
+ * TX/RX data ownership for DMA-style handoff.
  */
 #include "spi_bridge.h"
 
-#include "FreeRTOS.h"
-#include "task.h"
-#include "fsl_clock.h"
+#include <string.h>
 
-#define SPI_BRIDGE_IDLE_TX (0x00U)
+#include "FreeRTOS.h"
+#include "fsl_clock.h"
+#include "task.h"
+
+#define FRAME_SIZE (64U)
+#define FRAME_DATA_SIZE (62U)
 
 #ifndef SPI_BRIDGE_SPI_BASE
 #define SPI_BRIDGE_SPI_BASE LPSPI1
 #endif
 
-static volatile uint8_t s_lastRxByte;
-static volatile uint8_t s_nextTxByte = SPI_BRIDGE_IDLE_TX;
+volatile bool last_rx_good = false;
+volatile uint32_t good_count = 0U;
+volatile uint32_t bad_count = 0U;
 
-status_t SPI_BridgeInit(void)
+uint8_t last_rx[FRAME_SIZE];
+uint8_t last_tx[FRAME_SIZE];
+
+static uint8_t tx_buf[2][FRAME_SIZE];
+static uint8_t rx_buf[2][FRAME_SIZE];
+static volatile uint8_t active_idx = 0U;
+static volatile uint8_t completed_idx = 0U;
+static volatile bool processing_pending = false;
+
+static TaskHandle_t s_bridgeTaskHandle;
+
+static uint16_t crc16_ccitt_false(const uint8_t *data, uint32_t len)
+{
+    uint16_t crc = 0xFFFFU;
+
+    for (uint32_t i = 0U; i < len; i++)
+    {
+        crc ^= (uint16_t)data[i] << 8;
+        for (uint8_t bit = 0U; bit < 8U; bit++)
+        {
+            crc = (crc & 0x8000U) != 0U ? (uint16_t)((crc << 1) ^ 0x1021U) : (uint16_t)(crc << 1);
+        }
+    }
+
+    return crc;
+}
+
+static void frame_write_crc(uint8_t frame[FRAME_SIZE])
+{
+    uint16_t crc = crc16_ccitt_false(frame, FRAME_DATA_SIZE);
+    frame[62] = (uint8_t)(crc & 0xFFU);
+    frame[63] = (uint8_t)(crc >> 8);
+}
+
+static bool frame_check_crc(const uint8_t frame[FRAME_SIZE])
+{
+    uint16_t calc = crc16_ccitt_false(frame, FRAME_DATA_SIZE);
+    uint16_t recv = (uint16_t)frame[62] | ((uint16_t)frame[63] << 8);
+    return calc == recv;
+}
+
+static void build_test_frame(uint8_t frame[FRAME_SIZE], uint8_t start)
+{
+    frame[0] = 0xA5U;
+    frame[1] = 0x12U;
+    frame[2] = 0x34U;
+
+    uint8_t value = start;
+    for (uint32_t i = 3U; i <= 61U; i++)
+    {
+        frame[i] = value;
+        value++;
+    }
+
+    frame_write_crc(frame);
+}
+
+static void lpspi_slave_init_with_dma(void)
 {
     CLOCK_SetMux(kCLOCK_LpspiMux, 1U);
     CLOCK_SetDiv(kCLOCK_LpspiDiv, 7U);
@@ -27,27 +88,87 @@ status_t SPI_BridgeInit(void)
 
     SPI_BRIDGE_SPI_BASE->CR = LPSPI_CR_RST_MASK;
     SPI_BRIDGE_SPI_BASE->CR = 0U;
-    SPI_BRIDGE_SPI_BASE->CFGR1 =
-        LPSPI_CFGR1_MASTER(0U) | LPSPI_CFGR1_NOSTALL(1U) | LPSPI_CFGR1_PINCFG(0U);
+    SPI_BRIDGE_SPI_BASE->CFGR1 = LPSPI_CFGR1_MASTER(0U) | LPSPI_CFGR1_NOSTALL(1U) | LPSPI_CFGR1_PINCFG(0U);
     SPI_BRIDGE_SPI_BASE->FCR = LPSPI_FCR_TXWATER(0U) | LPSPI_FCR_RXWATER(0U);
-    SPI_BRIDGE_SPI_BASE->TCR =
-        LPSPI_TCR_FRAMESZ(7U) | LPSPI_TCR_PCS(0U) | LPSPI_TCR_CPHA(0U) | LPSPI_TCR_CPOL(0U);
-    SPI_BRIDGE_SPI_BASE->SR =
-        LPSPI_SR_WCF_MASK | LPSPI_SR_FCF_MASK | LPSPI_SR_TCF_MASK | LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK |
-        LPSPI_SR_DMF_MASK;
+    SPI_BRIDGE_SPI_BASE->TCR = LPSPI_TCR_FRAMESZ(7U) | LPSPI_TCR_PCS(0U) | LPSPI_TCR_CPHA(0U) | LPSPI_TCR_CPOL(0U);
+    SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_WCF_MASK | LPSPI_SR_FCF_MASK | LPSPI_SR_TCF_MASK | LPSPI_SR_TEF_MASK |
+                              LPSPI_SR_REF_MASK | LPSPI_SR_DMF_MASK;
 
-    NVIC_SetPriority(LPSPI1_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
-    NVIC_EnableIRQ(LPSPI1_IRQn);
+    /* DMA hookups are project-specific; these requests enable peripheral DMA. */
+    SPI_BRIDGE_SPI_BASE->DER = LPSPI_DER_TDDE_MASK | LPSPI_DER_RDDE_MASK;
+    SPI_BRIDGE_SPI_BASE->CR = LPSPI_CR_MEN_MASK;
+}
 
-    while ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_RDF_MASK) != 0U)
+static void arm_lpspi_dma(uint8_t *tx, uint8_t *rx)
+{
+    /*
+     * Driver-specific DMA setup intentionally isolated here.
+     * Replace this with eDMA transfer descriptors for 64-byte RX/TX.
+     */
+    (void)tx;
+    (void)rx;
+}
+
+static void notify_processing_task_from_isr(void)
+{
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    processing_pending = true;
+    if (s_bridgeTaskHandle != NULL)
     {
-        (void)SPI_BRIDGE_SPI_BASE->RDR;
+        vTaskNotifyGiveFromISR(s_bridgeTaskHandle, &xHigherPriorityTaskWoken);
+    }
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+}
+
+static void rt1064_spi_bringup_process(void)
+{
+    uint8_t idx = completed_idx;
+    uint8_t prep_idx = (uint8_t)(active_idx ^ 1U);
+
+    memcpy(last_rx, rx_buf[idx], FRAME_SIZE);
+    last_rx_good = frame_check_crc(last_rx);
+
+    if (last_rx_good)
+    {
+        good_count++;
+    }
+    else
+    {
+        bad_count++;
     }
 
-    s_nextTxByte = SPI_BRIDGE_IDLE_TX;
-    SPI_BRIDGE_SPI_BASE->TDR = s_nextTxByte;
-    SPI_BRIDGE_SPI_BASE->IER = LPSPI_IER_RDIE_MASK;
-    SPI_BRIDGE_SPI_BASE->CR = LPSPI_CR_MEN_MASK;
+    build_test_frame(tx_buf[prep_idx], 0x80U);
+    memcpy(last_tx, tx_buf[prep_idx], FRAME_SIZE);
+}
+
+/*
+ * Hook this function from the RX DMA completion IRQ in the selected
+ * eDMA/channel configuration.
+ */
+void LPSPI_RX_DMA_IRQHandler(void)
+{
+    completed_idx = active_idx;
+    active_idx ^= 1U;
+
+    arm_lpspi_dma(tx_buf[active_idx], rx_buf[active_idx]);
+    notify_processing_task_from_isr();
+}
+
+status_t SPI_BridgeInit(void)
+{
+    memset(last_rx, 0, sizeof(last_rx));
+    memset(last_tx, 0, sizeof(last_tx));
+
+    build_test_frame(tx_buf[0], 0x80U);
+    build_test_frame(tx_buf[1], 0x80U);
+
+    lpspi_slave_init_with_dma();
+
+    active_idx = 0U;
+    completed_idx = 0U;
+    processing_pending = false;
+
+    arm_lpspi_dma(tx_buf[active_idx], rx_buf[active_idx]);
 
     return kStatus_Success;
 }
@@ -56,28 +177,20 @@ void SPI_BridgeTask(void *param)
 {
     (void)param;
 
+    s_bridgeTaskHandle = xTaskGetCurrentTaskHandle();
+
     for (;;)
     {
-        vTaskDelay(pdMS_TO_TICKS(100U));
-    }
-}
+        if (!processing_pending)
+        {
+            (void)ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(1000U));
+        }
 
-void LPSPI1_IRQHandler(void)
-{
-    uint32_t sr = SPI_BRIDGE_SPI_BASE->SR;
-
-    if ((sr & (LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK)) != 0U)
-    {
-        SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_TEF_MASK | LPSPI_SR_REF_MASK;
-    }
-
-    while ((SPI_BRIDGE_SPI_BASE->SR & LPSPI_SR_RDF_MASK) != 0U)
-    {
-        uint8_t rx = (uint8_t)SPI_BRIDGE_SPI_BASE->RDR;
-        s_lastRxByte = rx;
-        s_nextTxByte = (uint8_t)(rx + 1U);
-        SPI_BRIDGE_SPI_BASE->TDR = s_nextTxByte;
-        SPI_BRIDGE_SPI_BASE->SR = LPSPI_SR_RDF_MASK | LPSPI_SR_TDF_MASK;
+        if (processing_pending)
+        {
+            processing_pending = false;
+            rt1064_spi_bringup_process();
+        }
     }
 }
 
