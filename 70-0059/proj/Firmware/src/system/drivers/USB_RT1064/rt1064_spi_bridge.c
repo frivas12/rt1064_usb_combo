@@ -25,57 +25,22 @@ volatile uint8_t spi_last_completed_idx = 0U;
 static uint8_t s_tx_frame[SPI_BRIDGE_FRAME_SIZE];
 static uint8_t s_rx_frame[SPI_BRIDGE_FRAME_SIZE];
 
-static uint16_t crc16_ccitt_false(const uint8_t *data, uint32_t len)
+static void build_fill_frame(uint8_t frame[SPI_BRIDGE_FRAME_SIZE], uint8_t fill)
 {
-    uint16_t crc = 0xFFFFU;
+    memset(frame, fill, SPI_BRIDGE_FRAME_SIZE);
+}
 
-    for (uint32_t i = 0U; i < len; i++)
+static bool frame_is_all_value(const uint8_t frame[SPI_BRIDGE_FRAME_SIZE], uint8_t expected)
+{
+    for (uint32_t i = 0U; i < SPI_BRIDGE_FRAME_SIZE; i++)
     {
-        crc ^= (uint16_t)data[i] << 8;
-        for (uint8_t b = 0U; b < 8U; b++)
+        if (frame[i] != expected)
         {
-            if ((crc & 0x8000U) != 0U)
-            {
-                crc = (uint16_t)((crc << 1) ^ 0x1021U);
-            }
-            else
-            {
-                crc = (uint16_t)(crc << 1);
-            }
+            return false;
         }
     }
 
-    return crc;
-}
-
-static void frame_write_crc(uint8_t frame[SPI_BRIDGE_FRAME_SIZE])
-{
-    uint16_t crc = crc16_ccitt_false(frame, SPI_BRIDGE_DATA_BYTES);
-    frame[62] = (uint8_t)(crc & 0xFFU);
-    frame[63] = (uint8_t)(crc >> 8);
-}
-
-static bool frame_check_crc(const uint8_t frame[SPI_BRIDGE_FRAME_SIZE])
-{
-    uint16_t calc = crc16_ccitt_false(frame, SPI_BRIDGE_DATA_BYTES);
-    uint16_t recv = (uint16_t)frame[62] | ((uint16_t)frame[63] << 8);
-    return calc == recv;
-}
-
-static void build_test_frame(uint8_t frame[SPI_BRIDGE_FRAME_SIZE], uint8_t start)
-{
-    frame[0] = 0xA5U;
-    frame[1] = 0x12U;
-    frame[2] = 0x34U;
-
-    uint8_t value = start;
-    for (uint32_t i = 3U; i <= 61U; i++)
-    {
-        frame[i] = value;
-        value++;
-    }
-
-    frame_write_crc(frame);
+    return true;
 }
 
 static bool spi_bridge_start_transaction(void)
@@ -117,7 +82,7 @@ static bool spi_transfer_64_with_optional_retry(const uint8_t *tx, uint8_t *rx)
         return false;
     }
 
-    if (rx[0] == 0xA5U)
+    if (rx[0] == 0x02U)
     {
         return true;
     }
@@ -140,13 +105,10 @@ static void task_spi_bridge(void *pvParameters)
 {
     (void)pvParameters;
 
-    uint8_t start = 0x00U;
-
     for (;;)
     {
         spi_active_idx ^= 1U;
-        build_test_frame(s_tx_frame, start);
-        start++;
+        build_fill_frame(s_tx_frame, 0x01U);
         memcpy((void *)last_tx, s_tx_frame, SPI_BRIDGE_FRAME_SIZE);
 
         xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);
@@ -158,7 +120,7 @@ static void task_spi_bridge(void *pvParameters)
             {
                 spi_last_completed_idx = spi_active_idx;
                 memcpy((void *)last_rx, s_rx_frame, SPI_BRIDGE_FRAME_SIZE);
-                last_rx_good = frame_check_crc(s_rx_frame);
+                last_rx_good = frame_is_all_value(s_rx_frame, 0x02U);
                 if (last_rx_good)
                 {
                     good_count++;
