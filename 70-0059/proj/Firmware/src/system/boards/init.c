@@ -232,7 +232,7 @@ void system_init(void) {
     // Initialize supervisor with the cpld status.
     // This is needed to periodically reset the WDT.
     supervisor_init(cpld_programmed);
-
+    cpld_programmed = true;
     /*Only continue if the CPLD has been programmed, else the usb slave is
      * running to load the CPLD with software*/
     if (cpld_programmed == true) {
@@ -240,7 +240,7 @@ void system_init(void) {
         board_init();
         hid_mapping_service_init();
         itc_service_init();
-        if (board_type < MCM_41_0117_RT1064) {
+        if (0) {  // board_type < MCM_41_0117_RT1064) {
             usb_host_init();
         } else {
             rt1064_spi_bridge_init();
