@@ -10,8 +10,8 @@
 extern "C" {
 #endif
 
-#define SPI_BRIDGE_FRAME_SIZE (16U)
-#define SPI_BRIDGE_DATA_BYTES (16U)
+#define SPI_BRIDGE_FRAME_SIZE (1U)
+#define SPI_BRIDGE_DATA_BYTES (1U)
 #define SPI_BRIDGE_CRC_BYTES (0U)
 
 extern volatile bool last_rx_good;

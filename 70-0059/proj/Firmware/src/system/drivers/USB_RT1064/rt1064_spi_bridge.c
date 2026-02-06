@@ -26,20 +26,24 @@ volatile uint32_t spi_transfer_seq = 0U;
 static uint8_t s_tx_frame[SPI_BRIDGE_FRAME_SIZE];
 static uint8_t s_rx_frame[SPI_BRIDGE_FRAME_SIZE];
 
-static void build_pattern_frame(uint8_t frame[SPI_BRIDGE_FRAME_SIZE], uint8_t seq)
+static const uint8_t s_tx_const = 0x05U;
+static const uint8_t s_expected_rx = 0x03U;
+
+static void build_pattern_frame(uint8_t frame[SPI_BRIDGE_FRAME_SIZE])
 {
     for (uint32_t i = 0U; i < SPI_BRIDGE_FRAME_SIZE; i++)
     {
-        frame[i] = (uint8_t)(seq + i);
+        frame[i] = s_tx_const;
     }
 }
 
 static bool frame_matches_tx_pattern(const uint8_t rx[SPI_BRIDGE_FRAME_SIZE],
                                      const uint8_t tx[SPI_BRIDGE_FRAME_SIZE])
 {
+    (void)tx;
     for (uint32_t i = 0U; i < SPI_BRIDGE_FRAME_SIZE; i++)
     {
-        if (rx[i] != tx[i])
+        if (rx[i] != s_expected_rx)
         {
             return false;
         }
@@ -113,8 +117,8 @@ static void task_spi_bridge(void *pvParameters)
     for (;;)
     {
         spi_active_idx ^= 1U;
-        const uint8_t seq = (uint8_t)(spi_transfer_seq++);
-        build_pattern_frame(s_tx_frame, seq);
+        (void)spi_transfer_seq++;
+        build_pattern_frame(s_tx_frame);
         memcpy((void *)last_tx, s_tx_frame, SPI_BRIDGE_FRAME_SIZE);
 
         xSemaphoreTake(xSPI_Semaphore, portMAX_DELAY);

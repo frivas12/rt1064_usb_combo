@@ -69,6 +69,7 @@ static void dma_configure_lpspi_channels(void)
 }
 
 static const uint8_t s_tx_const = 0x03U;
+static const uint8_t s_expected_rx = 0x05U;
 
 static void build_pattern_frame(uint8_t frame[FRAME_SIZE])
 {
@@ -80,9 +81,10 @@ static void build_pattern_frame(uint8_t frame[FRAME_SIZE])
 
 static bool frame_matches_tx_pattern(const uint8_t rx[FRAME_SIZE], const uint8_t tx[FRAME_SIZE])
 {
+    (void)tx;
     for (uint32_t i = 0U; i < FRAME_SIZE; i++)
     {
-        if (rx[i] != tx[i])
+        if (rx[i] != s_expected_rx)
         {
             return false;
         }
