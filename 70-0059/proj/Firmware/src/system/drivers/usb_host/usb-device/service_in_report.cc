@@ -148,14 +148,14 @@ void drivers::usb_device::service_in_report(
             continue;
         }
 
-        const uint8_t BYTE_POS =
-            device.hid_data.hid_in_controls[ctrl_no].byte_position;
+        const int16_t VALUE = extract_control_value(device, ctrl_no);
+        const int16_t PREV_VALUE =
+            extract_control_value(device.hid_data.hid_in_controls[ctrl_no],
+                                  device.hid_data.hid_prev_buf);
+        const bool CONTROL_CHANGED =
+            !device.initialized || (VALUE != PREV_VALUE);
 
-        const bool BYTE_CHANGED = device.hid_data.hid_buf[BYTE_POS] !=
-                                      device.hid_data.hid_prev_buf[BYTE_POS] ||
-                                  !device.initialized;
-
-        if (!BYTE_CHANGED) {
+        if (!CONTROL_CHANGED) {
             continue;
         }
 
@@ -167,8 +167,6 @@ void drivers::usb_device::service_in_report(
         if (MAPPING.control_disable) {
             continue;
         }
-
-        const int16_t VALUE = extract_control_value(device, ctrl_no);
         service::itc::message::hid_in_message message{
             .mode         = MAPPING.mode,
             .control_data = 0,

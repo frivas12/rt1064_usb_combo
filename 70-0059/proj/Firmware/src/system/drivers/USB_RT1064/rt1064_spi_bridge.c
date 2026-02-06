@@ -91,7 +91,7 @@ static bool spi_transfer_fixed_with_optional_retry(const uint8_t *tx, uint8_t *r
         return false;
     }
 
-    if (rx[0] == tx[0])
+    if (frame_matches_tx_pattern(rx, tx))
     {
         return true;
     }
