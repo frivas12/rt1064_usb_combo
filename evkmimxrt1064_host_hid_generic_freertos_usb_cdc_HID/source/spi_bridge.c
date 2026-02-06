@@ -1,7 +1,7 @@
 /*
  * SPI bring-up test (RT1064 slave side)
  *
- * Fixed 16-byte full-duplex frames with deterministic pattern generation
+ * Fixed 5-byte full-duplex frames with deterministic pattern generation
  * and double-buffered TX/RX data ownership for DMA-style handoff.
  */
 #include "spi_bridge.h"
